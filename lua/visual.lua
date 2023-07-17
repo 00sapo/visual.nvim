@@ -48,16 +48,20 @@ local function with_defaults(options)
        -- what each command name does:
        WORD_next = {
          -- first, the editor is switched to normal mode
-         {"W"}, -- if in visual mode, these keys are executed
+         {"W"}, -- if the command is launched in visual mode, these keys are executed
          -- then, the editor is switched to normal mode
-         {"iW"} -- these keys are executed
+         {"iW"}, -- then, these keys are executed
          -- in place of keys, you can use one or more functions (no argument
          -- allowed), or both of them
+         false
+         -- the final argument indicates if this command can be counted (e.g. 3w, 4e,
+         -- etc.)
+         -- this is true by default and applies to the second set of keys only
        },
        
-       word_next = {{"w"}, {"iw"}},
-       WORD_prev = {{"B"}, {"iWo"}},
-       word_prev = {{"b"}, {"iwo"}},
+       word_next = {{"w"}, {"iw"}, false},
+       WORD_prev = {{"B"}, {"iWo"}, false,},
+       word_prev = {{"b"}, {"iwo"}, false},
        from_cursor_to_end_word = {{}, {"e"}},
        from_cursor_to_start_word = {{}, {"b"}},
        from_cursor_to_start_word_next = {{}, {"w"}},
@@ -73,10 +77,10 @@ local function with_defaults(options)
        find_prev = {{}, {"F"}},
        till_next = {{}, {"t"}},
        till_prev = {{}, {"T"}},
-       append_at_cursor = {{}, {"<esc>a"}},
-       insert_at_cursor = {{}, {"<esc>i"}},
-       select_inside = {{}, {"i"}},
-       select_around = {{}, {"a"}},
+       append_at_cursor = {{}, {"<esc>a"}, false},
+       insert_at_cursor = {{}, {"<esc>i"}, false},
+       select_inside = {{}, {"i"}, false},
+       select_around = {{}, {"a"}, false},
        prev_selection = {{}, {function() require('visual').set_selection(visual.get_history_prev()) end}},
        next_selection = {{}, {function() require('visual').set_selection(visual.get_history_next()) end}},
      },
@@ -93,14 +97,6 @@ function visual.setup(options)
    -- mutations are hard to debug and test, so having them in a single
    -- function/module makes it easier to reason about all possible changes
    visual.options = with_defaults(options)
-end
-
-local function apply_key(key)
-  if type(key) == 'function' then
-    key()
-  elseif type(key) == 'string' then
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), 'n', false)
-  end
 end
 
 visual.selection_history = {}
@@ -155,6 +151,17 @@ function visual.set_selection(selection)
   vim.fn.setpos('.', selection[2])
 end
 
+local function apply_key(key, count)
+  if type(key) == 'function' then
+    key()
+  elseif type(key) == 'string' then
+    if count >= 1 then 
+      key = count .. key
+    end
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), 'n', false)
+  end
+end
+
 function visual.get_mapping_func(keys, mode)
   local function f()
     if mode == 'v' then
@@ -169,7 +176,7 @@ function visual.get_mapping_func(keys, mode)
 
       -- pre-visual keys
       for _, key in pairs(keys[1]) do
-        apply_key(key)
+        apply_key(key, 0)
       end
     end
     -- Enter visual mode
@@ -177,7 +184,11 @@ function visual.get_mapping_func(keys, mode)
 
     -- visual keys
     for _, key in pairs(keys[2]) do
-      apply_key(key)
+      if #keys == 2 or keys[3] then
+        apply_key(key, vim.v.count)
+      else
+        apply_key(key, 0)
+      end
     end
   end
   return f
