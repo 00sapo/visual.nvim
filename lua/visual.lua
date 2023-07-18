@@ -1,7 +1,10 @@
 local visual = {}
 
+-- history = require'moodules.history'
+mappings = require'modules.mappings'
+
 local function with_defaults(options)
-   return {
+   local defaults =  {
      mappings = {
        -- a list of command names, mapped to a lhs of mapping for visual and
        -- normal mode
@@ -49,7 +52,7 @@ local function with_defaults(options)
        WORD_next = {
          -- first, the editor is switched to normal mode
          {"W"}, -- if the command is launched in visual mode, these keys are executed
-         -- then, the editor is switched to normal mode
+         -- then, the editor is switched to visual mode
          {"iW"}, -- then, these keys are executed
          -- in place of keys, you can use one or more functions (no argument
          -- allowed), or both of them
@@ -88,111 +91,25 @@ local function with_defaults(options)
      unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc"},
      history_size = 50 -- ho many selections we should remember
    }
+
+   if type(options) == "table" then
+     return vim.tbl_deep_extend("force", defaults, options)
+   else
+     return defaults
+   end
 end
+
+visual.options = with_defaults()
+
 
 -- This function is supposed to be called explicitly by users to configure this
 -- plugin
 function visual.setup(options)
-   -- avoid setting global values outside of this function. Global state
-   -- mutations are hard to debug and test, so having them in a single
-   -- function/module makes it easier to reason about all possible changes
    visual.options = with_defaults(options)
+   mappings.general_mappings(visual.options)
+   mappings.only_normal_mappings(visual.options)
+   mappings.only_visual_mappings(visual.options)
+   mappings.unmaps(visual.options)
 end
 
-visual.selection_history = {}
-visual.cur_history_idx = 0
-
-function visual.push_history(selection) 
-  -- if cur_history_idx is > 1, delete everything before
-  if visual.cur_history_idx > 1 then
-    table.remove(visual.selection_history, 1, visual.cur_history_idx)
-  end
-
-  table.insert(visual.selection_history, selection)
-  if #visual.selection_history > visual.options.history_size then
-    -- remove the oldest entry
-    table.remove(visual.selection_history, #visual.selection_history)
-  end
-  visual.cur_history_idx = 1
-end
-
-function visual.get_history_prev()
-  -- if there is no previous item, return nil
-  if visual.cur_history_idx + 1 > #visual.selection_history then
-    return nil
-  end
-  -- increment counter
-  visual.cur_history_idx = visual.cur_history_idx + 1
-  return visual.selection_history[visual.cur_history_idx]
-end
-
-function visual.get_history_next()
-  -- if there is no previous item, return nil
-  if visual.cur_history_idx - 1 < 1 then
-    return nil
-  end
-  -- same as get_history_prev, but for next
-  visual.cur_history_idx = visual.cur_history_idx - 1
-  return visual.selection_history[visual.cur_history_idx]
-end
-
-function visual.set_selection_idx(idx)
-  if #visual.selection_history < idx then
-    return nil
-  end
-  visual.set_selection(visual.selection_history[idx])
-  visual.cur_history_idx = idx
-end
-
-function visual.set_selection(selection)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), 'n', false)
-  vim.fn.setpos('.', selection[1])
-  vim.api.nvim_feedkeys('', 'v', true)
-  vim.fn.setpos('.', selection[2])
-end
-
-local function apply_key(key, count)
-  if type(key) == 'function' then
-    key()
-  elseif type(key) == 'string' then
-    if count >= 1 then 
-      key = count .. key
-    end
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), 'n', false)
-  end
-end
-
-function visual.get_mapping_func(keys, mode)
-  local function f()
-    if mode == 'v' then
-      -- Save current selection to history
-      local selection = {
-        vim.fn.getpos('v'), vim.fn.getpos('.')
-      }
-      visual.push_history(selection)
-
-      -- Enter normal mode
-      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), 'n', false)
-
-      -- pre-visual keys
-      for _, key in pairs(keys[1]) do
-        apply_key(key, 0)
-      end
-    end
-    -- Enter visual mode
-    vim.api.nvim_feedkeys('v', 'n', false)
-
-    -- visual keys
-    for _, key in pairs(keys[2]) do
-      if #keys == 2 or keys[3] then
-        apply_key(key, vim.v.count)
-      else
-        apply_key(key, 0)
-      end
-    end
-  end
-  return f
-end
-
-visual.options = with_defaults()
 return visual
