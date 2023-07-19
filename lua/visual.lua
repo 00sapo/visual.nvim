@@ -8,20 +8,16 @@ local function with_defaults(options)
      mappings = {
        -- a list of command names, mapped to a lhs of mapping for visual and
        -- normal mode
-       WORD_next = "w", -- select next WORD (punctuation included)
+       WORD_next = "E", -- select next WORD (punctuation included)
        word_next = "e", -- select next word (no punctuation included)
-       WORD_prev = "z", -- select previous WORD
-       word_prev = "b", -- select previous word
-       from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
-       from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
-       from_cursor_to_start_word_next = "W", -- select from the cursor position to the beginning of the next word (as traditional w)
-       extend_word_end = "-e", -- extend until end of word
-       extend_word_prev = "-b", -- extend current selection until previous begin of word
-       extend_word_next = "-w", -- extend current selection until next word
-       extend_find_next = "-f", -- extend current selection to next char
-       extend_find_prev = "-F", -- extend current selection to previous char
-       extend_till_next = "-t", -- extend current selection till next char
-       extend_till_prev = "-T", -- extend current selection till previous char
+       WORD_prev = "gE", -- select previous WORD
+       word_prev = "ge", -- select previous word
+       till_next_word = "w", -- select next word including next its space
+       till_next_WORD = "W", -- select next WORD including its next space
+       till_prev_word = "b", -- select previous word including its previous space
+       till_prev_WORD = "B", -- select previous WORD including its previous space
+       -- from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
+       -- from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
        find_next = "f", -- select to next char
        find_prev = "F", -- select to previous char
        till_next = "t", -- select till next char
@@ -34,16 +30,28 @@ local function with_defaults(options)
      only_normal_mappings = {
        -- mappings applied to normal mode only:
        -- {lhs, {rhs1, rhs2, rhs3}}
-       line_select = {"y", {"<S-v>"}},
-       block_select = {"c", {"<C-v>"}},
+       line_select = {"x", {"<S-v>"}},
+       block_select = {"<S-x>", {"<C-v>"}},
+       delete_char = {"y", {"x"}}
      },
      only_visual_mappings = {
        -- mappings applied to visual mode only:
        -- {lhs, {rhs1, rhs2, rhs3}}
-       to_normal_mode = {"x", {"<esc>"}},
-       restart_selection = {"--", {"<esc>v"}},
+       line_select = {"x", {"<S-v>"}},
+       block_select = {"X", {"<C-v>"}},
+       restart_selection = {"'", {"<esc>v"}},
        delete_single_char = {"D", {"d"}}, -- delete char under cursor
        replace_single_char = {"R", {"r"}}, -- replace char under cursor
+      -- if they are strings, use the value from "commands" table
+       extend_word_end = "-e", -- extend until end of word
+       extend_word_prev = "-b", -- extend current selection until previous begin of word
+       extend_word_next = "-w", -- extend current selection until next word
+       extend_find_next = "-f", -- extend current selection to next char
+       extend_find_prev = "-F", -- extend current selection to previous char
+       extend_till_next = "-t", -- extend current selection till next char
+       extend_till_prev = "-T", -- extend current selection till previous char
+       -- delete_surround_chars = {"<C-s>", {"dgvodgv"}} -- delete chars at the
+       -- extremes of the selection
        -- delete_single_char = {"D", {"d", function() require('visual').set_selection_idx(2) end}}, -- delete char under cursor
        -- replace_single_char = {"R", {"r", function() require('visual').set_selection_idx(2) end}}, -- replace char under cursor
      },
@@ -65,9 +73,10 @@ local function with_defaults(options)
        word_next = {{"w"}, {"iw"}, false},
        WORD_prev = {{"B"}, {"iWo"}, false,},
        word_prev = {{"b"}, {"iwo"}, false},
-       from_cursor_to_end_word = {{}, {"e"}},
-       from_cursor_to_start_word = {{}, {"b"}},
-       from_cursor_to_start_word_next = {{}, {"w"}},
+       till_next_word = {{"w"}, {"wh"}},
+       till_next_WORD = {{"W"}, {"Wh"}},
+       till_prev_word = {{"b"}, {"gelowgeo"}},
+       till_prev_WORD = {{"B"}, {"gEloWgEo"}},
        extend_word_end = {{}, {"gve"}},
        extend_word_prev = {{}, {"gvb"}},
        extend_word_next = {{}, {"gvw"}},
@@ -106,10 +115,10 @@ visual.options = with_defaults()
 -- plugin
 function visual.setup(options)
    visual.options = with_defaults(options)
-   mappings.general_mappings(visual.options)
-   mappings.only_normal_mappings(visual.options)
-   mappings.only_visual_mappings(visual.options)
    mappings.unmaps(visual.options)
+   mappings.general_mappings(visual.options)
+   mappings.partial_mappings(visual.options, "n")
+   mappings.partial_mappings(visual.options, "v")
 end
 
 return visual
