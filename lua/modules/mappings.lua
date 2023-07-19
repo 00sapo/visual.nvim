@@ -15,9 +15,9 @@ function get_mapping_func(keys, mode)
   local function f()
     if mode == 'v' then
       -- Save current selection to history
-      local selection = {
-        vim.fn.getpos('v'), vim.fn.getpos('.')
-      }
+      -- local selection = {
+      --   vim.fn.getpos('v'), vim.fn.getpos('.')
+      -- }
       -- visual.push_history(selection)
 
       -- Enter normal mode
@@ -53,19 +53,28 @@ function mappings.general_mappings(opts)
    end
  end
 
- -- only normal mappings
- function mappings.only_normal_mappings(opts)
-  local nm = opts.only_normal_mappings
-  for k, v in pairs(nm) do
-     vim.keymap.set('n', v[1], get_mapping_func({{}, v[2]}, "n"), { noremap = true, silent = true })
-   end
- end
-
  -- only visual mappings
-function mappings.only_visual_mappings(opts)
-  local vm = opts.only_visual_mappings
-  for k, v in pairs(vm) do
-     vim.keymap.set('v', v[1], get_mapping_func({{}, v[2]}, "v"), { noremap = true, silent = true })
+function mappings.partial_mappings(opts, mode)
+  local rhs, lhs, m
+  local c = opts.commands
+  if mode == 'v' then
+    m = opts.only_visual_mappings
+  elseif mode == 'n' then
+    m = opts.only_normal_mappings
+  end
+  for k, v in pairs(m) do
+    if type(v) == 'table' then
+      rhs = function ()
+        for i, key in pairs(v[2]) do
+          apply_key(key, 0)
+        end
+      end
+      lhs = v[1]
+    elseif type(v) == 'string' then
+      rhs = get_mapping_func(c[k], mode)
+      lhs = v
+    end
+    vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true })
    end
  end
 
