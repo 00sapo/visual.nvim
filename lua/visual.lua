@@ -40,8 +40,8 @@ local function with_defaults(options)
        line_select = {"x", {"<S-v>"}},
        block_select = {"X", {"<C-v>"}},
        restart_selection = {"'", {"<esc>v"}},
-       delete_single_char = {"D", {"d"}}, -- delete char under cursor
-       replace_single_char = {"R", {"r"}}, -- replace char under cursor
+       delete_single_char = {"D", {"<esc>d"}}, -- delete char under cursor
+       replace_single_char = {"R", {"<esc>r"}}, -- replace char under cursor
       -- if they are strings, use the value from "commands" table
        extend_word_end = "-e", -- extend until end of word
        extend_word_prev = "-b", -- extend current selection until previous begin of word
