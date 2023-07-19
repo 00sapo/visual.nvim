@@ -1,3 +1,4 @@
+local history = require'modules.history'
 local mappings = {}
 
 local function apply_key(key, count)
@@ -11,32 +12,52 @@ local function apply_key(key, count)
   end
 end
 
-function get_mapping_func(keys, mode)
+local function parse_counts(opts)
+  local countable, counts
+  if opts.countable == nil then
+    countable = true
+  else 
+    countable = opts.countable
+  end
+  if countable then
+    counts = vim.v.count
+  else
+    counts = 0
+  end
+  return counts
+end
+
+local function get_mapping_func(keys, mode)
+  local pre_keys = keys.pre_keys or (#keys == 2 and keys[1])
+  local real_keys = keys.keys or (#keys == 2 and keys[2]) or keys[1]
+
   local function f()
-    if mode == 'v' then
+    if mode == 'v' and pre_keys then
+      local counts = parse_counts(pre_keys)
+      
       -- Save current selection to history
-      -- local selection = {
-      --   vim.fn.getpos('v'), vim.fn.getpos('.')
-      -- }
-      -- visual.push_history(selection)
+      local selection = {
+        vim.fn.getpos('v'), vim.fn.getpos('.')
+      }
+      history.push_history(selection)
 
       -- Enter normal mode
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), 'n', false)
 
       -- pre-visual keys
-      for _, key in pairs(keys[1]) do
-        apply_key(key, 0)
+      for _, key in pairs(pre_keys) do
+        apply_key(key, counts)
       end
     end
-    -- Enter visual mode
-    vim.api.nvim_feedkeys('v', 'n', false)
+    if real_keys then
+      -- Enter visual mode
+      vim.api.nvim_feedkeys('v', 'n', false)
 
-    -- visual keys
-    for _, key in pairs(keys[2]) do
-      if #keys == 2 or keys[3] then
-        apply_key(key, vim.v.count)
-      else
-        apply_key(key, 0)
+      local counts = parse_counts(real_keys)
+
+      -- visual keys
+      for _, key in pairs(real_keys) do
+        apply_key(key, counts)
       end
     end
   end
@@ -64,19 +85,15 @@ function mappings.partial_mappings(opts, mode)
   end
   for k, v in pairs(m) do
     if type(v) == 'table' then
-      rhs = function ()
-        for i, key in pairs(v[2]) do
-          apply_key(key, 0)
-        end
-      end
+      rhs = get_mapping_func(v[2], mode)
       lhs = v[1]
     elseif type(v) == 'string' then
       rhs = get_mapping_func(c[k], mode)
       lhs = v
     end
     vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true })
-   end
- end
+  end
+end
 
  -- unmappings
  function mappings.unmaps(opts)

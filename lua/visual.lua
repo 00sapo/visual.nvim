@@ -1,7 +1,10 @@
 local visual = {}
 
--- history = require'moodules.history'
-mappings = require'modules.mappings'
+local mappings = require'modules.mappings'
+local history = require'modules.history'
+
+visual.mappings = mappings
+visual.history = history
 
 local function with_defaults(options)
    local defaults =  {
@@ -26,55 +29,29 @@ local function with_defaults(options)
        insert_at_cursor = "i", -- insert at cursor position
        select_inside = "si", -- select inside
        select_around = "sa", -- select around
-     },
-     only_normal_mappings = {
-       -- mappings applied to normal mode only:
-       -- {lhs, {rhs1, rhs2, rhs3}}
-       line_select = {"x", {"<S-v>"}},
-       block_select = {"<S-x>", {"<C-v>"}},
-       delete_char = {"y", {"x"}}
-     },
-     only_visual_mappings = {
-       -- mappings applied to visual mode only:
-       -- {lhs, {rhs1, rhs2, rhs3}}
-       line_select = {"x", {"<S-v>"}},
-       block_select = {"X", {"<C-v>"}},
-       restart_selection = {"'", {"<esc>v"}},
-       delete_single_char = {"D", {"<esc>x"}}, -- delete char under cursor
-       replace_single_char = {"R", {"<esc>r"}}, -- replace char under cursor
-      -- if they are strings, use the value from "commands" table
-       extend_word_end = "-e", -- extend until end of word
-       extend_word_prev = "-b", -- extend current selection until previous begin of word
-       extend_word_next = "-w", -- extend current selection until next word
-       extend_find_next = "-f", -- extend current selection to next char
-       extend_find_prev = "-F", -- extend current selection to previous char
-       extend_till_next = "-t", -- extend current selection till next char
-       extend_till_prev = "-T", -- extend current selection till previous char
-       -- delete_surround_chars = {"<C-s>", {"dgvodgv"}} -- delete chars at the
-       -- extremes of the selection
-       -- delete_single_char = {"D", {"d", function() require('visual').set_selection_idx(2) end}}, -- delete char under cursor
-       -- replace_single_char = {"R", {"r", function() require('visual').set_selection_idx(2) end}}, -- replace char under cursor
+       next_selection = "L",
+       prev_selection = "H",
      },
      commands = {
        -- what each command name does:
        WORD_next = {
-         -- first, the editor is switched to normal mode
-         {"W"}, -- if the command is launched in visual mode, these keys are executed
-         -- then, the editor is switched to visual mode
-         {"iW"}, -- then, these keys are executed
+         pre_keys={"W", countable=false}, -- If the command is launched in visual mode, 
+         -- the editor is switched to normal mode and these keys are executed.
+         -- The editor is not switched to visal mode if pre_keys=nil.
+         -- Then, the editor is switched to visual mode
+         keys={"iW", countable=false}, -- Then, these keys are executed
          -- in place of keys, you can use one or more functions (no argument
-         -- allowed), or both of them
-         false
-         -- the final argument indicates if this command can be counted (e.g. 3w, 4e,
-         -- etc.)
-         -- this is true by default and applies to the second set of keys only
+         -- allowed), or both of them.
+         -- No switch to visual mode happens if keys=nil.
+         -- The `countable` parameters allows each command to be counted.
+         -- It is true by default.
        },
        
-       word_next = {{"w"}, {"iw"}, false},
-       WORD_prev = {{"B"}, {"iWo"}, false,},
-       word_prev = {{"b"}, {"iwo"}, false},
-       till_next_word = {{"w"}, {"wh"}},
-       till_next_WORD = {{"W"}, {"Wh"}},
+       word_next = {{"w", countable=false}, {"iw", countable=false}},
+       WORD_prev = {{"B", countable=false}, {"iWo", countable=false},},
+       word_prev = {{"b", countable=false}, {"iwo", countable=false}},
+       till_next_word = {{"w"}, {"who"}},
+       till_next_WORD = {{"W"}, {"Who"}},
        till_prev_word = {{"b"}, {"gelowgeo"}},
        till_prev_WORD = {{"B"}, {"gEloWgEo"}},
        extend_word_end = {{}, {"gve"}},
@@ -93,11 +70,39 @@ local function with_defaults(options)
        insert_at_cursor = {{}, {"<esc>i"}, false},
        select_inside = {{}, {"i"}, false},
        select_around = {{}, {"a"}, false},
-       prev_selection = {{}, {function() require('visual').set_selection(visual.get_history_prev()) end}},
-       next_selection = {{}, {function() require('visual').set_selection(visual.get_history_next()) end}},
+       prev_selection = {{}, {function() require('visual').history.set_history_prev() end}},
+       next_selection = {{}, {function() require('visual').history.set_history_next() end}},
+     },
+     only_normal_mappings = {
+       -- mappings applied to normal mode only:
+       -- {lhs, {rhs1, rhs2, rhs3}}
+       line_select = {"x", {{"<S-v>"}, nil}},
+       block_select = {"<S-x>", {{"<C-v>"}, nil}},
+       delete_char = {"y", {{"x"}, nil}}
+     },
+     only_visual_mappings = {
+       -- mappings applied to visual mode only:
+       -- {lhs, {rhs1, rhs2, rhs3}}
+       line_select = {"x", {nil, {"<S-v>"}}},
+       block_select = {"X", {nil, {"<C-v>"}}},
+       restart_selection = {"'", {nil, {"<esc>v"}}},
+       delete_single_char = {"D", {{"xgv"}, nil}}, -- delete char under cursor
+       replace_single_char = {"R", {{"r"}, nil}}, -- replace char under cursor
+      -- if they are strings, use the value from "commands" table
+       extend_word_end = "-e", -- extend until end of word
+       extend_word_prev = "-b", -- extend current selection until previous begin of word
+       extend_word_next = "-w", -- extend current selection until next word
+       extend_find_next = "-f", -- extend current selection to next char
+       extend_find_prev = "-F", -- extend current selection to previous char
+       extend_till_next = "-t", -- extend current selection till next char
+       extend_till_prev = "-T", -- extend current selection till previous char
+       -- delete_surround_chars = {"<C-s>", {"dgvodgv"}} -- delete chars at the
+       -- extremes of the selection
+       -- delete_single_char = {"D", {"d", function() require('visual').set_selection_idx(2) end}}, -- delete char under cursor
+       -- replace_single_char = {"R", {"r", function() require('visual').set_selection_idx(2) end}}, -- replace char under cursor
      },
      -- commands that can be unmapped (for learning new keymaps)
-     unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc"},
+     unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<"},
      history_size = 50 -- ho many selections we should remember
    }
 
@@ -119,6 +124,7 @@ function visual.setup(options)
    mappings.general_mappings(visual.options)
    mappings.partial_mappings(visual.options, "n")
    mappings.partial_mappings(visual.options, "v")
+   history.history_size = visual.options.history_size
 end
 
 return visual
