@@ -11,6 +11,39 @@ Just install it using your preferred package manager.
 * Lazy: `{ '00sapo/visual.nvim' }`
 * Packer: `use { '00sapo/visual.nvim' }`
 
+### Suggested config
+
+Example with Lazy and Treesitter incremental selection
+```lua
+{
+    '00sapo/visual.nvim',
+    config = function ()
+        require('nvim-treesitter.configs').setup { 
+            incremental_selection = { 
+                enable = true,
+                keymaps = {
+                    init_selection = "gn",
+                    node_incremental = "|",
+                    scope_incremental = "_",
+                    node_decremental = "\"",
+                }
+            } 
+        }
+        -- in lunarvim:
+        -- lvim.builtin.treesitter.incremental_selection = {
+        --     enable = true,
+        --     keymaps = {
+        --         init_selection = "gn",
+        --         node_incremental = "|",
+        --         scope_incremental = _;",
+        --         node_decremental = "\"",
+        --     }
+        -- }
+    end,
+    dependencies = { 'nvim-treesitter/nvim-treesitter' }
+}
+```
+
 ## How it works
 
 The plugin remap keys so that they select text objects/regions before you can type the
@@ -27,53 +60,59 @@ comments to understand how to modify it.
 Feel free to suggest new default keybindings in the issues!
 
 ```lua
- {
-    mappings = {
-        -- a list of command names, mapped to a lhs of mapping for visual and
-        -- normal mode
-        WORD_next = "w", -- select next WORD (punctuation included)
-        word_next = "e", -- select next word (no punctuation included)
-        WORD_prev = "z", -- select previous WORD
-        word_prev = "b", -- select previous word
-        from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
-        from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
-        from_cursor_to_start_word_next = "W", -- select from the cursor position to the beginning of the next word (as traditional w)
-        extend_word_end = "-e", -- extend until end of word
-        extend_word_prev = "-b", -- extend current selection until previous begin of word
-        extend_word_next = "-w", -- extend current selection until next word
-        extend_find_next = "-f", -- extend current selection to next char
-        extend_find_prev = "-F", -- extend current selection to previous char
-        extend_till_next = "-t", -- extend current selection till next char
-        extend_till_prev = "-T", -- extend current selection till previous char
-        find_next = "f", -- select to next char
-        find_prev = "F", -- select to previous char
-        till_next = "t", -- select till next char
-        till_prev = "T", -- select till previous char
-        append_at_cursor = "a", -- append at cursor position
-        insert_at_cursor = "i", -- insert at cursor position
-        select_inside = "si", -- select inside
-        select_around = "sa", -- select around
-        },
-        only_normal_mappings = {
-        -- mappings applied to normal mode only:
-        -- {lhs, {rhs1, rhs2, rhs3}}
-        line_select = {"y", {"<S-v>"}},
-        block_select = {"c", {"<C-v>"}},
-        },
-        only_visual_mappings = {
-        -- mappings applied to visual mode only:
-        -- {lhs, {rhs1, rhs2, rhs3}}
-        to_normal_mode = {"x", {"<esc>"}},
-        restart_selection = {"--", {"<esc>v"}},
-        delete_single_char = {"D", {"d"}}, -- delete char under cursor
-        replace_single_char = {"R", {"r"}}, -- replace char under cursor
-    },
-    commands = {
-        -- what each command name does:
-        WORD_next = {
+ require('visual').setup{
+     mappings = {
+       -- a list of command names, mapped to a lhs of mapping for visual and
+       -- normal mode
+       WORD_next = "E", -- select next WORD (punctuation included)
+       word_next = "e", -- select next word (no punctuation included)
+       WORD_prev = "gE", -- select previous WORD
+       word_prev = "ge", -- select previous word
+       till_next_word = "w", -- select next word including next its space
+       till_next_WORD = "W", -- select next WORD including its next space
+       till_prev_word = "b", -- select previous word including its previous space
+       till_prev_WORD = "B", -- select previous WORD including its previous space
+       -- from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
+       -- from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
+       find_next = "f", -- select to next char
+       find_prev = "F", -- select to previous char
+       till_next = "t", -- select till next char
+       till_prev = "T", -- select till previous char
+       append_at_cursor = "a", -- append at cursor position
+       insert_at_cursor = "i", -- insert at cursor position
+       select_inside = "si", -- select inside
+       select_around = "sa", -- select around
+     },
+     only_normal_mappings = {
+       -- mappings applied to normal mode only:
+       -- {lhs, {rhs1, rhs2, rhs3}}
+       line_select = {"x", {"<S-v>"}},
+       block_select = {"<S-x>", {"<C-v>"}},
+       delete_char = {"y", {"x"}}
+     },
+     only_visual_mappings = {
+       -- mappings applied to visual mode only:
+       -- {lhs, {rhs1, rhs2, rhs3}}
+       line_select = {"x", {"<S-v>"}},
+       block_select = {"X", {"<C-v>"}},
+       restart_selection = {"'", {"<esc>v"}},
+       delete_single_char = {"D", {"d"}}, -- delete char under cursor
+       replace_single_char = {"R", {"r"}}, -- replace char under cursor
+      -- if they are strings, use the value from "commands" table
+       extend_word_end = "-e", -- extend until end of word
+       extend_word_prev = "-b", -- extend current selection until previous begin of word
+       extend_word_next = "-w", -- extend current selection until next word
+       extend_find_next = "-f", -- extend current selection to next char
+       extend_find_prev = "-F", -- extend current selection to previous char
+       extend_till_next = "-t", -- extend current selection till next char
+       extend_till_prev = "-T", -- extend current selection till previous char
+     },
+     commands = {
+       -- what each command name does:
+       WORD_next = {
          -- first, the editor is switched to normal mode
          {"W"}, -- if the command is launched in visual mode, these keys are executed
-         -- then, the editor is switched to normal mode
+         -- then, the editor is switched to visual mode
          {"iW"}, -- then, these keys are executed
          -- in place of keys, you can use one or more functions (no argument
          -- allowed), or both of them
@@ -81,33 +120,34 @@ Feel free to suggest new default keybindings in the issues!
          -- the final argument indicates if this command can be counted (e.g. 3w, 4e,
          -- etc.)
          -- this is true by default and applies to the second set of keys only
-        },
-
-        word_next = {{"w"}, {"iw"}, false},
-        WORD_prev = {{"B"}, {"iWo"}, false,},
-        word_prev = {{"b"}, {"iwo"}, false},
-        from_cursor_to_end_word = {{}, {"e"}},
-        from_cursor_to_start_word = {{}, {"b"}},
-        from_cursor_to_start_word_next = {{}, {"w"}},
-        extend_word_end = {{}, {"gve"}},
-        extend_word_prev = {{}, {"gvb"}},
-        extend_word_next = {{}, {"gvw"}},
-        extend_word_next = {{}, {"gvw"}},
-        extend_find_next = {{}, {"gvf"}},
-        extend_find_prev = {{}, {"gvF"}},
-        extend_till_next = {{}, {"gvt"}},
-        extend_till_prev = {{}, {"gvT"}},
-        find_next = {{}, {"f"}},
-        find_prev = {{}, {"F"}},
-        till_next = {{}, {"t"}},
-        till_prev = {{}, {"T"}},
-        append_at_cursor = {{}, {"<esc>a"}, false},
-        insert_at_cursor = {{}, {"<esc>i"}, false},
-        select_inside = {{}, {"i"}, false},
-        select_around = {{}, {"a"}, false},
-    },
-    -- commands that can be unmapped (for learning new keymaps)
-    unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc"},
+       },
+       
+       word_next = {{"w"}, {"iw"}, false},
+       WORD_prev = {{"B"}, {"iWo"}, false,},
+       word_prev = {{"b"}, {"iwo"}, false},
+       till_next_word = {{"w"}, {"wh"}},
+       till_next_WORD = {{"W"}, {"Wh"}},
+       till_prev_word = {{"b"}, {"gelowgeo"}},
+       till_prev_WORD = {{"B"}, {"gEloWgEo"}},
+       extend_word_end = {{}, {"gve"}},
+       extend_word_prev = {{}, {"gvb"}},
+       extend_word_next = {{}, {"gvw"}},
+       extend_word_next = {{}, {"gvw"}},
+       extend_find_next = {{}, {"gvf"}},
+       extend_find_prev = {{}, {"gvF"}},
+       extend_till_next = {{}, {"gvt"}},
+       extend_till_prev = {{}, {"gvT"}},
+       find_next = {{}, {"f"}},
+       find_prev = {{}, {"F"}},
+       till_next = {{}, {"t"}},
+       till_prev = {{}, {"T"}},
+       append_at_cursor = {{}, {"<esc>a"}, false},
+       insert_at_cursor = {{}, {"<esc>i"}, false},
+       select_inside = {{}, {"i"}, false},
+       select_around = {{}, {"a"}, false},
+     },
+     -- commands that can be unmapped (for learning new keymaps)
+     unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc"},
 }
 ```
 
@@ -115,5 +155,11 @@ Feel free to suggest new default keybindings in the issues!
 
 * Selection history is being developed
 * Some commands misbehave the selection history (`gv`). For instance, when using `R` and
-  `D` in visual mode (replace and delete char at cursor position), the selection is
+  `D` in visual mode (replace and delete char at cursor position) or `gcc`, `>`, `<`, the selection is
   lost; the history of selections will solve it
+* History of selections will also improve commands for extending current selection
+* History of selections will allow to edit/append/remove surrounding chars
+  without additional plugins
+* History of commands will allow to repeat commands, including edits
+* Experiment with `vim-visual-multi`
+* Improve commands for extending selections
