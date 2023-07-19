@@ -28,11 +28,17 @@ local function parse_counts(opts)
 end
 
 local function get_mapping_func(keys, mode)
-  local pre_keys = keys.pre_keys or (#keys == 2 and keys[1])
-  local real_keys = keys.keys or (#keys == 2 and keys[2]) or keys[1]
+  local real_keys, pre_keys
+  if #keys == 2 then
+    pre_keys = keys.pre_keys or keys[1]
+    real_keys = keys.keys or keys[2]
+  else
+    pre_keys = false
+    real_keys = keys[1]
+  end
 
   local function f()
-    if mode == 'v' and pre_keys then
+    if mode == 'v' and type(pre_keys) == "table" then
       local counts = parse_counts(pre_keys)
       
       -- Save current selection to history
@@ -49,7 +55,7 @@ local function get_mapping_func(keys, mode)
         apply_key(key, counts)
       end
     end
-    if real_keys then
+    if type(real_keys) == "table" then
       -- Enter visual mode
       vim.api.nvim_feedkeys('v', 'n', false)
 
