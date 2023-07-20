@@ -1,5 +1,8 @@
 # Visual.nvim
 
+**N.B. This is still in a very experimental stage and mappings will
+suddenly change in the next few weeks.** 
+
 In nvim, you do `c3w`. Ah no! It was wrong, let's retry: `uc5w`... wooops! Sorry, it
 is still wrong: `uc6w`!
 
