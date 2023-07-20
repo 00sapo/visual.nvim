@@ -36,7 +36,7 @@ local function with_defaults(options)
 				pre_keys = { "WE", countable = true },
 				-- The editor is switched to normal mode and these keys are executed.
 				-- The editor is not switched to normal mode if pre_keys=nil.
-				keys = { "gEl", countable = false },
+				keys = { "gElo", countable = false },
 				-- Then, the editor is switched to visual mode and these keys are executed
 				-- In place of keys, you can use one or more functions (no argument
 				-- allowed), or both of them.
@@ -45,9 +45,9 @@ local function with_defaults(options)
 				-- It is true by default.
 			},
 
-			word_end_next = { { "we" }, { "gel", countable = false } },
-			WORD_end_prev = { { "gE" }, { "gEl", countable = false } },
-			word_end_prev = { { "ge" }, { "gel", countable = false } },
+			word_end_next = { { "we" }, { "gelo", countable = false } },
+			WORD_end_prev = { { "gE" }, { "gElo", countable = false } },
+			word_end_prev = { { "ge" }, { "gelo", countable = false } },
 			word_start_next = { { "w" }, { "who", countable = false } },
 			WORD_start_next = { { "W" }, { "Who", countable = false } },
 			word_start_prev = { { "bh" }, { "b", countable = false } },
