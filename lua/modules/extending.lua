@@ -103,6 +103,8 @@ end
 -- extending.keymaps["<esc>"] = function() extending:toggle() end
 
 function extending:feedkeys(keys)
+  count = vim.v.count == 0 and 1 or vim.v.count
+
 	if mapped == extending.options.keymaps.toggle then
 		return extending:toggle()
 	end
@@ -118,7 +120,7 @@ function extending:feedkeys(keys)
 		mapped = keys
 	end
 	if type(mapped) == "string" then
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(mapped, true, false, true), "n", false)
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(count .. mapped, true, false, true), "n", false)
 	elseif type(mapped) == "function" then
 		keys()
 	end
