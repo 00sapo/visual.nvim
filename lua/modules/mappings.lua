@@ -1,5 +1,6 @@
 local history = require("modules.history")
 local extending = require("modules.extending")
+local utils = require("modules.utils")
 local mappings = {}
 
 local function apply_key(key, count)
@@ -45,15 +46,8 @@ local function get_mapping_func(keys, mode, pressed_key)
 		if type(pre_keys) == "table" then
 			local counts = parse_counts(pre_keys)
 
-			-- Save current selection to history
-			local selection = {
-				vim.fn.getpos("v"),
-				vim.fn.getpos("."),
-			}
-			history.push_history(selection)
-
 			-- Enter normal mode
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "n", false)
+			utils.enter("n")
 
 			-- pre-visual keys
 			for _, key in pairs(pre_keys) do
@@ -62,7 +56,7 @@ local function get_mapping_func(keys, mode, pressed_key)
 		end
 		if type(real_keys) == "table" then
 			-- Enter visual mode
-			vim.api.nvim_feedkeys("v", "n", false)
+			utils.enter("v")
 
 			local counts = parse_counts(real_keys)
 
@@ -70,6 +64,16 @@ local function get_mapping_func(keys, mode, pressed_key)
 			for _, key in pairs(real_keys) do
 				apply_key(key, counts)
 			end
+		end
+		if utils.mode_is_visual() then
+			-- Save current selection to history
+			local selection = {
+				vim.fn.getpos("v"),
+				vim.fn.getpos("."),
+			}
+			history:push(selection)
+    else
+      print("not pushing")
 		end
 	end
 	return f
