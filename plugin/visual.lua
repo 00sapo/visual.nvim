@@ -5,7 +5,7 @@
 
 -- make sure this file is loaded only once
 if vim.g.loaded_visual == 1 then
-  return
+	return
 end
 vim.g.loaded_visual = 1
 
