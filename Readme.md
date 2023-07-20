@@ -193,6 +193,16 @@ Feel free to suggest new default keybindings in the issues!
         -- if values are strings instead of tables, the value from "commands"
   -- table is taken
     },
+    extending = {
+        guicursor = "a:hor100",
+        keymaps = {
+            toggle = "-",
+            -- here you can add mappings for extending mode:
+            ["x"] = "<S-v>",
+            ["X"] = "<C-v>"
+            -- you can also map to functions here!
+        }
+	},
     -- commands that can be unmapped (for learning new keymaps)
     unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<" },
 }

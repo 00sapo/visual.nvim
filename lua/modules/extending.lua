@@ -2,6 +2,8 @@ local extending = {
 	guicursor = "a:hor100",
 	keymaps = {
 		toggle = "-",
+		["x"] = "<S-v>",
+		["X"] = "<C-v>",
 	},
 }
 extending.active = false
@@ -13,9 +15,9 @@ function extending:toggle()
 		print(extending._old_mode)
 		extending._old_cursor = vim.o.guicursor
 		-- Enter visual mode
-		if extending._old_mode ~= "v" then
-      -- we need to press <esc> to enter visual mode, so let's do it only if we
-      -- are not in visual mode, otherwise we lose the selection
+		if extending._old_mode ~= "v" and extending._old_mode ~= "V" and extending._old_mode ~= "" then
+			-- we need to press <esc> to enter visual mode, so let's do it only if we
+			-- are not in visual mode, otherwise we lose the selection
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>v", true, false, true), "n", false)
 		end
 		-- Change cursor
