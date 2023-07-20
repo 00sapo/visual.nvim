@@ -83,8 +83,8 @@ local function with_defaults(options)
 		only_visual_mappings = {
 			-- mappings applied to visual mode only:
 			-- {lhs, {rhs1, rhs2, rhs3}}
-			line_select = { "x", { false, { "<S-v>" } } },
-			block_select = { "X", { false, { "<C-v>" } } },
+			line_select = { "x", { false, { "<S-v>", function() require'visual'.extending:toggle() end } } },
+			block_select = { "X", { false, { "<C-v>", function() require'visual'.extending:toggle() end } } },
 			restart_selection = { "'", { false, { "<esc>v" } } },
 			delete_single_char = { "D", { { "xgv" }, false } }, -- delete char under cursor
 			replace_single_char = { "R", { { "r" }, false } }, -- replace char under cursor
@@ -103,7 +103,7 @@ local function with_defaults(options)
 
 	if type(options) == "table" then
 		if options["extending"] ~= nil then
-			vim.table_extend("force", extending, options.extending)
+      extending.setup(options["extending"]) -- this must be done before of setting up mappings
 		end
     defaults = vim.tbl_deep_extend("force", defaults, options)
 	end
