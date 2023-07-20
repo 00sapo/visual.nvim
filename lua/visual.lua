@@ -62,11 +62,14 @@ local function with_defaults(options)
 			insert_at_cursor = { false, { "<esc>i", countable = false } },
 			select_inside = { false, { "<esc>vi", countable = false } },
 			select_around = { false, { "<esc>va", countable = false } },
-			prev_selection = { false, {
-				function()
-					require("visual").history.set_history_prev()
-				end,
-			} },
+			prev_selection = {
+				false,
+				{
+					function()
+						require("visual").history.set_history_prev()
+					end,
+				},
+			},
 			next_selection = { false, {
 				function()
 					require("visual").history.set_history_next()
@@ -76,15 +79,35 @@ local function with_defaults(options)
 		only_normal_mappings = {
 			-- mappings applied to normal mode only:
 			-- {lhs, command table}
-			line_select = { "x", { false, { "<S-v>", function() require'visual'.extending:toggle() end  }, } },
-			block_select = { "<S-x>", { false, { "<C-v>", function() require'visual'.extending:toggle() end  }, } },
+			line_select = { "x", { {
+				function()
+					require("visual").extending:toggle()
+				end,
+				"V",
+			}, false } },
+			block_select = { "<S-x>", { {
+				function()
+					require("visual").extending:toggle()
+				end,
+				"<C-v>",
+			}, false } },
 			delete_char = { "y", { { "x" }, false } },
 		},
 		only_visual_mappings = {
 			-- mappings applied to visual mode only:
 			-- {lhs, {rhs1, rhs2, rhs3}}
-			line_select = { "x", { false, { "<S-v>", function() require'visual'.extending:toggle() end } } },
-			block_select = { "X", { false, { "<C-v>", function() require'visual'.extending:toggle() end } } },
+			line_select = { "x", { {
+				"V",
+				function()
+					require("visual").extending:toggle()
+				end,
+			}, false } },
+			block_select = { "X", { {
+				"<C-v>",
+				function()
+					require("visual").extending:toggle()
+				end,
+			}, false } },
 			restart_selection = { "'", { false, { "<esc>v" } } },
 			delete_single_char = { "D", { { "xgv" }, false } }, -- delete char under cursor
 			replace_single_char = { "R", { { "r" }, false } }, -- replace char under cursor
@@ -103,11 +126,11 @@ local function with_defaults(options)
 
 	if type(options) == "table" then
 		if options["extending"] ~= nil then
-      extending.setup(options["extending"]) -- this must be done before of setting up mappings
+			extending.setup(options["extending"]) -- this must be done before of setting up mappings
 		end
-    defaults = vim.tbl_deep_extend("force", defaults, options)
+		defaults = vim.tbl_deep_extend("force", defaults, options)
 	end
-  return defaults
+	return defaults
 end
 
 visual.options = with_defaults()
