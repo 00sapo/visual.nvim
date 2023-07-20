@@ -107,10 +107,8 @@ function extending:feedkeys(keys)
 		return extending:toggle()
 	end
 	if vim.tbl_contains(extending.options.keymaps.ignore, keys) then
-		print("ignoring")
 		return
 	elseif vim.tbl_contains(extending.options.keymaps.exit_before, keys) then
-		print("toggling before")
 		extending:toggle()
 	end
 
@@ -120,14 +118,12 @@ function extending:feedkeys(keys)
 		mapped = keys
 	end
 	if type(mapped) == "string" then
-		print("executing " .. mapped)
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(mapped, true, false, true), "n", false)
 	elseif type(mapped) == "function" then
 		keys()
 	end
 
 	if vim.tbl_contains(extending.options.keymaps.exit_after, keys) then
-		print("togling after")
 		extending:toggle()
 	end
 end
