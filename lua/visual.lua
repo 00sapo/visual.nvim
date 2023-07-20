@@ -11,16 +11,14 @@ local function with_defaults(options)
      mappings = {
        -- a list of command names, mapped to a lhs of mapping for visual and
        -- normal mode
-       WORD_next = "E", -- select next WORD (punctuation included)
-       word_next = "e", -- select next word (no punctuation included)
-       WORD_prev = "gE", -- select previous WORD
-       word_prev = "ge", -- select previous word
-       till_next_word = "w", -- select next word including next its space
-       till_next_WORD = "W", -- select next WORD including its next space
-       till_prev_word = "b", -- select previous word including its previous space
-       till_prev_WORD = "B", -- select previous WORD including its previous space
-       -- from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
-       -- from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
+       WORD_end_next = "E", -- select next WORD (punctuation included), cursor at end, previous space included
+       word_end_next = "e", -- same as E but without punctuation
+       WORD_end_prev = "gE", -- same as E but for previous words
+       word_end_prev = "ge", -- same as e but for previous words
+       WORD_start_next = "W", -- select next word including next its space, cursor at beginning, with punctuation
+       word_start_next = "w", -- same as W but without punctuation
+       WORD_start_prev = "B", -- select previous WORD including its next space, with punctuation, cursor at beginnning
+       word_start_prev = "b", -- same as B but without punctuation
        find_next = "f", -- select to next char
        find_prev = "F", -- select to previous char
        till_next = "t", -- select till next char
@@ -34,26 +32,26 @@ local function with_defaults(options)
      },
      commands = {
        -- what each command name does:
-       WORD_next = {
-         pre_keys={"W", countable=false}, -- If the command is launched in visual mode, 
-         -- the editor is switched to normal mode and these keys are executed.
-         -- The editor is not switched to visal mode if pre_keys=nil.
-         -- Then, the editor is switched to visual mode
-         keys={"iW", countable=false}, -- Then, these keys are executed
-         -- in place of keys, you can use one or more functions (no argument
+       WORD_end_next = {
+         pre_keys={"WE", countable=true},
+         -- The editor is switched to normal mode and these keys are executed.
+         -- The editor is not switched to normal mode if pre_keys=nil.
+         keys={"gEl", countable=false}, 
+         -- Then, the editor is switched to visual mode and these keys are executed
+         -- In place of keys, you can use one or more functions (no argument
          -- allowed), or both of them.
          -- No switch to visual mode happens if keys=nil.
          -- The `countable` parameters allows each command to be counted.
          -- It is true by default.
        },
        
-       word_next = {{"w", countable=false}, {"iw", countable=false}},
-       WORD_prev = {{"B", countable=false}, {"iWo", countable=false},},
-       word_prev = {{"b", countable=false}, {"iwo", countable=false}},
-       till_next_word = {{"w"}, {"who"}},
-       till_next_WORD = {{"W"}, {"Who"}},
-       till_prev_word = {{"b"}, {"gelowgeo"}},
-       till_prev_WORD = {{"B"}, {"gEloWgEo"}},
+       word_end_next = {{"we"}, {"gel", countable=false}},
+       WORD_end_prev = {{"gE"}, {"gEl", countable=false},},
+       word_end_prev = {{"ge"}, {"gel", countable=false}},
+       word_start_next = {{"w"}, {"who", countable=false}},
+       WORD_start_next = {{"W"}, {"Who", countable=false}},
+       word_start_prev = {{"bh"}, {"b", countable=false}},
+       WORD_start_prev = {{"Bh"}, {"B", countable=false}},
        extend_word_end = {{}, {"gve"}},
        extend_word_prev = {{}, {"gvb"}},
        extend_word_next = {{}, {"gvw"}},

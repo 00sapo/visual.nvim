@@ -38,7 +38,7 @@ local function get_mapping_func(keys, mode)
   end
 
   local function f()
-    if mode == 'v' and type(pre_keys) == "table" then
+    if type(pre_keys) == "table" then
       local counts = parse_counts(pre_keys)
       
       -- Save current selection to history
@@ -75,10 +75,11 @@ function mappings.general_mappings(opts)
   local m = opts.mappings
   local c = opts.commands
   for k, v in pairs(m) do
+    
      vim.keymap.set('n', v, get_mapping_func(c[k], "n"), { noremap = true, silent = true })
      vim.keymap.set('v', v, get_mapping_func(c[k], "v"), { noremap = true, silent = true })
    end
- end
+end
 
  -- only visual mappings
 function mappings.partial_mappings(opts, mode)
