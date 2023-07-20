@@ -1,8 +1,17 @@
 # Visual.nvim
 
+In nvim, you do `c3w`. Ah no! It was wrong, let's retry: `uc5w`... wooops! Sorry, it
+is still wrong: `uc6w`!
+
+In Kakoune (which inspired Helix), you do the opposite: `3w`. First select 3
+words, then you see you still need three words, so `3w`. Then finally `d` for
+deleting. In `visual.nvim` (and Helix), this actually becomes `-3w3wd`, with the `-`
+used for "extending" selections.
+
 First select, then edit. This should be the way.
 
 If you have been tempted by Kakoune and Helix editors, this may be your new plugin!
+
 
 ## Usage
 
@@ -10,6 +19,35 @@ Just install it using your preferred package manager.
 
 * Lazy: `{ '00sapo/visual.nvim' }`
 * Packer: `use { '00sapo/visual.nvim' }`
+
+### Helix vs Visual.nvim
+
+Most of the ideas of this plugin are taken from Helix.
+
+Basic commands such as `w`, `e`, `b`, `ge` and thei punctuation-aware alternatives
+`W`, `E`, `B`, `gE` behave the same as in Helix.
+
+`x`, similarly to Helix, enters linewise selection. `<S-x>` enters block-wise
+selection. To keep the same key in normal and visual mode, `x` and `<S-x>` do the same
+in normal mode as well. Consequently, single-char-deletion is mapped to `y`. Yanking
+one line is then `xy` and deleting one line is `xd`, as opposed to nvim `yy` and
+`dd`.
+
+Collapsing the selection and flipping cursor is already provided by
+nvim with `v` (which toggles visual mode) and `o` (which flips the cursor
+position).
+
+Selection of text objects is possible with `si<text object>` and `sa<text object>` in both visual and normal mode, similarly to Helix's `mi` and `ma`.
+
+While in visual mode, it's also possible to delete or replace one single char at the
+cursor position with `R` and `A`. Moreover, differently from nvim, the `i` and `a`
+keys always insert and append at the cursor position (in nvim, they operate at the
+extremes of the selection).
+
+The Helix's selection mode, that is the usual Vim's visual mode, can be toggled to
+`-`. When pressing `-`, both in visual or normal mode, all keys are passed to
+visual mode and interpreted by standard nvim.
+
 
 ### Suggested config
 
