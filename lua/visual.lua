@@ -112,10 +112,14 @@ local function with_defaults(options)
 			delete_single_char = { "D", { { "xgv" }, false } }, -- delete char under cursor
 			replace_single_char = { "R", { { "r" }, false } }, -- replace char under cursor
 			-- move commands, for extending, you can use -
-			move_down_then_normal = { "j", { false, { "<esc>j" } } },
-			move_up_then_normal = { "k", { false, { "<esc>k" } } },
-			move_left_then_normal = { "l", { false, { "<esc>l" } } },
-			move_right_then_normal = { "h", { false, { "<esc>h" } } },
+			move_down_then_normal = { "j", { false, { "j" } } },
+			move_up_then_normal = { "k", { false, { "k" } } },
+			move_left_then_normal = { "l", { false, { "l" } } },
+			move_right_then_normal = { "h", { false, { "h" } } },
+			move_down_selecting = { "<a-j>", { { "gvj" }, false } },
+			move_up_selecting = { "<a-k>", { { "gvk" }, false } },
+			move_left_selecting = { "<a-l>", { { "gvl" }, false } },
+			move_right_selecting = { "<a-h>", { { "gvh" }, false } },
 			-- if values are strings instead of tables, the value from "commands"
 			-- table is taken
 		},
@@ -130,6 +134,7 @@ local function with_defaults(options)
 		end
 		defaults = vim.tbl_deep_extend("force", defaults, options)
 	end
+  history.history_size = defaults.history_size
 	return defaults
 end
 
