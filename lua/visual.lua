@@ -76,8 +76,8 @@ local function with_defaults(options)
 		only_normal_mappings = {
 			-- mappings applied to normal mode only:
 			-- {lhs, command table}
-			line_select = { "x", { { "<S-v>",function() require'visual'.extending:toggle() end  }, false } },
-			block_select = { "<S-x>", { { "<C-v>",function() require'visual'.extending:toggle() end  }, false } },
+			line_select = { "x", { false, { "<S-v>", function() require'visual'.extending:toggle() end  }, } },
+			block_select = { "<S-x>", { false, { "<C-v>", function() require'visual'.extending:toggle() end  }, } },
 			delete_char = { "y", { { "x" }, false } },
 		},
 		only_visual_mappings = {
