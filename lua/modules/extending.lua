@@ -6,10 +6,14 @@ local extending = {
 			custom = {
 				x = "<S-v>",
 				X = "<C-v>",
+				["<esc>"] = function()
+					require("visual").extending:exit()
+					vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "n", false)
+				end,
 			},
 			exit_before = { "a", "A", "i", "I", "c", "C", "o", "O" }, -- exit extending mode and then execute these commands
 			exit_after = { "d", "p", "y", "P", "Y", "D" }, -- execute these commands and then exit extending mode
-			ignore = { "<esc>" },
+			ignore = {},
 		},
 	},
 }
@@ -38,7 +42,8 @@ function extending.setup(options)
 	end
 end
 
-local function enter()
+function extending:enter()
+	extending.active = true
 	extending._old_mode = vim.fn.mode()
 	extending._old_cursor = vim.o.guicursor
 	-- Enter visual mode
@@ -50,7 +55,7 @@ local function enter()
 
 	-- Change cursor
 	vim.opt.guicursor = extending.options.guicursor
- 
+
 	-- apply mappings for extending mode
 	for k, v in pairs(extending.options.keymaps.custom) do
 		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
@@ -66,7 +71,8 @@ local function enter()
 	end
 end
 
-local function exit()
+function extending:exit()
+	extending.active = false
 	-- reset cursor
 	vim.o.guicursor = extending._old_cursor
 
@@ -84,26 +90,26 @@ local function exit()
 		vim.keymap.del("v", v)
 	end
 
-  -- reapply other keymaps
-  -- WARNING: this is not correct, we should find a way to reset the keymaps
-  -- backed up with vim.api.nvim_get_keymap('v')
-  visual = require'visual'
-  visual.setup(visual.options)
+	-- reapply other keymaps
+	-- WARNING: this is not correct, we should find a way to reset the keymaps
+	-- backed up with vim.api.nvim_get_keymap('v')
+	visual = require("visual")
+	visual.setup(visual.options)
+
 end
 
 function extending:toggle()
-	extending.active = not extending.active
 	if extending.active then
-		enter()
+		extending:exit()
 	else
-		exit()
+		extending:enter()
 	end
 end
 
 -- extending.keymaps["<esc>"] = function() extending:toggle() end
 
 function extending:feedkeys(keys)
-  local count = vim.v.count == 0 and 1 or vim.v.count
+	local count = vim.v.count == 0 and 1 or vim.v.count
 
 	if mapped == extending.options.keymaps.toggle then
 		return extending:toggle()
