@@ -33,7 +33,7 @@ local function with_defaults(options)
 		commands = {
 			-- what each command name does:
 			WORD_end_next = {
-				pre_keys = { "WE", countable = true },
+				pre_keys = { "E", countable = true },
 				-- The editor is switched to normal mode and these keys are executed.
 				-- The editor is not switched to normal mode if pre_keys=nil.
 				keys = { "gElo", countable = false },
@@ -45,13 +45,13 @@ local function with_defaults(options)
 				-- It is true by default.
 			},
 
-			word_end_next = { { "we" }, { "gelo", countable = false } },
+			word_end_next = { { "e" }, { "gelo", countable = false } },
 			WORD_end_prev = { { "gE" }, { "gElo", countable = false } },
 			word_end_prev = { { "ge" }, { "gelo", countable = false } },
 			word_start_next = { { "w" }, { "who", countable = false } },
 			WORD_start_next = { { "W" }, { "Who", countable = false } },
-			word_start_prev = { { "bh" }, { "b", countable = false } },
-			WORD_start_prev = { { "Bh" }, { "B", countable = false } },
+			word_start_prev = { { "b" }, { "iwwho", countable = false } },
+			WORD_start_prev = { { "B" }, { "iWWho", countable = false } },
 			extend_word_end = { {}, { "gve" } },
 			extend_word_prev = { {}, { "gvb" } },
 			extend_word_next = { {}, { "gvw" } },
