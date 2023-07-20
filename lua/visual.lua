@@ -2,9 +2,11 @@ local visual = {}
 
 local mappings = require("modules.mappings")
 local history = require("modules.history")
+local extending = require("modules.extending")
 
 visual.mappings = mappings
 visual.history = history
+visual.extending = extending
 
 local function with_defaults(options)
 	local defaults = {
@@ -52,28 +54,20 @@ local function with_defaults(options)
 			WORD_start_next = { { "W" }, { "Who", countable = false } },
 			word_start_prev = { { "b" }, { "iwwho", countable = false } },
 			WORD_start_prev = { { "B" }, { "iWWho", countable = false } },
-			extend_word_end = { {}, { "gve" } },
-			extend_word_prev = { {}, { "gvb" } },
-			extend_word_next = { {}, { "gvw" } },
-			extend_word_next = { {}, { "gvw" } },
-			extend_find_next = { {}, { "gvf" } },
-			extend_find_prev = { {}, { "gvF" } },
-			extend_till_next = { {}, { "gvt" } },
-			extend_till_prev = { {}, { "gvT" } },
 			find_next = { {}, { "f" } },
 			find_prev = { {}, { "F" } },
 			till_next = { {}, { "t" } },
 			till_prev = { {}, { "T" } },
 			append_at_cursor = { false, { "<esc>a", countable = false } },
 			insert_at_cursor = { false, { "<esc>i", countable = false } },
-			select_inside = { false, { "i", countable = false } },
-			select_around = { false, { "a", countable = false } },
-			prev_selection = { {}, {
+			select_inside = { false, { "<esc>vi", countable = false } },
+			select_around = { false, { "<esc>va", countable = false } },
+			prev_selection = { false, {
 				function()
 					require("visual").history.set_history_prev()
 				end,
 			} },
-			next_selection = { {}, {
+			next_selection = { false, {
 				function()
 					require("visual").history.set_history_next()
 				end,
@@ -81,31 +75,26 @@ local function with_defaults(options)
 		},
 		only_normal_mappings = {
 			-- mappings applied to normal mode only:
-			-- {lhs, {rhs1, rhs2, rhs3}}
-			line_select = { "x", { { "<S-v>" }, nil } },
-			block_select = { "<S-x>", { { "<C-v>" }, nil } },
-			delete_char = { "y", { { "x" }, nil } },
+			-- {lhs, command table}
+			line_select = { "x", { { "<S-v>" }, false } },
+			block_select = { "<S-x>", { { "<C-v>" }, false } },
+			delete_char = { "y", { { "x" }, false } },
 		},
 		only_visual_mappings = {
 			-- mappings applied to visual mode only:
 			-- {lhs, {rhs1, rhs2, rhs3}}
-			line_select = { "x", { nil, { "<S-v>" } } },
-			block_select = { "X", { nil, { "<C-v>" } } },
-			restart_selection = { "'", { nil, { "<esc>v" } } },
-			delete_single_char = { "D", { { "xgv" }, nil } }, -- delete char under cursor
-			replace_single_char = { "R", { { "r" }, nil } }, -- replace char under cursor
-			-- if they are strings, use the value from "commands" table
-			extend_word_end = "-e", -- extend until end of word
-			extend_word_prev = "-b", -- extend current selection until previous begin of word
-			extend_word_next = "-w", -- extend current selection until next word
-			extend_find_next = "-f", -- extend current selection to next char
-			extend_find_prev = "-F", -- extend current selection to previous char
-			extend_till_next = "-t", -- extend current selection till next char
-			extend_till_prev = "-T", -- extend current selection till previous char
-			-- delete_surround_chars = {"<C-s>", {"dgvodgv"}} -- delete chars at the
-			-- extremes of the selection
-			-- delete_single_char = {"D", {"d", function() require('visual').set_selection_idx(2) end}}, -- delete char under cursor
-			-- replace_single_char = {"R", {"r", function() require('visual').set_selection_idx(2) end}}, -- replace char under cursor
+			line_select = { "x", { false, { "<S-v>" } } },
+			block_select = { "X", { false, { "<C-v>" } } },
+			restart_selection = { "'", { false, { "<esc>v" } } },
+			delete_single_char = { "D", { { "xgv" }, false } }, -- delete char under cursor
+			replace_single_char = { "R", { { "r" }, false } }, -- replace char under cursor
+			-- move commands, for extending, you can use -
+			move_down_then_normal = { "j", { false, { "<esc>j" } } },
+			move_up_then_normal = { "k", { false, { "<esc>k" } } },
+			move_left_then_normal = { "l", { false, { "<esc>l" } } },
+			move_right_then_normal = { "h", { false, { "<esc>h" } } },
+			-- if values are strings instead of tables, the value from "commands"
+			-- table is taken
 		},
 		-- commands that can be unmapped (for learning new keymaps)
 		unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<" },
@@ -113,10 +102,12 @@ local function with_defaults(options)
 	}
 
 	if type(options) == "table" then
-		return vim.tbl_deep_extend("force", defaults, options)
-	else
-		return defaults
+		if options["extending"] ~= nil then
+			vim.table_extend("force", extending, options.extending)
+		end
+    defaults = vim.tbl_deep_extend("force", defaults, options)
 	end
+  return defaults
 end
 
 visual.options = with_defaults()

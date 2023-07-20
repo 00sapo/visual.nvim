@@ -46,7 +46,9 @@ extremes of the selection).
 
 The Helix's selection mode, that is the usual Vim's visual mode, can be toggled to
 `-`. When pressing `-`, both in visual or normal mode, all keys are passed to
-visual mode and interpreted by standard nvim.
+standard nvim, including normal and insert modes, until `-` is pressed again. For remapping keys in this special
+mode, use the table `extending` (see below). You can also customize the cursor in
+this mode to visualize it.
 
 
 ### Suggested config
@@ -99,93 +101,100 @@ Feel free to suggest new default keybindings in the issues!
 
 ```lua
  require('visual').setup{
-     mappings = {
-       -- a list of command names, mapped to a lhs of mapping for visual and
-       -- normal mode
-       WORD_next = "E", -- select next WORD (punctuation included)
-       word_next = "e", -- select next word (no punctuation included)
-       WORD_prev = "gE", -- select previous WORD
-       word_prev = "ge", -- select previous word
-       till_next_word = "w", -- select next word including next its space
-       till_next_WORD = "W", -- select next WORD including its next space
-       till_prev_word = "b", -- select previous word including its previous space
-       till_prev_WORD = "B", -- select previous WORD including its previous space
-       -- from_cursor_to_end_word = "E", -- select from the cursor position to the end of the word (as traditional e)
-       -- from_cursor_to_start_word = "B", -- select from the cursor position to the beginning of the word (as traditional b)
-       find_next = "f", -- select to next char
-       find_prev = "F", -- select to previous char
-       till_next = "t", -- select till next char
-       till_prev = "T", -- select till previous char
-       append_at_cursor = "a", -- append at cursor position
-       insert_at_cursor = "i", -- insert at cursor position
-       select_inside = "si", -- select inside
-       select_around = "sa", -- select around
-     },
-     only_normal_mappings = {
-       -- mappings applied to normal mode only:
-       -- {lhs, {rhs1, rhs2, rhs3}}
-       line_select = {"x", {"<S-v>"}},
-       block_select = {"<S-x>", {"<C-v>"}},
-       delete_char = {"y", {"x"}}
-     },
-     only_visual_mappings = {
-       -- mappings applied to visual mode only:
-       -- {lhs, {rhs1, rhs2, rhs3}}
-       line_select = {"x", {"<S-v>"}},
-       block_select = {"X", {"<C-v>"}},
-       restart_selection = {"'", {"<esc>v"}},
-       delete_single_char = {"D", {"d"}}, -- delete char under cursor
-       replace_single_char = {"R", {"r"}}, -- replace char under cursor
-      -- if they are strings, use the value from "commands" table
-       extend_word_end = "-e", -- extend until end of word
-       extend_word_prev = "-b", -- extend current selection until previous begin of word
-       extend_word_next = "-w", -- extend current selection until next word
-       extend_find_next = "-f", -- extend current selection to next char
-       extend_find_prev = "-F", -- extend current selection to previous char
-       extend_till_next = "-t", -- extend current selection till next char
-       extend_till_prev = "-T", -- extend current selection till previous char
-     },
-     commands = {
-       -- what each command name does:
-       WORD_next = {
-         -- first, the editor is switched to normal mode
-         {"W"}, -- if the command is launched in visual mode, these keys are executed
-         -- then, the editor is switched to visual mode
-         {"iW"}, -- then, these keys are executed
-         -- in place of keys, you can use one or more functions (no argument
-         -- allowed), or both of them
-         false
-         -- the final argument indicates if this command can be counted (e.g. 3w, 4e,
-         -- etc.)
-         -- this is true by default and applies to the second set of keys only
-       },
-       
-       word_next = {{"w"}, {"iw"}, false},
-       WORD_prev = {{"B"}, {"iWo"}, false,},
-       word_prev = {{"b"}, {"iwo"}, false},
-       till_next_word = {{"w"}, {"wh"}},
-       till_next_WORD = {{"W"}, {"Wh"}},
-       till_prev_word = {{"b"}, {"gelowgeo"}},
-       till_prev_WORD = {{"B"}, {"gEloWgEo"}},
-       extend_word_end = {{}, {"gve"}},
-       extend_word_prev = {{}, {"gvb"}},
-       extend_word_next = {{}, {"gvw"}},
-       extend_word_next = {{}, {"gvw"}},
-       extend_find_next = {{}, {"gvf"}},
-       extend_find_prev = {{}, {"gvF"}},
-       extend_till_next = {{}, {"gvt"}},
-       extend_till_prev = {{}, {"gvT"}},
-       find_next = {{}, {"f"}},
-       find_prev = {{}, {"F"}},
-       till_next = {{}, {"t"}},
-       till_prev = {{}, {"T"}},
-       append_at_cursor = {{}, {"<esc>a"}, false},
-       insert_at_cursor = {{}, {"<esc>i"}, false},
-       select_inside = {{}, {"i"}, false},
-       select_around = {{}, {"a"}, false},
-     },
-     -- commands that can be unmapped (for learning new keymaps)
-     unmaps = {"W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc"},
+    mappings = {
+        -- a list of command names, mapped to a lhs of mapping for visual and
+        -- normal mode
+        WORD_end_next = "E", -- select next WORD (punctuation included), cursor at end, previous space included
+        word_end_next = "e", -- same as E but without punctuation
+        WORD_end_prev = "gE", -- same as E but for previous words
+        word_end_prev = "ge", -- same as e but for previous words
+        WORD_start_next = "W", -- select next word including next its space, cursor at beginning, with punctuation
+        word_start_next = "w", -- same as W but without punctuation
+        WORD_start_prev = "B", -- select previous WORD including its next space, with punctuation, cursor at beginnning
+        word_start_prev = "b", -- same as B but without punctuation
+        find_next = "f", -- select to next char
+        find_prev = "F", -- select to previous char
+        till_next = "t", -- select till next char
+        till_prev = "T", -- select till previous char
+        append_at_cursor = "a", -- append at cursor position
+        insert_at_cursor = "i", -- insert at cursor position
+        select_inside = "si", -- select inside
+        select_around = "sa", -- select around
+        extending_mode = "-",
+        next_selection = "L", -- under work
+        prev_selection = "H", -- under work
+    },
+    commands = {
+        -- what each command name does:
+        WORD_end_next = {
+            pre_keys = { "E", countable = true },
+            -- The editor is switched to normal mode and these keys are executed.
+            -- The editor is not switched to normal mode if pre_keys=nil.
+            keys = { "gElo", countable = false },
+            -- Then, the editor is switched to visual mode and these keys are executed
+            -- In place of keys, you can use one or more functions (no argument
+            -- allowed), or both of them.
+            -- No switch to visual mode happens if keys=nil.
+            -- The `countable` parameters allows each command to be counted.
+            -- It is true by default.
+        },
+
+        word_end_next = { { "e" }, { "gelo", countable = false } },
+        WORD_end_prev = { { "gE" }, { "gElo", countable = false } },
+        word_end_prev = { { "ge" }, { "gelo", countable = false } },
+        word_start_next = { { "w" }, { "who", countable = false } },
+        WORD_start_next = { { "W" }, { "Who", countable = false } },
+        word_start_prev = { { "b" }, { "iwwho", countable = false } },
+        WORD_start_prev = { { "B" }, { "iWWho", countable = false } },
+        find_next = { {}, { "f" } },
+        find_prev = { {}, { "F" } },
+        till_next = { {}, { "t" } },
+        till_prev = { {}, { "T" } },
+        append_at_cursor = { false, { "<esc>a", countable = false } },
+        insert_at_cursor = { false, { "<esc>i", countable = false } },
+        select_inside = { false, { "<esc>vi", countable = false } },
+        select_around = { false, { "<esc>va", countable = false } },
+        extending_mode = { false, {
+            function()
+                require("visual").extending:toggle()
+            end,
+        } },
+        prev_selection = { false, {
+            function()
+                require("visual").history.set_history_prev()
+            end,
+        } },
+        next_selection = { false, {
+            function()
+                require("visual").history.set_history_next()
+            end,
+        } },
+    },
+    only_normal_mappings = {
+        -- mappings applied to normal mode only:
+        -- {lhs, command table}
+        line_select = { "x", { { "<S-v>" }, false} },
+        block_select = { "<S-x>", { { "<C-v>" }, false} },
+        delete_char = { "y", { { "x" }, false } },
+    },
+    only_visual_mappings = {
+        -- mappings applied to visual mode only:
+        -- {lhs, {rhs1, rhs2, rhs3}}
+        line_select = { "x", { false, { "<S-v>" } } },
+        block_select = { "X", { false, { "<C-v>" } } },
+        restart_selection = { "'", { false, { "<esc>v" } } },
+        delete_single_char = { "D", { { "xgv" }, false } }, -- delete char under cursor
+        replace_single_char = { "R", { { "r" }, false } }, -- replace char under cursor
+        -- move commands, for extending, you can use -
+        move_down_then_normal = {"j", {false, {"<esc>j"}}},
+        move_up_then_normal = {"k", {false, {"<esc>k"}}},
+        move_left_then_normal = {"l", {false, {"<esc>l"}}},
+        move_right_then_normal = {"h", {false, {"<esc>h"}}},
+        -- if values are strings instead of tables, the value from "commands"
+  -- table is taken
+    },
+    -- commands that can be unmapped (for learning new keymaps)
+    unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<" },
 }
 ```
 

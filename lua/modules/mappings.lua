@@ -1,4 +1,5 @@
 local history = require("modules.history")
+local extending = require("modules.extending")
 local mappings = {}
 
 local function apply_key(key, count)
@@ -27,7 +28,7 @@ local function parse_counts(opts)
 	return counts
 end
 
-local function get_mapping_func(keys, mode)
+local function get_mapping_func(keys, mode, pressed_key)
 	local real_keys, pre_keys
 	if #keys == 2 then
 		pre_keys = keys.pre_keys or keys[1]
@@ -38,6 +39,9 @@ local function get_mapping_func(keys, mode)
 	end
 
 	local function f()
+		if extending.active then
+			return extending:feedkeys(pressed_key)
+		end
 		if type(pre_keys) == "table" then
 			local counts = parse_counts(pre_keys)
 
@@ -76,12 +80,24 @@ function mappings.general_mappings(opts)
 	local m = opts.mappings
 	local c = opts.commands
 	for k, v in pairs(m) do
-		vim.keymap.set("n", v, get_mapping_func(c[k], "n"), { noremap = true, silent = true })
-		vim.keymap.set("v", v, get_mapping_func(c[k], "v"), { noremap = true, silent = true })
+		if c[k] == nil then
+			print("No mapping for " .. k)
+		else
+			vim.keymap.set("n", v, get_mapping_func(c[k], "n", v), { noremap = true, silent = true })
+			vim.keymap.set("v", v, get_mapping_func(c[k], "v", v), { noremap = true, silent = true })
+		end
 	end
+
+	-- mapping the extending mode toggle
+	vim.keymap.set("n", "-", function()
+		extending:toggle()
+	end, { noremap = true, silent = true })
+	vim.keymap.set("v", "-", function()
+		extending:toggle()
+	end, { noremap = true, silent = true })
 end
 
--- only visual mappings
+-- only visual or only normal mappings
 function mappings.partial_mappings(opts, mode)
 	local rhs, lhs, m
 	local c = opts.commands
@@ -92,11 +108,15 @@ function mappings.partial_mappings(opts, mode)
 	end
 	for k, v in pairs(m) do
 		if type(v) == "table" then
-			rhs = get_mapping_func(v[2], mode)
 			lhs = v[1]
+			rhs = get_mapping_func(v[2], mode, lhs)
 		elseif type(v) == "string" then
-			rhs = get_mapping_func(c[k], mode)
-			lhs = v
+			if c[k] == nil then
+				print("No mapping for " .. k)
+			else
+				lhs = v
+				rhs = get_mapping_func(c[k], mode, lhs)
+			end
 		end
 		vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true })
 	end
