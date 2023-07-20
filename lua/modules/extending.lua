@@ -103,7 +103,7 @@ end
 -- extending.keymaps["<esc>"] = function() extending:toggle() end
 
 function extending:feedkeys(keys)
-  count = vim.v.count == 0 and 1 or vim.v.count
+  local count = vim.v.count == 0 and 1 or vim.v.count
 
 	if mapped == extending.options.keymaps.toggle then
 		return extending:toggle()
