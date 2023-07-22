@@ -8,8 +8,7 @@ visual.mappings = mappings
 visual.history = history
 visual.extending = extending
 
-local function with_defaults(options)
-	local defaults = {
+visual.options = {
 		-- commands that will be unmapped from normal mode (e.g. for forcing you learning new keymaps)
 		unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<" },
 		history_size = 50, -- how many selections we should remember in the history
@@ -61,94 +60,89 @@ local function with_defaults(options)
 				-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
 			},
 
-			word_end_next = { { "<esc>evgelo" }, {}, { "n", "v" } },
-			WORD_end_prev = { { "<esc>gEvgElo" }, {}, { "n", "v" } },
-			word_end_prev = { { "<esc>gevgelo" }, {}, { "n", "v" } },
-			word_start_next = { { "<esc>wvwho" }, {}, { "n", "v" } },
-			WORD_start_next = { { "<esc>WvWho" }, {}, { "n", "v" } },
-			word_start_prev = { { "<esc>bviwwho" }, {}, { "n", "v" } },
-			WORD_start_prev = { { "<esc>BviWWho" }, {}, { "n", "v" } },
-			find_next = { { "<esc>vf" }, {}, { "n", "v" } },
-			find_prev = { { "<esc>vF" }, {}, { "n", "v" } },
-			till_next = { { "<esc>vt" }, {}, { "n", "v" } },
-			till_prev = { { "<esc>vT" }, {}, { "n", "v" } },
-			append_at_cursor = { { "<esc>a" }, {}, { "n", "v" } },
-			insert_at_cursor = { { "<esc>i" }, {}, { "n", "v" } },
-			visual_inside = { { "<esc>vi" }, {}, { "n", "v" } },
-			visual_around = { { "<esc>va" }, {}, { "n", "v" } },
+			word_end_next = { pre_amend={ "<esc>evgelo" }, post_amend={}, modes={ "n", "v" } },
+			WORD_end_prev = { pre_amend={ "<esc>gEvgElo" }, post_amend={}, modes={ "n", "v" } },
+			word_end_prev = { pre_amend={ "<esc>gevgelo" }, post_amend={}, modes={ "n", "v" } },
+			word_start_next = { pre_amend={ "<esc>wvwho" }, post_amend={}, modes={ "n", "v" } },
+			WORD_start_next = { pre_amend={ "<esc>WvWho" }, post_amend={}, modes={ "n", "v" } },
+			word_start_prev = { pre_amend={ "<esc>bviwwho" }, post_amend={}, modes={ "n", "v" } },
+			WORD_start_prev = { pre_amend={ "<esc>BviWWho" }, post_amend={}, modes={ "n", "v" } },
+			find_next = { pre_amend={ "<esc>vf" }, post_amend={}, modes={ "n", "v" } },
+			find_prev = { pre_amend={ "<esc>vF" }, post_amend={}, modes={ "n", "v" } },
+			till_next = { pre_amend={ "<esc>vt" }, post_amend={}, modes={ "n", "v" } },
+			till_prev = { pre_amend={ "<esc>vT" }, post_amend={}, modes={ "n", "v" } },
+			append_at_cursor = { pre_amend={ "<esc>a" }, post_amend={}, modes={ "n", "v" } },
+			insert_at_cursor = { pre_amend={ "<esc>i" }, post_amend={}, modes={ "n", "v" } },
+			visual_inside = { pre_amend={ "<esc>vi" }, post_amend={}, modes={ "n", "v" } },
+			visual_around = { pre_amend={ "<esc>va" }, post_amend={}, modes={ "n", "v" } },
 			prev_selection = {
-				{
+				pre_amend = {
 					function()
 						require("visual").history.set_history_prev()
 					end,
 				},
-				{},
-				{ "n", "v" },
+				post_amend = {},
+				modes = { "n", "v" },
 			},
 			next_selection = {
-				{
+				pre_amend = {
 					function()
 						require("visual").history.set_history_next()
 					end,
 				},
-				{},
-				{ "n", "v" },
+				post_amend = {},
+				modes = { "n", "v" },
 			},
 			line_visual = {
-				{
+				pre_amend = {
 					function()
 						require("visual").extending:toggle()
 					end,
 					"V",
 				},
-				{},
-				{ "n", "v" },
+				post_amend = {},
+				modes = { "n", "v" },
 			},
 			block_visual = {
-				{
+				pre_amend = {
 					function()
 						require("visual").extending:toggle()
 					end,
 					"<C-v>",
 				},
-				{},
-				{ "n", "v" },
+				post_amend = {},
+				modes ={ "n", "v" },
 			},
 
 			-- mapping applied to normal mode only
-			delete_char = { { "x" }, {}, { "n" } },
+			delete_char = { pre_amend={ "x" }, post_amend={}, modes={ "n" } },
 			-- mapping applied to visual mode only
-			restart_visual = { { "<esc>v" }, {}, { "v" } },
-			delete_single_char = { { "<esc>vxgv" }, {}, { "v" } },
-			replace_single_char = { { "<esc>r" }, {}, { "v" } },
-			move_down_then_normal = { { "j<esc>" }, {}, { "v" } },
-			move_up_then_normal = { { "k<esc>" }, {}, { "v" } },
-			move_left_then_normal = { { "l<esc>" }, {}, { "v" } },
-			move_right_then_normal = { { "h<esc>" }, {}, { "v" } },
-			move_down_visual = { { "j" }, {}, { "v" } },
-			move_up_visual = { { "k" }, {}, { "v" } },
-			move_left_visual = { { "l" }, {}, { "v" } },
-			move_right_visual = { { "h" }, {}, { "v" } },
+			restart_visual = { pre_amend={ "<esc>v" }, post_amend={}, modes={ "v" } },
+			delete_single_char = { pre_amend={ "<esc>vxgv" }, post_amend={}, modes={ "v" } },
+			replace_single_char = { pre_amend={ "<esc>r" }, post_amend={}, modes={ "v" } },
+			move_down_then_normal = { pre_amend={ "j<esc>" }, post_amend={}, modes={ "v" } },
+			move_up_then_normal = { pre_amend={ "k<esc>" }, post_amend={}, modes={ "v" } },
+			move_left_then_normal = { pre_amend={ "l<esc>" }, post_amend={}, modes={ "v" } },
+			move_right_then_normal = { pre_amend={ "h<esc>" }, post_amend={}, modes={ "v" } },
+			move_down_visual = { pre_amend={ "j" }, post_amend={}, modes={ "v" } },
+			move_up_visual = { pre_amend={ "k" }, post_amend={}, modes={ "v" } },
+			move_left_visual = { pre_amend={ "l" }, post_amend={}, modes={ "v" } },
+			move_right_visual = { pre_amend={ "h" }, post_amend={}, modes={ "v" } },
 		},
 	}
 
-	if type(options) == "table" then
-		defaults = vim.tbl_deep_extend("force", defaults, options)
-		extending.options = vim.tbl_deep_extend("force", extending.options, defaults.extending)
-	end
-	history.history_size = defaults.history_size
-	return defaults
-end
-
-visual.options = with_defaults()
 
 -- This function is supposed to be called explicitly by users to configure this
 -- plugin
 function visual.setup(options)
-	visual.options = with_defaults(options)
+	if type(options) == "table" then
+		visual.options = vim.tbl_deep_extend("force", visual.options, options)
+	end
+  print(vim.inspect(visual.options.commands.move_up_then_normal))
+  extending.options = vim.tbl_deep_extend("force", extending.options, visual.options.extending)
+	history.history_size = visual.options.history_size
 	mappings.unmaps(visual.options)
 	mappings.apply_mappings(visual.options)
-	history.history_size = visual.options.history_size
 end
 
 return visual

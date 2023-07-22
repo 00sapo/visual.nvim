@@ -25,9 +25,6 @@ local function get_feedkey(v)
 	end
 end
 
-function extending.setup(options)
-end
-
 function extending:enter()
 	extending.active = true
 	extending._old_mode = vim.fn.mode()

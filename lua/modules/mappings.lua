@@ -34,21 +34,19 @@ local function parse_counts(opts)
 end
 
 -- Return a function that can be used as rhs in keys-amend.nvim
-local function make_rhs(keys, pressed_key)
+local function make_rhs(keys, lhs)
 	local pre_amend = keys.pre_amend or keys[1]
 	local post_amend = keys.post_amend or keys[2]
 	---@diagnostic disable-next-line: unused-local
 	local mode = keys.mode or keys[3]
-	local amend
-	if #keys == 4 then
-		amend = keys.amend or keys[4]
-	else
-		amend = false
-	end
+	local amend = keys.amend
+  if amend == nil then
+    amend = false
+  end
 
 	local function f(original)
 		if extending.active then
-			return extending:feedkeys(pressed_key)
+			return extending:feedkeys(lhs)
 		end
 		local counts = parse_counts(pre_amend)
 		for _, key in pairs(pre_amend) do
@@ -56,7 +54,10 @@ local function make_rhs(keys, pressed_key)
 		end
 
 		if amend then
+      print("amending!")
 			original()
+    else
+      print("not amending")
 		end
 
 		counts = parse_counts(post_amend)
@@ -64,16 +65,16 @@ local function make_rhs(keys, pressed_key)
 			apply_key(key, counts)
 		end
 
-		if utils.mode_is_visual() then
-			-- Save current selection to history
-			local selection = {
-				vim.fn.getpos("v"),
-				vim.fn.getpos("."),
-			}
-			history:push(selection)
-		else
-			print("not pushing")
-		end
+		-- if utils.mode_is_visual() then
+		-- 	-- Save current selection to history
+		-- 	local selection = {
+		-- 		vim.fn.getpos("v"),
+		-- 		vim.fn.getpos("."),
+		-- 	}
+		-- 	history:push(selection)
+		-- else
+		-- 	print("not pushing")
+		-- end
 	end
 	return f
 end
@@ -84,10 +85,10 @@ function mappings.apply_mappings(opts)
 		if opts.commands[name] == nil then
 			print("No mapping for " .. name)
 		else
-			local modes = opts.commands[name].mode or opts.commands[name][3]
-			for i in 1, #modes do
-				keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, silent = true })
-			end
+			local modes = opts.commands[name].modes or opts.commands[name][3]
+      for i = 1, #modes do
+        keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, silent = true })
+      end
 		end
 	end
 

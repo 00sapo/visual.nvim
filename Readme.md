@@ -54,9 +54,28 @@ mode, use the table `extending` (see below). You can also customize the cursor i
 this mode to visualize it.
 
 
-### Suggested config
+### Example config
 
-Example with Lazy and Treesitter incremental selection
+Configuration with some change to commands in order to make them compatible:
+```lua
+{    
+  '00sapo/visual.nvim',
+  dependencies = { "anuvyklack/keymap-amend.nvim" },
+  config = function()
+    require('visual').setup({
+    commands = {
+      move_up_then_normal = { amend = true },
+      move_down_then_normal = { amend = true },
+      move_right_then_normal = { amend = true },
+      move_left_then_normal = { amend = true },
+    },
+  } )
+  end,
+  event = "VeryLazy", -- this is for making sure our keymaps are applied after the others: we call the previous mapppings, but other plugins/configs usually not!
+}
+```
+
+Example with Treesitter incremental selection
 ```lua
 {
     '00sapo/visual.nvim',
@@ -65,25 +84,16 @@ Example with Lazy and Treesitter incremental selection
             incremental_selection = { 
                 enable = true,
                 keymaps = {
-                    init_selection = "gn",
-                    node_incremental = "|",
-                    scope_incremental = "_",
-                    node_decremental = "\"",
+                    init_selection = "<c-.>",
+                    node_incremental = "<c-.>",
+                    scope_incremental = "<c-,>",
+                    node_decremental = "<c-/>",
                 }
             } 
         }
-        -- in lunarvim:
-        -- lvim.builtin.treesitter.incremental_selection = {
-        --     enable = true,
-        --     keymaps = {
-        --         init_selection = "gn",
-        --         node_incremental = "|",
-        --         scope_incremental = _;",
-        --         node_decremental = "\"",
-        --     }
-        -- }
     end,
-    dependencies = { 'nvim-treesitter/nvim-treesitter' }
+    dependencies = { "anuvyklack/keymap-amend.nvim", 'nvim-treesitter/nvim-treesitter' },
+    event = "VeryLazy"
 }
 ```
 
