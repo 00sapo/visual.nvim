@@ -26,20 +26,6 @@ local function get_feedkey(v)
 end
 
 function extending.setup(options)
-	vim.tbl_deep_extend("force", extending.options, options)
-	-- apply mappings for extending mode
-	for k, v in pairs(extending.options.keymaps.custom) do
-		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
-	end
-	for _, v in ipairs(extending.options.keymaps.exit_before) do
-		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
-	end
-	for _, v in ipairs(extending.options.keymaps.exit_after) do
-		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
-	end
-	for _, v in ipairs(extending.options.keymaps.ignore) do
-		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
-	end
 end
 
 function extending:enter()
@@ -93,7 +79,7 @@ function extending:exit()
 	-- reapply other keymaps
 	-- WARNING: this is not correct, we should find a way to reset the keymaps
 	-- backed up with vim.api.nvim_get_keymap('v')
-	visual = require("visual")
+	local visual = require("visual")
 	visual.setup(visual.options)
 
 end
@@ -111,6 +97,13 @@ end
 function extending:feedkeys(keys)
 	local count = vim.v.count == 0 and 1 or vim.v.count
 
+  local mapped
+	if extending.options.keymaps[keys] ~= nil then
+		mapped = extending.options.keymaps[keys]
+	else
+		mapped = keys
+	end
+
 	if mapped == extending.options.keymaps.toggle then
 		return extending:toggle()
 	end
@@ -120,11 +113,6 @@ function extending:feedkeys(keys)
 		extending:toggle()
 	end
 
-	if extending.options.keymaps[keys] ~= nil then
-		mapped = extending.options.keymaps[keys]
-	else
-		mapped = keys
-	end
 	if type(mapped) == "string" then
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(count .. mapped, true, false, true), "n", false)
 	elseif type(mapped) == "function" then
