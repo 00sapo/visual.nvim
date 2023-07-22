@@ -10,7 +10,7 @@ visual.extending = extending
 
 visual.options = {
 		-- commands that will be unmapped from normal mode (e.g. for forcing you learning new keymaps)
-		unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<" },
+		unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s"},
 		history_size = 50, -- how many selections we should remember in the history
 		extending = {}, -- options for extending mode
 		mappings = {
