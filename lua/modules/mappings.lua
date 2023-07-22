@@ -1,4 +1,4 @@
-local amend_func = require('keymap-amend')
+local keys_amend = require("keymap-amend")
 
 local history = require("modules.history")
 local extending = require("modules.extending")
@@ -29,32 +29,40 @@ local function parse_counts(opts)
 	else
 		counts = 0
 	end
-  opts.countable = nil
+	opts.countable = nil
 	return counts
 end
 
-local function get_mapping_func(keys, mode, pressed_key)
-  local pre_amend = keys.pre_amend or keys[1]
-  local amend = keys.amend or keys[2]
-  local post_amend = keys.post_amend or keys[3]
+-- Return a function that can be used as rhs in keys-amend.nvim
+local function make_rhs(keys, pressed_key)
+	local pre_amend = keys.pre_amend or keys[1]
+	local post_amend = keys.post_amend or keys[2]
+	---@diagnostic disable-next-line: unused-local
+	local mode = keys.mode or keys[3]
+	local amend
+	if #keys == 4 then
+		amend = keys.amend or keys[4]
+	else
+		amend = false
+	end
 
 	local function f(original)
 		if extending.active then
 			return extending:feedkeys(pressed_key)
 		end
-    local counts = parse_counts(pre_amend)
-    for _, key in pairs(pre_amend) do
-      apply_key(key, counts)
-    end
+		local counts = parse_counts(pre_amend)
+		for _, key in pairs(pre_amend) do
+			apply_key(key, counts)
+		end
 
-    if amend then
-      original()
-    end
+		if amend then
+			original()
+		end
 
-    counts = parse_counts(post_amend)
-    for _, key in pairs(post_amend) do
-      apply_key(key, counts)
-    end
+		counts = parse_counts(post_amend)
+		for _, key in pairs(post_amend) do
+			apply_key(key, counts)
+		end
 
 		if utils.mode_is_visual() then
 			-- Save current selection to history
@@ -63,23 +71,23 @@ local function get_mapping_func(keys, mode, pressed_key)
 				vim.fn.getpos("."),
 			}
 			history:push(selection)
-    else
-      print("not pushing")
+		else
+			print("not pushing")
 		end
 	end
 	return f
 end
 
 -- general mappings
-function mappings.general_mappings(opts)
-	local m = opts.mappings
-	local c = opts.commands
-	for k, v in pairs(m) do
-		if c[k] == nil then
-			print("No mapping for " .. k)
+function mappings.apply_mappings(opts)
+	for name, lhs in pairs(opts.mappings) do
+		if opts.commands[name] == nil then
+			print("No mapping for " .. name)
 		else
-			amend_func("n", v, get_mapping_func(c[k], "n", v), { noremap = true, silent = true })
-			amend_func("v", v, get_mapping_func(c[k], "v", v), { noremap = true, silent = true })
+			local modes = opts.commands[name].mode or opts.commands[name][3]
+			for i in 1, #modes do
+				keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, silent = true })
+			end
 		end
 	end
 
@@ -90,31 +98,6 @@ function mappings.general_mappings(opts)
 	vim.keymap.set("v", "-", function()
 		extending:toggle()
 	end, { noremap = true, silent = true })
-end
-
--- only visual or only normal mappings
-function mappings.partial_mappings(opts, mode)
-	local rhs, lhs, m
-	local c = opts.commands
-	if mode == "v" then
-		m = opts.only_visual_mappings
-	elseif mode == "n" then
-		m = opts.only_normal_mappings
-	end
-	for k, v in pairs(m) do
-		if type(v) == "table" then
-			lhs = v[1]
-			rhs = get_mapping_func(v[2], mode, lhs)
-		elseif type(v) == "string" then
-			if c[k] == nil then
-				print("No mapping for " .. k)
-			else
-				lhs = v
-				rhs = get_mapping_func(c[k], mode, lhs)
-			end
-		end
-		amend_func(mode, lhs, rhs, { noremap = true, silent = true })
-	end
 end
 
 -- unmappings
