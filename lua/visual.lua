@@ -30,8 +30,8 @@ local function with_defaults(options)
 			till_prev = "T", -- select till previous char
 			append_at_cursor = "a", -- append at cursor position
 			insert_at_cursor = "i", -- insert at cursor position
-			select_inside = "si", -- select inside
-			select_around = "sa", -- select around
+			visual_inside = "si", -- select inside
+			visual_around = "sa", -- select around
 			line_visual = "x", -- enter line-visual mode
 			block_visual = "<S-x>", -- enter block-visual mode
 			delete_char = "y", -- delete char under cursor
@@ -74,8 +74,8 @@ local function with_defaults(options)
 			till_prev = { { "<esc>vT" }, {}, { "n", "v" } },
 			append_at_cursor = { { "<esc>a" }, {}, { "n", "v" } },
 			insert_at_cursor = { { "<esc>i" }, {}, { "n", "v" } },
-			select_inside = { { "<esc>vi" }, {}, { "n", "v" } },
-			select_around = { { "<esc>va" }, {}, { "n", "v" } },
+			visual_inside = { { "<esc>vi" }, {}, { "n", "v" } },
+			visual_around = { { "<esc>va" }, {}, { "n", "v" } },
 			prev_selection = {
 				{
 					function()
@@ -94,7 +94,7 @@ local function with_defaults(options)
 				{},
 				{ "n", "v" },
 			},
-			line_select = {
+			line_visual = {
 				{
 					"V",
 					function()
@@ -104,7 +104,7 @@ local function with_defaults(options)
 				{},
 				{ "n", "v" },
 			},
-			block_select = {
+			block_visual = {
 				{
 					"<C-v>",
 					function()
@@ -118,17 +118,17 @@ local function with_defaults(options)
 			-- mapping applied to normal mode only
 			delete_char = { { "x" }, {}, { "n" } },
 			-- mapping applied to visual mode only
-			restart_selection = { { "<esc>v" }, {}, { "v" } },
+			restart_visual = { { "<esc>v" }, {}, { "v" } },
 			delete_single_char = { { "<esc>vxgv" }, {}, { "v" } },
 			replace_single_char = { { "<esc>r" }, {}, { "v" } },
 			move_down_then_normal = { { "j<esc>" }, {}, { "v" } },
 			move_up_then_normal = { { "k<esc>" }, {}, { "v" } },
 			move_left_then_normal = { { "l<esc>" }, {}, { "v" } },
 			move_right_then_normal = { { "h<esc>" }, {}, { "v" } },
-			move_down_selecting = { { "j" }, {}, { "v" } },
-			move_up_selecting = { { "k" }, {}, { "v" } },
-			move_left_selecting = { { "l" }, {}, { "v" } },
-			move_right_selecting = { { "h" }, {}, { "v" } },
+			move_down_visual = { { "j" }, {}, { "v" } },
+			move_up_visual = { { "k" }, {}, { "v" } },
+			move_left_visual = { { "l" }, {}, { "v" } },
+			move_right_visual = { { "h" }, {}, { "v" } },
 		},
 	}
 
