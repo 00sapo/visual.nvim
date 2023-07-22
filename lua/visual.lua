@@ -96,20 +96,20 @@ local function with_defaults(options)
 			},
 			line_visual = {
 				{
-					"V",
 					function()
 						require("visual").extending:toggle()
 					end,
+					"V",
 				},
 				{},
 				{ "n", "v" },
 			},
 			block_visual = {
 				{
-					"<C-v>",
 					function()
 						require("visual").extending:toggle()
 					end,
+					"<C-v>",
 				},
 				{},
 				{ "n", "v" },
@@ -134,7 +134,7 @@ local function with_defaults(options)
 
 	if type(options) == "table" then
 		defaults = vim.tbl_deep_extend("force", defaults, options)
-		vim.tbl_deep_extend("force", extending.options, defaults.extending)
+		extending.options = vim.tbl_deep_extend("force", extending.options, defaults.extending)
 	end
 	history.history_size = defaults.history_size
 	return defaults
