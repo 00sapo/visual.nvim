@@ -1,3 +1,5 @@
+local amend_func = require('keymap-amend')
+
 local history = require("modules.history")
 local extending = require("modules.extending")
 local utils = require("modules.utils")
@@ -14,6 +16,7 @@ local function apply_key(key, count)
 	end
 end
 
+-- return a proper value for counting commands and remove the field `countable` from `opts`
 local function parse_counts(opts)
 	local countable, counts
 	if opts.countable == nil then
@@ -26,45 +29,33 @@ local function parse_counts(opts)
 	else
 		counts = 0
 	end
+  opts.countable = nil
 	return counts
 end
 
 local function get_mapping_func(keys, mode, pressed_key)
-	local real_keys, pre_keys
-	if #keys == 2 then
-		pre_keys = keys.pre_keys or keys[1]
-		real_keys = keys.keys or keys[2]
-	else
-		pre_keys = false
-		real_keys = keys[1]
-	end
+  local pre_amend = keys.pre_amend or keys[1]
+  local amend = keys.amend or keys[2]
+  local post_amend = keys.post_amend or keys[3]
 
-	local function f()
+	local function f(original)
 		if extending.active then
 			return extending:feedkeys(pressed_key)
 		end
-		if type(pre_keys) == "table" then
-			local counts = parse_counts(pre_keys)
+    local counts = parse_counts(pre_amend)
+    for _, key in pairs(pre_amend) do
+      apply_key(key, counts)
+    end
 
-			-- Enter normal mode
-			utils.enter("n")
+    if amend then
+      original()
+    end
 
-			-- pre-visual keys
-			for _, key in pairs(pre_keys) do
-				apply_key(key, counts)
-			end
-		end
-		if type(real_keys) == "table" then
-			-- Enter visual mode
-			utils.enter("v")
+    counts = parse_counts(post_amend)
+    for _, key in pairs(post_amend) do
+      apply_key(key, counts)
+    end
 
-			local counts = parse_counts(real_keys)
-
-			-- visual keys
-			for _, key in pairs(real_keys) do
-				apply_key(key, counts)
-			end
-		end
 		if utils.mode_is_visual() then
 			-- Save current selection to history
 			local selection = {
@@ -87,8 +78,8 @@ function mappings.general_mappings(opts)
 		if c[k] == nil then
 			print("No mapping for " .. k)
 		else
-			vim.keymap.set("n", v, get_mapping_func(c[k], "n", v), { noremap = true, silent = true })
-			vim.keymap.set("v", v, get_mapping_func(c[k], "v", v), { noremap = true, silent = true })
+			amend_func("n", v, get_mapping_func(c[k], "n", v), { noremap = true, silent = true })
+			amend_func("v", v, get_mapping_func(c[k], "v", v), { noremap = true, silent = true })
 		end
 	end
 
@@ -122,7 +113,7 @@ function mappings.partial_mappings(opts, mode)
 				rhs = get_mapping_func(c[k], mode, lhs)
 			end
 		end
-		vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true })
+		amend_func(mode, lhs, rhs, { noremap = true, silent = true })
 	end
 end
 
@@ -130,7 +121,7 @@ end
 function mappings.unmaps(opts)
 	local u = opts.unmaps
 	local nothing = function() end
-	for k, v in pairs(u) do
+	for _, v in pairs(u) do
 		vim.keymap.set("n", v, nothing, { silent = true })
 	end
 end

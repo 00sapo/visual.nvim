@@ -35,16 +35,17 @@ local function with_defaults(options)
 		commands = {
 			-- what each command name does:
 			WORD_end_next = {
-				pre_keys = { "E", countable = true },
-				-- The editor is switched to normal mode and these keys are executed.
-				-- The editor is not switched to normal mode if pre_keys=nil.
-				keys = { "gElo", countable = false },
-				-- Then, the editor is switched to visual mode and these keys are executed
-				-- In place of keys, you can use one or more functions (no argument
-				-- allowed), or both of them.
-				-- No switch to visual mode happens if keys=nil.
+        -- send the following keys as standard nvim, this can also be a function, or mix them in sequences of string and functions
+				pre_amend = { "E", countable = true },
+        -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
+        amend = false,
+        -- send the following keys as standard nvim, this can also be a function
+        post_amend = {},
+				-- keys = { "gElo", countable = false },
 				-- The `countable` parameters allows each command to be counted.
 				-- It is true by default.
+        --
+        -- You can also avoid the keys pre_amend, amend, post_amend, and just use positional arguments
 			},
 
 			word_end_next = { { "e" }, { "gelo", countable = false } },
