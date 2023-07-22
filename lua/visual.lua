@@ -49,8 +49,7 @@ local function with_defaults(options)
 			next_selection = "L", -- surf selection history forward
 			prev_selection = "H", -- surf selection history backward
 		},
-		commands = {
-			-- what each command name does:
+		commands = { -- what each command name does
 			WORD_end_next = {
 				-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
 				-- The `countable` parameter allows each command to be counted.
@@ -59,40 +58,40 @@ local function with_defaults(options)
 				post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
 				modes = { "n", "v" }, -- A list of modes where this command will be mappe
 				amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
-				-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false.
+				-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
 			},
 
-			word_end_next = { { "<esc>e" }, { "vgelo", countable = false }, { "n", "v" } },
-			WORD_end_prev = { { "<esc>gE" }, { "vgElo", countable = false }, { "n", "v" } },
-			word_end_prev = { { "<esc>ge" }, { "vgelo", countable = false }, { "n", "v" } },
-			word_start_next = { { "<esc>w" }, { "vwho", countable = false }, { "n", "v" } },
-			WORD_start_next = { { "<esc>W" }, { "vWho", countable = false }, { "n", "v" } },
-			word_start_prev = { { "<esc>b" }, { "viwwho", countable = false }, { "n", "v" } },
-			WORD_start_prev = { { "<esc>B" }, { "viWWho", countable = false }, { "n", "v" } },
-			find_next = { { "<esc>" }, { "vf" }, { "n", "v" } },
-			find_prev = { { "<esc>" }, { "vF" }, { "n", "v" } },
-			till_next = { { "<esc>" }, { "vt" }, { "n", "v" } },
-			till_prev = { { "<esc>" }, { "vT" }, { "n", "v" } },
-			append_at_cursor = { {}, { "<esc>a", countable = false }, { "n", "v" } },
-			insert_at_cursor = { {}, { "<esc>i", countable = false }, { "n", "v" } },
-			select_inside = { {}, { "<esc>vi", countable = false }, { "n", "v" } },
-			select_around = { {}, { "<esc>va", countable = false }, { "n", "v" } },
+			word_end_next = { { "<esc>evgelo" }, {}, { "n", "v" } },
+			WORD_end_prev = { { "<esc>gEvgElo" }, {}, { "n", "v" } },
+			word_end_prev = { { "<esc>gevgelo" }, {}, { "n", "v" } },
+			word_start_next = { { "<esc>wvwho" }, {}, { "n", "v" } },
+			WORD_start_next = { { "<esc>WvWho" }, {}, { "n", "v" } },
+			word_start_prev = { { "<esc>bviwwho" }, {}, { "n", "v" } },
+			WORD_start_prev = { { "<esc>BviWWho" }, {}, { "n", "v" } },
+			find_next = { { "<esc>vf" }, {}, { "n", "v" } },
+			find_prev = { { "<esc>vF" }, {}, { "n", "v" } },
+			till_next = { { "<esc>vt" }, {}, { "n", "v" } },
+			till_prev = { { "<esc>vT" }, {}, { "n", "v" } },
+			append_at_cursor = { { "<esc>a" }, {}, { "n", "v" } },
+			insert_at_cursor = { { "<esc>i" }, {}, { "n", "v" } },
+			select_inside = { { "<esc>vi" }, {}, { "n", "v" } },
+			select_around = { { "<esc>va" }, {}, { "n", "v" } },
 			prev_selection = {
-				{},
 				{
 					function()
 						require("visual").history.set_history_prev()
 					end,
 				},
+				{},
 				{ "n", "v" },
 			},
 			next_selection = {
-				{},
 				{
 					function()
 						require("visual").history.set_history_next()
 					end,
 				},
+				{},
 				{ "n", "v" },
 			},
 			line_select = {
@@ -119,20 +118,17 @@ local function with_defaults(options)
 			-- mapping applied to normal mode only
 			delete_char = { { "x" }, {}, { "n" } },
 			-- mapping applied to visual mode only
-			restart_selection = { {}, { "<esc>v" }, { "v" } },
-			delete_single_char = { { "<esc>vxgv" }, {}, { "v" } }, -- delete char under cursor
-			replace_single_char = { { "<esc>r" }, {}, { "v" } }, -- replace char under cursor
-			-- move commands, for extending, you can use -
-			move_down_then_normal = { {}, { "vj" }, { "v" } },
-			move_up_then_normal = { {}, { "vk" }, { "v" } },
-			move_left_then_normal = { {}, { "vl" }, { "v" } },
-			move_right_then_normal = { {}, { "vh" }, { "v" } },
-			move_down_selecting = { { "<esc>gvj" }, {}, { "v" } },
-			move_up_selecting = { { "<esc>gvk" }, {}, { "v" } },
-			move_left_selecting = { { "<esc>gvl" }, {}, { "v" } },
-			move_right_selecting = { { "<esc>gvh" }, {}, { "v" } },
-			-- if values are strings instead of tables, the value from "commands"
-			-- table is taken
+			restart_selection = { { "<esc>v" }, {}, { "v" } },
+			delete_single_char = { { "<esc>vxgv" }, {}, { "v" } },
+			replace_single_char = { { "<esc>r" }, {}, { "v" } },
+			move_down_then_normal = { { "j<esc>" }, {}, { "v" } },
+			move_up_then_normal = { { "k<esc>" }, {}, { "v" } },
+			move_left_then_normal = { { "l<esc>" }, {}, { "v" } },
+			move_right_then_normal = { { "h<esc>" }, {}, { "v" } },
+			move_down_selecting = { { "j" }, {}, { "v" } },
+			move_up_selecting = { { "k" }, {}, { "v" } },
+			move_left_selecting = { { "l" }, {}, { "v" } },
+			move_right_selecting = { { "h" }, {}, { "v" } },
 		},
 	}
 
