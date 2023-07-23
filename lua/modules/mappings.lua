@@ -101,11 +101,12 @@ end
 -- unmappings
 function mappings.unmaps(opts, mode)
 	local u = opts[mode .. "unmaps"]
-	local nothing = function() end
 	for _, v in pairs(u) do
-		vim.keymap.set(mode, v, nothing, { remap = false })
-    if mode == "v" then
-      vim.keymap.set("x", v, nothing, { remap = false })
+    if vim.tbl_contains(vim.api.nvim_get_keymap(mode)) then
+      vim.keymap.del(mode, v)
+    end
+    if mode == "v" and vim.tbl_contains(vim.api.nvim_get_keymap("x")) then
+      vim.keymap.del("x", v)
     end
 	end
 end

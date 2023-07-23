@@ -40,12 +40,13 @@ Collapsing the selection and flipping cursor is already provided by
 nvim with `v` (which toggles visual mode) and `o` (which flips the cursor
 position).
 
-Selection of text objects is possible with `si<text object>` and `sa<text object>` in both visual and normal mode, similarly to Helix's `mi` and `ma`.
+Selection of text objects is possible as in usual nvim with `i<text object>` and `a<text object>` in visual mode, thus becoming `va` and `vi` from norma mode, similarly to Helix's `mi` and `ma`.
 
 While in visual mode, it's also possible to delete or replace one single char at the
-cursor position with `R` and `A`. Moreover, differently from nvim, the `i` and `a`
-keys always insert and append at the cursor position (in nvim, they operate at the
-extremes of the selection).
+cursor position with `D` and `R`. Moreover, differently from nvim, the `I` and `A`
+keys always insert and append at the cursor position.
+
+While in visual mode, pressing `h`, `j`, `k`, or `l` moves the cursor and enters normal mode. However using `<A-h>`,  `<A-j>`, `<A-k>`, `<A-l>` extends the selection, witohut needing to enter the extending mode.
 
 The Helix's selection mode, that is the usual Vim's visual mode, can be toggled to
 `-`. When pressing `-`, both in visual or normal mode, all keys are passed to

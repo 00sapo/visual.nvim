@@ -11,11 +11,11 @@ visual.extending = extending
 
 visual.options = {
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
-	vunmaps = { "a", "i", "af", "if", "ac", "ic", "aa", "ia"},
-	nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s", "ds", "cs", "yy", "dd", "vaf", "vac", "vif", "vic", "vaa", "via"},
+	vunmaps = { "A", "I"},
+	nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "ci", "ca", "c", "ds", "cs", "yy", "yi", "ya", "dd", "di", "da" },
 	treesitter_textobjects = {
-		enable = false,
-		init_key = "s",
+		enable = false, -- only needed if you want to use a different init_key
+		init_key = "v", -- the key with which the text object selection start (e.g. vaf, vif have init_key=v)
 	},
 	history_size = 50, -- how many selections we should remember in the history
 	extending = {}, -- options for extending mode
@@ -34,10 +34,10 @@ visual.options = {
 		find_prev = "F", -- select to previous char
 		till_next = "t", -- select till next char
 		till_prev = "T", -- select till previous char
-		append_at_cursor = "a", -- append at cursor position
-		insert_at_cursor = "i", -- insert at cursor position
-		visual_inside = "si", -- select inside
-		visual_around = "sa", -- select around
+		append_at_cursor = "A", -- append at cursor position in visual mode
+		insert_at_cursor = "I", -- insert at cursor position in visual mode
+		-- visual_inside = "si", -- select inside
+		-- visual_around = "sa", -- select around
 		line_visual = "x", -- enter line-visual mode
 		block_visual = "<S-x>", -- enter block-visual mode
 		delete_char = "y", -- delete char under cursor
@@ -81,8 +81,8 @@ visual.options = {
 		till_prev = { pre_amend = { "<esc>vT" }, post_amend = {}, modes = { "n", "v" } },
 		append_at_cursor = { pre_amend = { "<esc>a" }, post_amend = {}, modes = { "n", "v" } },
 		insert_at_cursor = { pre_amend = { "<esc>i" }, post_amend = {}, modes = { "n", "v" } },
-		visual_inside = { pre_amend = { "<esc>vi" }, post_amend = {}, modes = { "n", "v" } },
-		visual_around = { pre_amend = { "<esc>va" }, post_amend = {}, modes = { "n", "v" } },
+		-- visual_inside = { pre_amend = { "<esc>vi" }, post_amend = {}, modes = { "n", "v" } },
+		-- visual_around = { pre_amend = { "<esc>va" }, post_amend = {}, modes = { "n", "v" } },
 		prev_selection = {
 			pre_amend = {
 				function()
