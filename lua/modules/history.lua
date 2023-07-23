@@ -14,7 +14,7 @@ function history:push(selection)
     if history.selection_history[history.cur_history_idx] == selection then
         return
     end
-    print("pushing")
+    -- print("pushing")
     -- Check if the history is already full
     if #history.selection_history == history.history_size then
         -- Remove the oldest selection
@@ -85,7 +85,7 @@ end
 function history.set_selection(selection)
   if selection ~= nil then
     utils.enter("n")
-    print(vim.inspect(selection))
+    -- print(vim.inspect(selection))
     vim.fn.cursor(selection[1][2], selection[1][3])
     utils.enter("v")
     vim.fn.cursor(selection[2][2], selection[2][3])

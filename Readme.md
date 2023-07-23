@@ -131,8 +131,8 @@ Feel free to suggest new default keybindings in the issues!
 ```lua
  require('visual').setup{
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
-	vunmaps = { "a", "i", "af", "if" },
-	nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s", "ds", "cs", "yy", "dd" },
+	vunmaps = { "a", "i", "af", "if", "ac", "ic", "aa", "ia"},
+	nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s", "ds", "cs", "yy", "dd", "vaf", "vac", "vif", "vic", "vaa", "via"},
 	treesitter_textobjects = {
 		enable = false,
 		init_key = "s",

@@ -80,7 +80,7 @@ end
 function mappings.apply_mappings(opts)
 	for name, lhs in pairs(opts.mappings) do
 		if opts.commands[name] == nil then
-			print("No mapping for " .. name)
+			print("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
       for i = 1, #modes do

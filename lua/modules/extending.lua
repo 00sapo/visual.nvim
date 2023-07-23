@@ -1,3 +1,5 @@
+local keys_amend = require("keymap-amend")
+
 local extending = {
 	options = {
 		guicursor = "a:hor100",
@@ -12,16 +14,17 @@ local extending = {
 				end,
 			},
 			exit_before = { "a", "A", "i", "I", "c", "C", "o", "O" }, -- exit extending mode and then execute these commands
-			exit_after = { "d", "p", "y", "P", "Y", "D" }, -- execute these commands and then exit extending mode
+			exit_after = { "d", "p", "y", "P", "Y", "D", "gc" }, -- execute these commands and then exit extending mode
 			ignore = {},
 		},
 	},
 }
 extending.active = false
 
-local function get_feedkey(v)
-	return function()
-		extending:feedkeys(v)
+local function get_amended(v)
+	return function(original)
+    print(original)
+		extending.feedkeys(v, original)
 	end
 end
 
@@ -41,16 +44,20 @@ function extending:enter()
 
 	-- apply mappings for extending mode
 	for k, v in pairs(extending.options.keymaps.custom) do
-		vim.keymap.set("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		-- keys_amend("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		vim.keymap.set("v", k, v, { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.exit_before) do
-		vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
+		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.exit_after) do
-		vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.ignore) do
-		vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
+		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
+		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
 	end
 end
 
@@ -78,7 +85,6 @@ function extending:exit()
 	-- backed up with vim.api.nvim_get_keymap('v')
 	local visual = require("visual")
 	visual.setup(visual.options)
-
 end
 
 function extending:toggle()
@@ -91,17 +97,9 @@ end
 
 -- extending.keymaps["<esc>"] = function() extending:toggle() end
 
-function extending:feedkeys(keys)
-	local count = vim.v.count == 0 and 1 or vim.v.count
+function extending.feedkeys(keys, original)
 
-  local mapped
-	if extending.options.keymaps[keys] ~= nil then
-		mapped = extending.options.keymaps[keys]
-	else
-		mapped = keys
-	end
-
-	if mapped == extending.options.keymaps.toggle then
+	if keys == extending.options.keymaps.toggle then
 		return extending:toggle()
 	end
 	if vim.tbl_contains(extending.options.keymaps.ignore, keys) then
@@ -110,11 +108,7 @@ function extending:feedkeys(keys)
 		extending:toggle()
 	end
 
-	if type(mapped) == "string" then
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(count .. mapped, true, false, true), "n", false)
-	elseif type(mapped) == "function" then
-		keys()
-	end
+	original()
 
 	if vim.tbl_contains(extending.options.keymaps.exit_after, keys) then
 		extending:toggle()
