@@ -102,11 +102,11 @@ function mappings.apply_mappings(opts)
 end
 
 -- unmappings
-function mappings.unmaps(opts)
-	local u = opts.unmaps
+function mappings.unmaps(opts, mode)
+	local u = opts[mode .. "unmaps"]
 	local nothing = function() end
 	for _, v in pairs(u) do
-		vim.keymap.set("n", v, nothing, { silent = true })
+		vim.keymap.set(mode, v, nothing, { remap = false })
 	end
 end
 

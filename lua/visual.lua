@@ -9,8 +9,9 @@ visual.history = history
 visual.extending = extending
 
 visual.options = {
-		-- commands that will be unmapped from normal mode (e.g. for forcing you learning new keymaps)
-		unmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s"},
+		-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
+    vunmaps = { "a", "i", "af", "if", },
+		nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "c", "s", "ds", "cs", "yy", "dd"},
 		history_size = 50, -- how many selections we should remember in the history
 		extending = {}, -- options for extending mode
 		mappings = {
@@ -141,7 +142,8 @@ function visual.setup(options)
   print(vim.inspect(visual.options.commands.move_up_then_normal))
   extending.options = vim.tbl_deep_extend("force", extending.options, visual.options.extending)
 	history.history_size = visual.options.history_size
-	mappings.unmaps(visual.options)
+	mappings.unmaps(visual.options, "v")
+	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
 end
 
