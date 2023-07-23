@@ -12,7 +12,7 @@ visual.extending = extending
 visual.options = {
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
 	vunmaps = { "A", "I"},
-	nunmaps = { "W", "E", "B", "ys", "d", "<S-v>", "<C-v>", "gc", ">", "<", "ci", "ca", "c", "ds", "cs", "yy", "yi", "ya", "dd", "di", "da" },
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "<S-v>", "<C-v>", "gc", ">", "<", "va", "vi"},
 	treesitter_textobjects = {
 		enable = false, -- only needed if you want to use a different init_key
 		init_key = "v", -- the key with which the text object selection start (e.g. vaf, vif have init_key=v)
@@ -79,8 +79,8 @@ visual.options = {
 		find_prev = { pre_amend = { "<esc>vF" }, post_amend = {}, modes = { "n", "v" } },
 		till_next = { pre_amend = { "<esc>vt" }, post_amend = {}, modes = { "n", "v" } },
 		till_prev = { pre_amend = { "<esc>vT" }, post_amend = {}, modes = { "n", "v" } },
-		append_at_cursor = { pre_amend = { "<esc>a" }, post_amend = {}, modes = { "n", "v" } },
-		insert_at_cursor = { pre_amend = { "<esc>i" }, post_amend = {}, modes = { "n", "v" } },
+		append_at_cursor = { pre_amend = { "<esc>a" }, post_amend = {}, modes = { "v" } },
+		insert_at_cursor = { pre_amend = { "<esc>i" }, post_amend = {}, modes = { "v" } },
 		-- visual_inside = { pre_amend = { "<esc>vi" }, post_amend = {}, modes = { "n", "v" } },
 		-- visual_around = { pre_amend = { "<esc>va" }, post_amend = {}, modes = { "n", "v" } },
 		prev_selection = {

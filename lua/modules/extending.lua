@@ -13,8 +13,8 @@ local extending = {
 					vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "n", false)
 				end,
 			},
-			exit_before = { "a", "A", "i", "I", "c", "C", "o", "O" }, -- exit extending mode and then execute these commands
-			exit_after = { "d", "p", "y", "P", "Y", "D", "gc" }, -- execute these commands and then exit extending mode
+			exit_before = { "a", "A", "i", "I", "c", "C", "o", "O"}, -- exit extending mode and then execute these commands
+			exit_after = { "d", "p", "y", "P", "Y", "D",}, -- execute these commands and then exit extending mode
 			ignore = {},
 		},
 	},
@@ -23,7 +23,6 @@ extending.active = false
 
 local function get_amended(v)
 	return function(original)
-    print(original)
 		extending.feedkeys(v, original)
 	end
 end
@@ -42,22 +41,22 @@ function extending:enter()
 	-- Change cursor
 	vim.opt.guicursor = extending.options.guicursor
 
+  -- backup mappings of visual mode
+  extending._backup_mapping = vim.api.nvim_get_keymap("v")
+
 	-- apply mappings for extending mode
 	for k, v in pairs(extending.options.keymaps.custom) do
-		-- keys_amend("v", k, get_feedkey(v), { expr = true, silent = true, noremap = true })
-		vim.keymap.set("v", k, v, { expr = true, silent = true, noremap = true })
+		-- vim.keymap.set("v", k, v, { expr = true, silent = true, noremap = true })
+		keys_amend("v", k, get_amended(v), { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.exit_before) do
 		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
-		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.exit_after) do
-		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
 		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
 	end
 	for _, v in ipairs(extending.options.keymaps.ignore) do
 		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
-		-- vim.keymap.set("v", v, get_feedkey(v), { expr = true, silent = true, noremap = true })
 	end
 end
 
@@ -80,11 +79,18 @@ function extending:exit()
 		vim.keymap.del("v", v)
 	end
 
-	-- reapply other keymaps
-	-- WARNING: this is not correct, we should find a way to reset the keymaps
-	-- backed up with vim.api.nvim_get_keymap('v')
-	local visual = require("visual")
-	visual.setup(visual.options)
+  -- reapply backed up commands
+	for _, map in ipairs(extending._backup_mapping) do
+    if map.rhs == nil then
+      print(map.mode .. '  =  ' .. map.lhs .. ' + ')
+    else
+      local lhs = vim.api.nvim_replace_termcodes(map.lhs, true, false, true)
+      local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, false, true)
+      vim.keymap.set(map.mode, lhs, rhs, {noremap = map.noremap, silent = map.silent, nowait = map.nowait})
+    end
+	end
+	-- local visual = require("visual")
+	-- visual.setup(visual.options)
 end
 
 function extending:toggle()

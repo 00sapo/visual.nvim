@@ -40,13 +40,13 @@ local function make_rhs(keys, lhs)
 	---@diagnostic disable-next-line: unused-local
 	local mode = keys.mode or keys[3]
 	local amend = keys.amend
-  if amend == nil then
-    amend = false
-  end
+	if amend == nil then
+		amend = false
+	end
 
 	local function f(original)
 		if extending.active then
-			return extending:feedkeys(lhs)
+			return extending.feedkeys(lhs, original)
 		end
 		local counts = parse_counts(pre_amend)
 		for _, key in pairs(pre_amend) do
@@ -83,31 +83,29 @@ function mappings.apply_mappings(opts)
 			print("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
-      for i = 1, #modes do
-        keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, silent = true })
-      end
+			for i = 1, #modes do
+				keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, nowait=true})
+			end
 		end
 	end
 
 	-- mapping the extending mode toggle
 	vim.keymap.set("n", "-", function()
 		extending:toggle()
-	end, { noremap = true, silent = true })
+	end, { nowait=true, noremap = true, silent = true })
 	vim.keymap.set("v", "-", function()
 		extending:toggle()
-	end, { noremap = true, silent = true })
+	end, { nowait=true, noremap = true, silent = true })
 end
 
 -- unmappings
 function mappings.unmaps(opts, mode)
 	local u = opts[mode .. "unmaps"]
 	for _, v in pairs(u) do
-    if vim.tbl_contains(vim.api.nvim_get_keymap(mode)) then
-      vim.keymap.del(mode, v)
-    end
-    if mode == "v" and vim.tbl_contains(vim.api.nvim_get_keymap("x")) then
-      vim.keymap.del("x", v)
-    end
+		vim.keymap.set(mode, v, function() end, {nowait=true})
+		if mode == "v" then
+			vim.keymap.set("x", v, function() end, {nowait=true})
+		end
 	end
 end
 
