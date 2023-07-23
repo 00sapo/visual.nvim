@@ -13,4 +13,10 @@ function utils.mode_is_visual()
   return mode == "v" or mode == "V" or mode == "" 
 end
 
+function utils.prequire(m)
+  local ok, err = pcall(require, m)
+  if not ok then return nil, err end
+  return err
+end
+
 return utils

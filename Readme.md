@@ -97,55 +97,15 @@ Example with Treesitter incremental selection
 }
 ```
 
-Example with Treesitter text objects. Unfortunately, `nvim-treesitter-textobjects` doesn't provide real text objects, so the usual maps for text objects doesn't work. We cannot neither remap them with simple options at the current state of the plugin. The solution is creating new commands from scratch. We can avoid creating keymaps from the nvim-treesitter configs, then.
-
+Example with Treesitter text objects. 
 ```lua
 {
     '00sapo/visual.nvim',
-    config = function ()
-        require('nvim-treesitter.configs').setup { 
-                    textobjects = {
-          select = {
-            enable = true,
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ["<leader>a"] = "@parameter.inner",
-            },
-            swap_previous = {
-              ["<leader>A"] = "@parameter.inner",
-            },
-          },
-        },
-      }
-
-    end,
     opts = {
-        mappings = {
-          visual_around_function = "saf",
-          visual_inside_function = "sif",
-        },
-        commands = {
-          visual_inside_function = {
-            {
-              function()
-                require("nvim-treesitter.textobjects.select").select_textobject("@function.inner", nil, "V")
-              end,
-            },
-            {},
-            { "n", "v" },
-          },
-          visual_around_function = {
-            {
-              function()
-                require("nvim-treesitter.textobjects.select").select_textobject("@function.outer", nil, "V")
-              end,
-            },
-            {},
-            { "n", "v" },
-          },
-        },
+        treesitter_textobjects = {
+            enable = true,
+            init_key = "s" -- instead "vaf", "vif", etc, use "saf", "sif", etc
+        }
       },
     dependencies = { "anuvyklack/keymap-amend.nvim", 'nvim-treesitter/nvim-treesitter', "nvim-treesitter/nvim-treesitter-textobjects" },
     event = "VeryLazy"

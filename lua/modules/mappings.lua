@@ -54,10 +54,7 @@ local function make_rhs(keys, lhs)
 		end
 
 		if amend then
-      print("amending!")
 			original()
-    else
-      print("not amending")
 		end
 
 		counts = parse_counts(post_amend)
@@ -107,6 +104,9 @@ function mappings.unmaps(opts, mode)
 	local nothing = function() end
 	for _, v in pairs(u) do
 		vim.keymap.set(mode, v, nothing, { remap = false })
+    if mode == "v" then
+      vim.keymap.set("x", v, nothing, { remap = false })
+    end
 	end
 end
 
