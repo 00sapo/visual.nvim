@@ -11,7 +11,7 @@ local extending = {
 				x = "<S-v>",
 				X = "<C-v>",
 				["<"] = function()
-					require("visual").extending.avoid_next_exit = true
+					require("visual").extending.avoid_next_exit = true -- this flag allows to force visual.nvim staying in extending mode even if the autocommand would exit it. When extending mode is entered, the nvim's visual mode is turned on, and it it turned off whenever nvim's visual mode is left. Here, we need to enter normal mode in order to feed keys properly. Re-entering extending mode after having feeded the keys doesn't work, (don't really know why, though)
 					vim.api.nvim_feedkeys("<gv", "n", true)
 				end,
 				[">"] = function()
@@ -40,8 +40,10 @@ local function get_amended(v)
 end
 
 function extending:enter()
-  if extending.active then return end
-  extending.avoid_next_exit = false
+	if extending.active then
+		return
+	end
+	extending.avoid_next_exit = false
 	extending.active = true
 	extending._old_mode = vim.fn.mode()
 	extending._old_cursor = vim.o.guicursor
@@ -56,7 +58,7 @@ function extending:enter()
 	vim.opt.guicursor = extending.options.guicursor
 
 	-- backup mappings of visual mode
-	extending._backup_mapping = vim.api.nvim_get_keymap("v")
+	extending._backup_mapping = utils.concat_arrays({ vim.api.nvim_buf_get_keymap(0, "v"), vim.api.nvim_get_keymap("v") })
 
 	-- apply mappings for extending mode
 	for k, v in pairs(custom) do
@@ -80,11 +82,13 @@ function extending:enter()
 end
 
 function extending:exit()
-  if not extending.active then return end
-  if extending.avoid_next_exit then
-    extending.avoid_next_exit = false
-    return
-  end
+	if not extending.active then
+		return
+	end
+	if extending.avoid_next_exit then
+		extending.avoid_next_exit = false
+		return
+	end
 	extending.active = false
 	-- reset cursor
 	vim.o.guicursor = extending._old_cursor
@@ -100,12 +104,17 @@ function extending:exit()
 	-- reapply backed up commands
 	for _, map in ipairs(extending._backup_mapping) do
 		map.rhs = map.rhs or ""
-		local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, false, true)
+		-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
+    local buf = map.buffer == 1
+    local mode = map.mode
+    if mode == " " then
+      mode = "v"
+    end
 		vim.keymap.set(
-			"",
+      mode,
 			map.lhs,
-			rhs,
-			{ noremap = map.noremap, silent = map.silent, nowait = map.nowait, callback = map.callback }
+			map.rhs,
+			{ noremap = map.noremap, silent = map.silent, nowait = map.nowait, callback = map.callback, buffer = buf }
 		)
 	end
 
