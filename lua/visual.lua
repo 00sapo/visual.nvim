@@ -60,29 +60,29 @@ visual.options = {
 			-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
 			-- The `countable` parameter allows each command to be counted.
 			-- It is true by default.
-			pre_amend = { "<esc>EvgElo", countable = true },
+			pre_amend = { "<esc>", "EvgElo", countable = true },
 			post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
 			modes = { "n", "v" }, -- A list of modes where this command will be mappe
 			amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
 			-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
 		},
 
-		word_end_next = { pre_amend = { "<esc>evgelo" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_end_prev = { pre_amend = { "<esc>gEvgElo" }, post_amend = {}, modes = { "n", "v" } },
-		word_end_prev = { pre_amend = { "<esc>gevgelo" }, post_amend = {}, modes = { "n", "v" } },
-		word_start_next = { pre_amend = { "<esc>wvwho" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_start_next = { pre_amend = { "<esc>WvWho" }, post_amend = {}, modes = { "n", "v" } },
-		word_start_prev = { pre_amend = { "<esc>bviwwho" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_start_prev = { pre_amend = { "<esc>BviWWho" }, post_amend = {}, modes = { "n", "v" } },
+		word_end_next = { pre_amend = { "<esc>", "evgelo" }, post_amend = {}, modes = { "n", "v" } },
+		WORD_end_prev = { pre_amend = { "<esc>", "gEvgElo" }, post_amend = {}, modes = { "n", "v" } },
+		word_end_prev = { pre_amend = { "<esc>", "gevgelo" }, post_amend = {}, modes = { "n", "v" } },
+		word_start_next = { pre_amend = { "<esc>", "wvwho" }, post_amend = {}, modes = { "n", "v" } },
+		WORD_start_next = { pre_amend = { "<esc>", "WvWho" }, post_amend = {}, modes = { "n", "v" } },
+		word_start_prev = { pre_amend = { "<esc>", "bviwwho" }, post_amend = {}, modes = { "n", "v" } },
+		WORD_start_prev = { pre_amend = { "<esc>", "BviWWho" }, post_amend = {}, modes = { "n", "v" } },
 		toggle_visual_mode = { pre_amend = { "v" }, post_amend = {}, modes = { "n", "v" } },
-		find_next = { pre_amend = { "<esc>vf" }, post_amend = {}, modes = { "n", "v" } },
-		find_prev = { pre_amend = { "<esc>vF" }, post_amend = {}, modes = { "n", "v" } },
-		till_next = { pre_amend = { "<esc>vt" }, post_amend = {}, modes = { "n", "v" } },
-		till_prev = { pre_amend = { "<esc>vT" }, post_amend = {}, modes = { "n", "v" } },
-		append_at_cursor = { pre_amend = { "<esc>a" }, post_amend = {}, modes = { "v" } },
-		insert_at_cursor = { pre_amend = { "<esc>i" }, post_amend = {}, modes = { "v" } },
-		-- visual_inside = { pre_amend = { "<esc>vi" }, post_amend = {}, modes = { "n", "v" } },
-		-- visual_around = { pre_amend = { "<esc>va" }, post_amend = {}, modes = { "n", "v" } },
+		find_next = { pre_amend = { "<esc>", "vf" }, post_amend = {}, modes = { "n", "v" } },
+		find_prev = { pre_amend = { "<esc>", "vF" }, post_amend = {}, modes = { "n", "v" } },
+		till_next = { pre_amend = { "<esc>", "vt" }, post_amend = {}, modes = { "n", "v" } },
+		till_prev = { pre_amend = { "<esc>", "vT" }, post_amend = {}, modes = { "n", "v" } },
+		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
+		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
+		-- visual_inside = { pre_amend = { "<esc>", "vi" }, post_amend = {}, modes = { "n", "v" } },
+		-- visual_around = { pre_amend = { "<esc>", "va" }, post_amend = {}, modes = { "n", "v" } },
 		prev_selection = {
 			pre_amend = {
 				function()
@@ -125,9 +125,9 @@ visual.options = {
 		-- mapping applied to normal mode only
 		delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
-		restart_visual = { pre_amend = { "<esc>v" }, post_amend = {}, modes = { "v" } },
-		delete_single_char = { pre_amend = { "<esc>vxgv" }, post_amend = {}, modes = { "v" } },
-		replace_single_char = { pre_amend = { "<esc>r" }, post_amend = {}, modes = { "v" } },
+		restart_visual = { pre_amend = { "<esc>", "v" }, post_amend = {}, modes = { "v" } },
+		delete_single_char = { pre_amend = { "<esc>", "vxgv" }, post_amend = {}, modes = { "v" } },
+		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "v" } },
 		move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "v" } },
 		move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "v" } },
 		move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "v" } },
