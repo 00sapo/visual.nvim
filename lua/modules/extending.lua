@@ -1,4 +1,5 @@
 local keys_amend = require("keymap-amend")
+local utils = require("modules.utils")
 
 local extending = {
 	options = {
@@ -8,18 +9,28 @@ local extending = {
 			custom = {
 				x = "<S-v>",
 				X = "<C-v>",
-				["<esc>"] = function()
-					require("visual").extending:exit()
-					vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "n", false)
+				["<"] = function()
+					require("visual").extending.avoid_next_exit = true
+					vim.api.nvim_feedkeys("<gv", "n", true)
+				end,
+				[">"] = function()
+					require("visual").extending.avoid_next_exit = true
+					vim.api.nvim_feedkeys(">gv", "n", true)
 				end,
 			},
-			exit_before = { "a", "A", "i", "I", "c", "C", "o", "O"}, -- exit extending mode and then execute these commands
-			exit_after = { "d", "p", "y", "P", "Y", "D",}, -- execute these commands and then exit extending mode
+			exit_before = {}, -- exit extending mode and then execute these commands
+			exit_after = {}, -- execute these commands and then exit extending mode
 			ignore = {},
 		},
 	},
 }
 extending.active = false
+local exit_before = extending.options.keymaps.exit_before
+local exit_after = extending.options.keymaps.exit_after
+local custom = extending.options.keymaps.custom
+local ignore = extending.options.keymaps.ignore
+local toggle = extending.options.keymaps.toggle
+local all_commands = utils.concat_arrays({ ignore, exit_before, exit_after })
 
 local function get_amended(v)
 	return function(original)
@@ -28,11 +39,13 @@ local function get_amended(v)
 end
 
 function extending:enter()
+  if extending.active then return end
+  extending.avoid_next_exit = false
 	extending.active = true
 	extending._old_mode = vim.fn.mode()
 	extending._old_cursor = vim.o.guicursor
 	-- Enter visual mode
-	if extending._old_mode ~= "v" and extending._old_mode ~= "V" and extending._old_mode ~= "" then
+	if not utils.mode_is_visual_arg(extending._old_mode) then
 		-- we need to press <esc> to enter visual mode, so let's do it only if we
 		-- are not in visual mode, otherwise we lose the selection
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>v", true, false, true), "n", false)
@@ -41,56 +54,62 @@ function extending:enter()
 	-- Change cursor
 	vim.opt.guicursor = extending.options.guicursor
 
-  -- backup mappings of visual mode
-  extending._backup_mapping = vim.api.nvim_get_keymap("v")
+	-- backup mappings of visual mode
+	extending._backup_mapping = vim.api.nvim_get_keymap("v")
 
 	-- apply mappings for extending mode
-	for k, v in pairs(extending.options.keymaps.custom) do
-		-- vim.keymap.set("v", k, v, { expr = true, silent = true, noremap = true })
-		keys_amend("v", k, get_amended(v), { expr = true, silent = true, noremap = true })
+	for k, v in pairs(custom) do
+		vim.keymap.set("v", k, v, { silent = true, noremap = true })
 	end
-	for _, v in ipairs(extending.options.keymaps.exit_before) do
-		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
+	for i = 1, #all_commands do
+		keys_amend("v", all_commands[i], get_amended(all_commands[i]))
 	end
-	for _, v in ipairs(extending.options.keymaps.exit_after) do
-		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
-	end
-	for _, v in ipairs(extending.options.keymaps.ignore) do
-		keys_amend("v", v, get_amended(v), { expr = true, silent = true, noremap = true })
-	end
+
+	-- setup auto commands for exiting when mode changes from visual
+	local gid = vim.api.nvim_create_augroup("VisualExtending", { clear = true })
+	vim.api.nvim_create_autocmd("ModeChanged", {
+		group = gid,
+		pattern = "*",
+		callback = function()
+			if not utils.mode_is_visual_arg(vim.v.event.new_mode) then
+				require("visual").extending:exit()
+			end
+		end,
+	})
 end
 
 function extending:exit()
+  if not extending.active then return end
+  if extending.avoid_next_exit then
+    extending.avoid_next_exit = false
+    return
+  end
 	extending.active = false
 	-- reset cursor
 	vim.o.guicursor = extending._old_cursor
 
 	-- remove mappings for extending mode
-	for k, v in pairs(extending.options.keymaps.custom) do
+	for k, _ in pairs(custom) do
 		vim.keymap.del("v", k)
 	end
-	for _, v in ipairs(extending.options.keymaps.exit_before) do
-		vim.keymap.del("v", v)
-	end
-	for _, v in ipairs(extending.options.keymaps.exit_after) do
-		vim.keymap.del("v", v)
-	end
-	for _, v in ipairs(extending.options.keymaps.ignore) do
-		vim.keymap.del("v", v)
+	for i = 1, #all_commands do
+		vim.keymap.del("v", all_commands[i])
 	end
 
-  -- reapply backed up commands
+	-- reapply backed up commands
 	for _, map in ipairs(extending._backup_mapping) do
-    if map.rhs == nil then
-      print(map.mode .. '  =  ' .. map.lhs .. ' + ')
-    else
-      local lhs = vim.api.nvim_replace_termcodes(map.lhs, true, false, true)
-      local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, false, true)
-      vim.keymap.set(map.mode, lhs, rhs, {noremap = map.noremap, silent = map.silent, nowait = map.nowait})
-    end
+		map.rhs = map.rhs or ""
+		local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, false, true)
+		vim.keymap.set(
+			"",
+			map.lhs,
+			rhs,
+			{ noremap = map.noremap, silent = map.silent, nowait = map.nowait, callback = map.callback }
+		)
 	end
-	-- local visual = require("visual")
-	-- visual.setup(visual.options)
+
+	-- delete autocommands
+	vim.api.nvim_del_augroup_by_name("VisualExtending")
 end
 
 function extending:toggle()
@@ -104,20 +123,19 @@ end
 -- extending.keymaps["<esc>"] = function() extending:toggle() end
 
 function extending.feedkeys(keys, original)
-
-	if keys == extending.options.keymaps.toggle then
+	if keys == toggle then
 		return extending:toggle()
 	end
-	if vim.tbl_contains(extending.options.keymaps.ignore, keys) then
+	if vim.tbl_contains(ignore, keys) then
 		return
-	elseif vim.tbl_contains(extending.options.keymaps.exit_before, keys) then
-		extending:toggle()
+	elseif vim.tbl_contains(exit_before, keys) then
+		extending:exit()
 	end
 
 	original()
 
-	if vim.tbl_contains(extending.options.keymaps.exit_after, keys) then
-		extending:toggle()
+	if vim.tbl_contains(exit_after, keys) then
+		extending:exit()
 	end
 end
 

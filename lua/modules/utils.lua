@@ -8,15 +8,29 @@ function utils.enter(mode)
 	end
 end
 
+function utils.mode_is_visual_arg(mode)
+  return mode:sub(1, 1) == "v" or mode:sub(1, 1) == "V" or mode:sub(1, 1) == ""
+end
+
 function utils.mode_is_visual()
   local mode = vim.fn.mode()
-  return mode == "v" or mode == "V" or mode == "" 
+  return utils.mode_is_visual_arg(mode)
 end
 
 function utils.prequire(m)
   local ok, err = pcall(require, m)
   if not ok then return nil, err end
   return err
+end
+
+function utils.concat_arrays(arrays)
+  local result = {}
+  for i = 1, #arrays do
+    for j = 1, #arrays[i] do
+      table.insert(result, arrays[i][j])
+    end
+  end
+  return result
 end
 
 

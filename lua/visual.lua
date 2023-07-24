@@ -11,7 +11,7 @@ visual.extending = extending
 
 visual.options = {
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
-	vunmaps = { "A", "I"},
+	vunmaps = {},
 	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "<S-v>", "<C-v>", "gc", ">", "<", "va", "vi"},
 	treesitter_textobjects = {
 		enable = false, -- only needed if you want to use a different init_key
@@ -104,7 +104,7 @@ visual.options = {
 		line_visual = {
 			pre_amend = {
 				function()
-					require("visual").extending:toggle()
+					require("visual").extending:enter()
 				end,
 				"V",
 			},
@@ -114,7 +114,7 @@ visual.options = {
 		block_visual = {
 			pre_amend = {
 				function()
-					require("visual").extending:toggle()
+					require("visual").extending:enter()
 				end,
 				"<C-v>",
 			},
