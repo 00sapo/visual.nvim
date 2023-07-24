@@ -1,4 +1,4 @@
-local keys_amend = require("keymap-amend")
+local keys_amend = require("modules.keymap-amend")
 
 local history = require("modules.history")
 local extending = require("modules.extending")
