@@ -15,6 +15,12 @@ First select, then edit. This should be the way.
 
 If you have been tempted by Kakoune and Helix editors, this may be your new plugin!
 
+## Features
+
+* Selection first mode
+* New mode for extending selection
+* Surrounding commands (change, delete, add) that operate over selections
+* Automatic set-up with treesitter-textobjects
 
 ## Usage
 
@@ -53,6 +59,8 @@ The Helix's selection mode, that is the usual Vim's visual mode, can be toggled 
 standard nvim, including normal and insert modes, until `-` is pressed again. For remapping keys in this special
 mode, use the table `extending` (see below). You can also customize the cursor in
 this mode to visualize it.
+
+Visual.nvim also offers surrounding commands with `sd`, `sc`, and `sa` (delete, change, add).
 
 
 ### Example config
@@ -271,8 +279,6 @@ Feel free to suggest new default keybindings in the issues!
 
 # TODO
 
+* Make surrounding commands re-select the remaining text
 * Selection history is being developed
-* History of selections will allow to edit/append/remove surrounding chars
-  without additional plugins
-* History of commands will allow to repeat commands, including edits
 * Experiment with `vim-visual-multi`
