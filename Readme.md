@@ -20,8 +20,8 @@ If you have been tempted by Kakoune and Helix editors, this may be your new plug
 
 Just install it using your preferred package manager.
 
-* Lazy: `{ '00sapo/visual.nvim',   dependencies = { "anuvyklack/keymap-amend.nvim" } }`
-* Packer: `use { '00sapo/visual.nvim', requires = { "anuvyklack/keymap-amend.nvim" }`
+* Lazy: `{ '00sapo/visual.nvim' }`
+* Packer: `use { '00sapo/visual.nvim' }`
 
 ### Helix vs Visual.nvim
 
@@ -61,7 +61,6 @@ Configuration with some change to commands in order to make them compatible:
 ```lua
 {    
   '00sapo/visual.nvim',
-  dependencies = { "anuvyklack/keymap-amend.nvim" },
   config = function()
     require('visual').setup({
     commands = {
@@ -93,7 +92,7 @@ Example with Treesitter incremental selection
             } 
         }
     end,
-    dependencies = { "anuvyklack/keymap-amend.nvim", 'nvim-treesitter/nvim-treesitter' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
     event = "VeryLazy"
 }
 ```
@@ -108,7 +107,7 @@ Example with Treesitter text objects.
             init_key = "s" -- instead "vaf", "vif", etc, use "saf", "sif", etc
         }
       },
-    dependencies = { "anuvyklack/keymap-amend.nvim", 'nvim-treesitter/nvim-treesitter', "nvim-treesitter/nvim-treesitter-textobjects" },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     event = "VeryLazy"
 }
 
@@ -273,12 +272,7 @@ Feel free to suggest new default keybindings in the issues!
 # TODO
 
 * Selection history is being developed
-* Some commands misbehave the selection history (`gv`). For instance, when using `R` and
-  `D` in visual mode (replace and delete char at cursor position) or `gcc`, `>`, `<`, the selection is
-  lost; the history of selections will solve it
-* History of selections will also improve commands for extending current selection
 * History of selections will allow to edit/append/remove surrounding chars
   without additional plugins
 * History of commands will allow to repeat commands, including edits
 * Experiment with `vim-visual-multi`
-* Improve commands for extending selections
