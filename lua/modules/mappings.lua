@@ -54,6 +54,7 @@ local function make_rhs(keys, lhs)
 		end
 
 		if amend then
+      print('amending')
 			original()
 		end
 

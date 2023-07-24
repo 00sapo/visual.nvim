@@ -75,9 +75,9 @@ function M.delete()
 	M.deletechar(second_pos)
 	M.deletechar(first_pos)
 	-- update selections
+  second_pos = decrement_pos(decrement_pos(second_pos))
+  first_pos = decrement_pos(first_pos)
 	if are_same_line(first_pos, second_pos) then
-		second_pos = decrement_pos(decrement_pos(second_pos))
-	else
 		second_pos = decrement_pos(second_pos)
 	end
 
@@ -117,10 +117,9 @@ function M.add()
 	M.insertchar(second_pos, char_pair[2])
 	M.insertchar(first_pos, char_pair[1])
 	-- update selections
-	if are_same_line(first_pos, second_pos) then
-		second_pos[3] = second_pos[3] + 1
-	else
-		second_pos[3] = second_pos[3]
+  first_pos = decrement_pos(first_pos)
+	if not are_same_line(first_pos, second_pos) then
+    second_pos = decrement_pos(second_pos)
 	end
 	-- reset selection
 	utils.set_selection({first_pos, second_pos})

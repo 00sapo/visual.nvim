@@ -10,10 +10,10 @@ end
 
 function utils.set_selection(selection)
   local start_pos, end_pos = selection[1], selection[2]
-	vim.api.nvim_win_set_cursor(0, { start_pos[2], start_pos[3] })
-	local selection_mode = vim.api.nvim_replace_termcodes("v", true, true, true)
-	vim.api.nvim_cmd({ cmd = "normal", bang = true, args = { selection_mode } }, {})
-	vim.api.nvim_win_set_cursor(0, { end_pos[2], end_pos[3] })
+  local esc_tc = vim.api.nvim_replace_termcodes("<esc>", true, true, true)
+  local args = esc_tc .. start_pos[2] .. 'G0' .. start_pos[3] .. 'lv' .. end_pos[2] .. 'G0' .. end_pos[3] .. 'l'
+  print(args)
+	vim.cmd('normal! ' .. args)
 end
 
 -- decide which is the first position: start_pos or end_pos?

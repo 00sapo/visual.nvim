@@ -87,7 +87,7 @@ visual.options = {
 		till_prev = { pre_amend = { "<esc>", "vT" }, post_amend = {}, modes = { "n", "v" } },
 		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
 		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
-    surround_delete = { pre_amend = { '<cmd>lua require("visual").surround.delete()<cr>' }, post_amend = {}, modes = { "v" } },
+    surround_delete = { pre_amend = { function () require("visual").surround.delete() end }, post_amend = {}, modes = { "v" } },
     surround_add = { pre_amend = { '<cmd>lua require("visual").surround.add()<cr>' }, post_amend = {}, modes = { "v" } },
     surround_change = { pre_amend = { '<cmd>lua require("visual").surround.change()<cr>' }, post_amend = {}, modes = { "v" } },
 		prev_selection = {
