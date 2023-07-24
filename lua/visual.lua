@@ -4,10 +4,13 @@ local mappings = require("modules.mappings")
 local history = require("modules.history")
 local extending = require("modules.extending")
 local compatibility = require("modules.compatibility")
+local surround = require("modules.surround")
 
+visual.utils = require("modules.utils")
 visual.mappings = mappings
 visual.history = history
 visual.extending = extending
+visual.surround = surround
 
 visual.options = {
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
@@ -52,6 +55,9 @@ visual.options = {
 		move_up_visual = "<a-k>", -- move up staying in visual mode
 		move_left_visual = "<a-l>", -- move left staying in visual mode
 		move_right_visual = "<a-h>", -- move right staying in visual mode
+    surround_change = "sc", -- change chars at the extremes of the selection
+    surround_add = "sa", -- insert chars at the extremes of the selection
+    surround_delete = "sd", -- delete chars at the extremes of the selection
 		next_selection = "L", -- surf selection history forward
 		prev_selection = "H", -- surf selection history backward
 	},
@@ -81,8 +87,9 @@ visual.options = {
 		till_prev = { pre_amend = { "<esc>", "vT" }, post_amend = {}, modes = { "n", "v" } },
 		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
 		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
-		-- visual_inside = { pre_amend = { "<esc>", "vi" }, post_amend = {}, modes = { "n", "v" } },
-		-- visual_around = { pre_amend = { "<esc>", "va" }, post_amend = {}, modes = { "n", "v" } },
+    surround_delete = { pre_amend = { '<cmd>lua require("visual").surround.delete()<cr>' }, post_amend = {}, modes = { "v" } },
+    surround_add = { pre_amend = { '<cmd>lua require("visual").surround.add()<cr>' }, post_amend = {}, modes = { "v" } },
+    surround_change = { pre_amend = { '<cmd>lua require("visual").surround.change()<cr>' }, post_amend = {}, modes = { "v" } },
 		prev_selection = {
 			pre_amend = {
 				function()
