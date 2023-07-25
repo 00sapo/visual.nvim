@@ -2,7 +2,7 @@
 local utils = require("modules.utils")
 local M = {}
 
-function M.treesitter_textobjects(init_key)
+function M.treesitter_textobjects(init_key, visual_inside, visual_around)
 	local treesitter = utils.prequire("nvim-treesitter.configs")
 	if treesitter then
 		local select = treesitter.get_module("textobjects.select")
@@ -20,6 +20,13 @@ function M.treesitter_textobjects(init_key)
 							group = nil
 						end
 						local selection_mode = select.selection_modes[query] or "v"
+
+            -- change the first character of key if i/a to
+            if key:sub(1, 1) == "i" then
+              key = visual_inside .. key:sub(2)
+            elseif key:sub(1, 1) == "a" then
+              key = visual_around .. key:sub(2)
+            end
 
 						vim.keymap.set({ "n", "v" }, init_key .. key, function()
 							require("nvim-treesitter.textobjects.select").select_textobject(

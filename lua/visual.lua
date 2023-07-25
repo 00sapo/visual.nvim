@@ -14,8 +14,8 @@ visual.surround = surround
 
 visual.options = {
 	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
-	vunmaps = {},
-	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "<S-v>", "<C-v>", "gc", ">", "<", "va", "vi"},
+	vunmaps = { "i", "a" },
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "<S-v>", "<C-v>", "gc", ">", "<", "va", "vi" },
 	treesitter_textobjects = {
 		enable = false, -- only needed if you want to use a different init_key
 		init_key = "v", -- the key with which the text object selection start (e.g. vaf, vif have init_key=v)
@@ -37,10 +37,10 @@ visual.options = {
 		find_prev = "F", -- select to previous char
 		till_next = "t", -- select till next char
 		till_prev = "T", -- select till previous char
-		append_at_cursor = "A", -- append at cursor position in visual mode
-		insert_at_cursor = "I", -- insert at cursor position in visual mode
-		-- visual_inside = "si", -- select inside
-		-- visual_around = "sa", -- select around
+		append_at_cursor = "a", -- append at cursor position in visual mode
+		insert_at_cursor = "i", -- insert at cursor position in visual mode
+		visual_inside = "I", -- select inside from visual mode
+		visual_around = "A", -- select around from visual mode
 		line_visual = "x", -- enter line-visual mode
 		block_visual = "<S-x>", -- enter block-visual mode
 		delete_char = "y", -- delete char under cursor
@@ -55,9 +55,9 @@ visual.options = {
 		move_up_visual = "<a-k>", -- move up staying in visual mode
 		move_left_visual = "<a-l>", -- move left staying in visual mode
 		move_right_visual = "<a-h>", -- move right staying in visual mode
-    surround_change = "sc", -- change chars at the extremes of the selection
-    surround_add = "sa", -- insert chars at the extremes of the selection
-    surround_delete = "sd", -- delete chars at the extremes of the selection
+		surround_change = "sc", -- change chars at the extremes of the selection
+		surround_add = "sa", -- insert chars at the extremes of the selection
+		surround_delete = "sd", -- delete chars at the extremes of the selection
 		next_selection = "L", -- surf selection history forward
 		prev_selection = "H", -- surf selection history backward
 	},
@@ -85,11 +85,6 @@ visual.options = {
 		find_prev = { pre_amend = { "<esc>", "vF" }, post_amend = {}, modes = { "n", "v" } },
 		till_next = { pre_amend = { "<esc>", "vt" }, post_amend = {}, modes = { "n", "v" } },
 		till_prev = { pre_amend = { "<esc>", "vT" }, post_amend = {}, modes = { "n", "v" } },
-		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
-		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
-    surround_delete = { pre_amend = { function () require("visual").surround.delete() end }, post_amend = {}, modes = { "v" } },
-    surround_add = { pre_amend = { '<cmd>lua require("visual").surround.add()<cr>' }, post_amend = {}, modes = { "v" } },
-    surround_change = { pre_amend = { '<cmd>lua require("visual").surround.change()<cr>' }, post_amend = {}, modes = { "v" } },
 		prev_selection = {
 			pre_amend = {
 				function()
@@ -132,6 +127,25 @@ visual.options = {
 		-- mapping applied to normal mode only
 		delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
+		visual_around = { pre_amend = { "<esc>", "va" }, post_amend = {}, modes = { "v" } },
+		visual_inside = { pre_amend = { "<esc>", "vi" }, post_amend = {}, modes = { "v" } },
+		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
+		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
+		surround_delete = {
+			pre_amend = { '<cmd>lua require("visual").surround.delete()<cr>' },
+			post_amend = {},
+			modes = { "v" },
+		},
+		surround_add = {
+			pre_amend = { '<cmd>lua require("visual").surround.add()<cr>' },
+			post_amend = {},
+			modes = { "v" },
+		},
+		surround_change = {
+			pre_amend = { '<cmd>lua require("visual").surround.change()<cr>' },
+			post_amend = {},
+			modes = { "v" },
+		},
 		restart_visual = { pre_amend = { "<esc>", "v" }, post_amend = {}, modes = { "v" } },
 		delete_single_char = { pre_amend = { "<esc>", "vxgv" }, post_amend = {}, modes = { "v" } },
 		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "v" } },
@@ -158,7 +172,11 @@ function visual.setup(options)
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
 	if visual.options.treesitter_textobjects.enable then
-		compatibility.treesitter_textobjects(visual.options.treesitter_textobjects.init_key)
+		compatibility.treesitter_textobjects(
+			visual.options.mappings.toggle_visual_mode,
+			visual.options.mappings.visual_inside,
+			visual.options.mappings.visual_around
+		)
 	end
 end
 
