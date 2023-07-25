@@ -116,6 +116,9 @@ function extending:exit()
 			map.rhs,
 			{ noremap = map.noremap, silent = map.silent, nowait = map.nowait, callback = map.callback, buffer = buf }
 		)
+
+  -- re-setup our commands (these shouldn't be needed, but...)
+  require("visual").setup()
 	end
 
 	-- delete autocommands
