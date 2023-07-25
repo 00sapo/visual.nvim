@@ -58,8 +58,10 @@ local function decrement_pos(pos)
 			pos[2] = 1
 			pos[3] = 1
 		else
-			local line = vim.api.nvim_buf_get_lines(0, pos[2], pos[2] - 1, false)
-			pos[3] = string.len(line[1])
+			local line = vim.api.nvim_buf_get_lines(0, pos[2] - 1, pos[2], false)
+      if line[1] then
+        pos[3] = string.len(line[1])
+      end
 		end
 	end
 	return pos
@@ -108,7 +110,11 @@ function M.add()
 	local end_pos = selection[2]
 	local first_pos, second_pos = utils.get_ordered_positions(start_pos, end_pos)
 	-- we actually want to insert a character *after* second_pos
-	second_pos[3] = second_pos[3] + 1
+  local line_second_pos = vim.api.nvim_buf_get_lines(0, second_pos[2] - 1, second_pos[2], false)[1]
+  local length_second_line = string.len(line_second_pos)
+  if second_pos[3] <= length_second_line then
+    second_pos[3] = second_pos[3] + 1
+  end
 	-- wait for character from the user
 	local char = string.char(vim.fn.getchar())
 	-- lookup the matching pairs

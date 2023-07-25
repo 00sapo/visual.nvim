@@ -12,7 +12,6 @@ function utils.set_selection(selection)
   local start_pos, end_pos = selection[1], selection[2]
   local esc_tc = vim.api.nvim_replace_termcodes("<esc>", true, true, true)
   local args = esc_tc .. start_pos[2] .. 'G0' .. start_pos[3] .. 'lv' .. end_pos[2] .. 'G0' .. end_pos[3] .. 'l'
-  print(args)
 	vim.cmd('normal! ' .. args)
 end
 
