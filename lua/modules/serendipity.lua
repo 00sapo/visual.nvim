@@ -21,6 +21,9 @@ M.active = false
 
 -- returns a table representing the same input command as str but serendipity special codes are substituted with functions
 function M.serendipity_specialcodes(str)
+  if type(str) ~= "string" then
+    return { str }
+  end
 	-- splitting str by special codes
 	local codes = vim.tbl_values(M.term_codes)
 	local out = {}
