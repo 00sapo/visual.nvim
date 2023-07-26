@@ -3,6 +3,13 @@
 **N.B. This is still in a very experimental stage and mappings will
 suddenly change in the next few weeks.** 
 
+### serendipity
+noun,  formal
+UK  /ˌser.ənˈdɪp.ə.ti/ US  /ˌser.ənˈdɪp.ə.t̬i/
+
+_the fact of finding interesting or valuable things by chance_
+
+## What is this
 In nvim, you do `c3w`. Ah no! It was wrong, let's retry: `uc5w`... wooops! Sorry, it
 is still wrong: `uc6w`!
 

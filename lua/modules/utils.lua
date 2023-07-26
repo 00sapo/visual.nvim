@@ -1,4 +1,29 @@
+local keys_amend = require("modules.keymap-amend")
+
 local utils = {}
+
+function utils.find_first_pattern(str, patterns, start)
+	local min_start_idx = math.huge
+  local min_end_idx = nil
+  local found_code = nil
+	for i = 1, #patterns do
+		local start_idx, end_idx = string.find(str, patterns[i], start)
+		if start_idx~=nil and start_idx < min_start_idx then
+			min_start_idx = start_idx
+      min_end_idx = end_idx
+      found_code = patterns[i]
+		end
+	end
+  if min_start_idx == math.huge then
+    return nil, nil, nil
+  else
+    return min_start_idx, min_end_idx, found_code
+  end
+end
+
+function utils.keys_amend_noremap_nowait(lhs, rhs, mode)
+	keys_amend(mode, lhs, rhs, { noremap = true, nowait = true })
+end
 
 function utils.get_selection()
 	local selection = {
@@ -9,10 +34,10 @@ function utils.get_selection()
 end
 
 function utils.set_selection(selection)
-  local start_pos, end_pos = selection[1], selection[2]
-  local esc_tc = vim.api.nvim_replace_termcodes("<esc>", true, true, true)
-  local args = esc_tc .. start_pos[2] .. 'G0' .. start_pos[3] .. 'lv' .. end_pos[2] .. 'G0' .. end_pos[3] .. 'l'
-	vim.cmd('normal! ' .. args)
+	local start_pos, end_pos = selection[1], selection[2]
+	local esc_tc = vim.api.nvim_replace_termcodes("<esc>", true, true, true)
+	local args = esc_tc .. start_pos[2] .. "G0" .. start_pos[3] .. "lv" .. end_pos[2] .. "G0" .. end_pos[3] .. "l"
+	vim.cmd("normal! " .. args)
 end
 
 -- decide which is the first position: start_pos or end_pos?

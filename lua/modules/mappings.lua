@@ -1,7 +1,6 @@
-local keys_amend = require("modules.keymap-amend")
 
 local history = require("modules.history")
-local extending = require("modules.extending")
+local serendipity = require("modules.serendipity")
 local utils = require("modules.utils")
 local mappings = {}
 
@@ -34,7 +33,7 @@ local function parse_counts(opts)
 end
 
 -- Return a function that can be used as rhs in keys-amend.nvim
-local function make_rhs(keys, lhs)
+local function make_rhs(keys)
 	local pre_amend = keys.pre_amend or keys[1]
 	local post_amend = keys.post_amend or keys[2]
 	---@diagnostic disable-next-line: unused-local
@@ -45,22 +44,22 @@ local function make_rhs(keys, lhs)
 	end
 
 	local function f(original)
-		if extending.active then
-			return extending.feedkeys(lhs, original)
-		end
 		local counts = parse_counts(pre_amend)
 		for _, key in pairs(pre_amend) do
-			apply_key(key, counts)
+      for _, el in ipairs(serendipity.serendipity_specialcodes(key)) do
+        apply_key(el, counts)
+      end
 		end
 
 		if amend then
-      print('amending')
 			original()
 		end
 
 		counts = parse_counts(post_amend)
 		for _, key in pairs(post_amend) do
-			apply_key(key, counts)
+      for _, el in ipairs(serendipity.serendipity_specialcodes(key)) do
+        apply_key(el, counts)
+      end
 		end
 
 		-- if utils.mode_is_visual() then
@@ -81,22 +80,19 @@ end
 function mappings.apply_mappings(opts)
 	for name, lhs in pairs(opts.mappings) do
 		if opts.commands[name] == nil then
-			print("Visual.nvim: No mapping for " .. name)
+			vim.notify("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
+      local rhs = make_rhs(opts.commands[name])
 			for i = 1, #modes do
-				keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, nowait=true})
+        if modes[i] == serendipity.mode_value then
+          serendipity.mappings[lhs] = rhs
+        else
+          utils.keys_amend_noremap_nowait(lhs, rhs, modes[i])
+        end
 			end
 		end
 	end
-
-	-- mapping the extending mode toggle
-	vim.keymap.set("n", "-", function()
-		extending:toggle()
-	end, { nowait=true, noremap = true, silent = true })
-	vim.keymap.set("v", "-", function()
-		extending:toggle()
-	end, { nowait=true, noremap = true, silent = true })
 end
 
 -- unmappings
