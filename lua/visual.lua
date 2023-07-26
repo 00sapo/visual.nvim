@@ -5,6 +5,7 @@ local history = require("modules.history")
 local serendipity = require("modules.serendipity")
 -- local compatibility = require("modules.compatibility")
 local surround = require("modules.surround")
+local motions = require("modules.motions")
 
 visual.utils = require("modules.utils")
 visual.mappings = mappings
@@ -66,8 +67,14 @@ visual.options = {
 		WORD_end_next = {
 			-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
 			-- The `countable` parameter allows each command to be counted.
-			-- It is true by default.
-			pre_amend = { "<esc>", "Ev<sdi>gElo", countable = true }, -- <sdi> is a special code meaning "enter serendipity mode"
+			-- It is true by default and can be specified at the whole command level or at each inner-level.
+			-- In this second case, you need to use `rhs` key for the command value (string or function).
+			-- The outer level has precedence on the inner level.
+			pre_amend = {
+				{ rhs = "<esc>v", countable = false },
+				{ rhs = "E<sdi>", countable = true },
+			},
+			-- <sdi> is a special code meaning "enter serendipity mode"
 			-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
 			post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
 			modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
@@ -75,18 +82,65 @@ visual.options = {
 			-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
 		},
 
-		word_end_next = { pre_amend = { "<esc>", "ev<sdi>gelo" }, post_amend = {}, modes = { "n", "sd" } },
-		WORD_end_prev = { pre_amend = { "<esc>", "gEv<sdi>gElo" }, post_amend = {}, modes = { "n", "sd" } },
-		word_end_prev = { pre_amend = { "<esc>", "gev<sdi>gelo" }, post_amend = {}, modes = { "n", "sd" } },
-		word_start_next = { pre_amend = { "<esc>", "wv<sdi>who" }, post_amend = {}, modes = { "n", "sd" } },
-		WORD_start_next = { pre_amend = { "<esc>", "Wv<sdi>Who" }, post_amend = {}, modes = { "n", "sd" } },
-		word_start_prev = { pre_amend = { "<esc>", "bv<sdi>iwwho" }, post_amend = {}, modes = { "n", "sd" } },
-		WORD_start_prev = { pre_amend = { "<esc>", "Bv<sdi>iWWho" }, post_amend = {}, modes = { "n", "sd" } },
-		toggle_serendipity = { pre_amend = { "<sdt>" }, post_amend = {}, modes = { "n", "sd", "v" } },
-		find_next = { pre_amend = { "<esc>", "v<sdi>f" }, post_amend = {}, modes = { "n", "sd" } },
-		find_prev = { pre_amend = { "<esc>", "v<sdi>F" }, post_amend = {}, modes = { "n", "sd" } },
-		till_next = { pre_amend = { "<esc>", "v<sdi>t" }, post_amend = {}, modes = { "n", "sd" } },
-		till_prev = { pre_amend = { "<esc>", "v<sdi>T" }, post_amend = {}, modes = { "n", "sd" } },
+		word_end_next = {
+			pre_amend = {
+				{ rhs = "<esc>v", countable = false },
+				{ rhs = "e<sdi>", countable = true },
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_end_prev = {
+			pre_amend = { { rhs = "<esc>v", countable = false }, "gE<sdi>" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_end_prev = {
+			pre_amend = { { rhs = "<esc>v", countable = false }, "ge<sdi>" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_start_next = {
+			pre_amend = { { rhs = "<esc>v", countable = false }, motions.till_end_word, {rhs = "o<sdi>", countable=false} },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_start_next = {
+			pre_amend = { { rhs = "<esc>vW", countable = false }, "Who<sdi>" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_start_prev = {
+			pre_amend = { { rhs = "<esc>v", countable = false }, "biwwgeo<sdi" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_start_prev = {
+			pre_amend = { { rhs = "<esc>v", countable = false }, "BiWWgEo<sdi>" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		toggle_serendipity = { pre_amend = { "<sdt>" }, post_amend = {}, modes = { "n", "sd", "v" }, countable = false },
+		find_next = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "f" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		find_prev = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "F" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		till_next = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "t" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		till_prev = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "T" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
 		-- prev_selection = {
 		-- 	pre_amend = {
 		-- 		function()
@@ -123,40 +177,48 @@ visual.options = {
 		-- mapping applied to normal mode only
 		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
-		sd_around = { pre_amend = { "<esc>", "va<sdi>" }, post_amend = {}, modes = { "sd" } },
-		sd_inside = { pre_amend = { "<esc>", "vi<sdi>" }, post_amend = {}, modes = { "sd" } },
-		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" } },
-		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" } },
+		sd_around = { pre_amend = { "<esc>", "va<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		sd_inside = { pre_amend = { "<esc>", "vi<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
+		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		surround_delete = {
 			pre_amend = { '<cmd>lua require("visual").surround.delete()<cr><sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
+			countable = false,
 		},
 		surround_add = {
 			pre_amend = { '<cmd>lua require("visual").surround.add()<cr><sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
+			countable = false,
 		},
 		surround_change = {
 			pre_amend = { '<cmd>lua require("visual").surround.change()<cr><sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
+			countable = false,
 		},
-		restart_visual = { pre_amend = { "<esc>", "<sdi>" }, post_amend = {}, modes = { "sd" } },
-		delete_single_char = { pre_amend = { "<esc>", "xgv<sdi>" }, post_amend = {}, modes = { "sd" } },
-		replace_single_char = { pre_amend = { "<esc>", "rgv<sdi>" }, post_amend = {}, modes = { "sd" } },
-		move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
-		move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
-		move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
-		move_right_then_normal = { pre_amend = { "h<esc>" }, post_amend = {}, modes = { "sd" } },
-		move_down_visual = { pre_amend = { "j" }, post_amend = {}, modes = { "sd" } },
-		move_up_visual = { pre_amend = { "k" }, post_amend = {}, modes = { "sd" } },
-		move_left_visual = { pre_amend = { "l" }, post_amend = {}, modes = { "sd" } },
-		move_right_visual = { pre_amend = { "h" }, post_amend = {}, modes = { "sd" } },
-		decrease_indent = { pre_amend = { "<gv", }, post_amend = {}, modes = { "v" }, },
-		increase_indent = { pre_amend = { ">gv", }, post_amend = {}, modes = { "v" }, },
-		decrease_indent_sd = { pre_amend = { "<gv<sdi>", }, post_amend = {}, modes = { "sd" }, },
-		increase_indent_sd = { pre_amend = { ">gv<sdi>", }, post_amend = {}, modes = { "sd" }, },
+		restart_visual = {
+			pre_amend = { "<esc>", "<sde>", "<sdi>" },
+			post_amend = {},
+			modes = { "sd" },
+			countable = false,
+		},
+		delete_single_char = { pre_amend = { "<esc>", "xgv<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
+		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_right_then_normal = { pre_amend = { "h<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_down_visual = { pre_amend = { "j" }, post_amend = {}, modes = { "sd" } },
+		-- move_up_visual = { pre_amend = { "k" }, post_amend = {}, modes = { "sd" } },
+		-- move_left_visual = { pre_amend = { "l" }, post_amend = {}, modes = { "sd" } },
+		-- move_right_visual = { pre_amend = { "h" }, post_amend = {}, modes = { "sd" } },
+		decrease_indent = { pre_amend = { "<gv" }, post_amend = {}, modes = { "v" } },
+		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
+		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },
+		increase_indent_sd = { pre_amend = { ">gv<sdi>" }, post_amend = {}, modes = { "sd" } },
 	},
 }
 

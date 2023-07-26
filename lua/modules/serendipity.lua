@@ -30,7 +30,10 @@ function M.serendipity_specialcodes(str)
 	local prev_code_end = 0
 	local next_code_start, next_code_end, code = utils.find_first_pattern(str, codes, 1)
 	while code do
-		table.insert(out, string.sub(str, prev_code_end + 1, next_code_start - 1))
+    local substr = string.sub(str, prev_code_end + 1, next_code_start - 1)
+    if #substr > 0 then
+      table.insert(out, substr)
+    end
 		local func
 		if code == M.term_codes.toggle then
 			func = M.toggle
@@ -48,7 +51,10 @@ function M.serendipity_specialcodes(str)
 		prev_code_end = next_code_end
 		next_code_start, next_code_end, code = utils.find_first_pattern(str, codes, prev_code_end + 1)
 	end
-	table.insert(out, string.sub(str, prev_code_end + 1, #str))
+  local remaining = string.sub(str, prev_code_end + 1, #str)
+  if #remaining > 0 then
+    table.insert(out, remaining)
+  end
 
 	return out
 end
