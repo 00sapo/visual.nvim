@@ -15,8 +15,12 @@ is still wrong: `uc6w`!
 
 In Kakoune (which inspired Helix), you do the opposite: `3w`. First select 3
 words, then you see you still need three words, so `3w`. Then finally `d` for
-deleting. In `visual.nvim` (and Helix), this actually becomes `-3w3wd`, with the `-`
-used for "extending" selections.
+deleting.
+
+In `visual.nvim`, this actually becomes `3w-3wd`, with the `-` used for
+"refining" selections. If you do not need to adjust the selection, `3wd` is all
+you need.
+
 
 First select, then edit. This should be the way.
 
