@@ -15,7 +15,7 @@ A clear and concise description of what the bug is.
 **Minimal config**
 1. Using the minimal configuration generates the error (yes/no).
 
-> Download [this](https://raw.githubusercontent.com/00sapo/visual.nvim/main/test/init.lua -o /tmp/visual.nvim-test.lua) configuration and launch nvim with `-u <test_config.lua>`. In Linux/Mac, here is a one-line command that you can you use in your shell:
+> Download [this](https://raw.githubusercontent.com/00sapo/visual.nvim/main/test/init.lua) configuration and launch nvim with `-u <test_config.lua>`. In Linux/Mac, here is a one-line command that you can you use in your shell:
 > 
 > `curl https://raw.githubusercontent.com/00sapo/visual.nvim/main/test/init.lua -o /tmp/visual.nvim-test.lua; nvim -u /tmp/visual.nvim-test.lua <file>`
 
