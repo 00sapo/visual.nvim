@@ -1,3 +1,4 @@
+-- download and run with nvim -u init.lua <file to edit>
 local lazypath = vim.fn.stdpath("run") .. "/visual.nvim-test/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
