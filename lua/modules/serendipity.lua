@@ -39,7 +39,7 @@ function M.serendipity_specialcodes(str)
 			func = M.toggle
 		elseif code == M.term_codes.init then
 			func = function()
-				M.avoid_next_exit = true
+				-- M.avoid_next_exit = true
 				M.init()
 			end
 		elseif code == M.term_codes.exit then
@@ -115,6 +115,7 @@ function M.exit()
 		return
 	end
 	if M.avoid_next_exit then
+    -- print("disabling avoid_next_exit 2")
 		M.avoid_next_exit = false
 		return
 	end

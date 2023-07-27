@@ -2,6 +2,13 @@ local keys_amend = require("modules.keymap-amend")
 
 local utils = {}
 
+function utils.feedkeys_noserendipityautocmd(m, k, r)
+  local sd = require'modules.serendipity'
+  -- print("avoiding next exit 3")
+  sd.avoid_next_exit = true
+  vim.api.nvim_feedkeys(m, k, r)
+end
+
 function utils.find_first_pattern(str, patterns, start)
 	local min_start_idx = math.huge
   local min_end_idx = nil

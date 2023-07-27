@@ -101,7 +101,13 @@ visual.options = {
 			modes = { "n", "sd" },
 		},
 		word_start_next = {
-			pre_amend = { { rhs = "<esc>v", countable = false }, motions.till_end_word, {rhs = "o<sdi>", countable=false} },
+			pre_amend = {
+				{ rhs = "<esc>", countable = false },
+				motions.start_word_next,
+				{ rhs = "v", countable = false },
+				motions.end_word,
+				{ rhs = "<sdi>", countable = false },
+			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
@@ -205,7 +211,12 @@ visual.options = {
 			modes = { "sd" },
 			countable = false,
 		},
-		delete_single_char = { pre_amend = { "<esc>", "xgv<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		delete_single_char = {
+			pre_amend = { "<esc>", "xgv<sdi>" },
+			post_amend = {},
+			modes = { "sd" },
+			countable = false,
+		},
 		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
 		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },

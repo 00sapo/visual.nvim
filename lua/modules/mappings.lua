@@ -3,7 +3,7 @@ local serendipity = require("modules.serendipity")
 local utils = require("modules.utils")
 local mappings = {}
 
-local function apply_key(key, countable)
+local function apply_key(key, countable, count)
   -- parse countability
 	if countable == nil then
 		if type(key) == "string" or type(key) == "function" or key.countable == nil then
@@ -12,12 +12,6 @@ local function apply_key(key, countable)
 			countable = key.countable
 		end
 	end
-  local count
-  if countable then
-    count = vim.v.count
-  else
-    count = 0
-  end
 
   -- apply keys with special codes replaced
   if type(key) == "table" then
@@ -27,9 +21,7 @@ local function apply_key(key, countable)
 		if type(el) == "function" then
 			el()
 		elseif type(el) == "string" then
-			if count >= 1 then
-				el = count .. el
-			end
+      el = count .. el
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(el, true, false, true), "n", false)
 		end
 	end
@@ -48,8 +40,9 @@ local function make_rhs(keys)
 	end
 
 	local function f(original)
+    local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
-			apply_key(key, countable)
+			apply_key(key, countable, count)
 		end
 
 		if amend then
@@ -57,7 +50,7 @@ local function make_rhs(keys)
 		end
 
 		for _, key in pairs(post_amend) do
-			apply_key(key, countable)
+			apply_key(key, countable, count)
 		end
 
 		-- if utils.mode_is_visual() then
