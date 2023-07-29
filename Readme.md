@@ -288,6 +288,11 @@ Feel free to suggest new default keybindings in the issues!
 }
 ```
 
+# Testing
+
+* `curl https://raw.githubusercontent.com/00sapo/visual.nvim/main/test/init.lua -o /tmp/visual.nvim-test.lua`
+* `nvim -u /tmp/visual.nvim-test.lua <file>`
+
 # TODO
 
 * Make surrounding commands re-select the remaining text
