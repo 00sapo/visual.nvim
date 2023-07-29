@@ -108,17 +108,23 @@ visual.options = {
 			modes = { "n", "sd" },
 		},
 		WORD_start_next = {
-			pre_amend = { { rhs = "<esc>vW", countable = false }, "Who<sdi>" },
+			pre_amend = {
+				motions.WORD_start_next,
+			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		word_start_prev = {
-			pre_amend = { { rhs = "<esc>v", countable = false }, "biwwgeo<sdi" },
+			pre_amend = {
+				motions.word_start_prev,
+			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		WORD_start_prev = {
-			pre_amend = { { rhs = "<esc>v", countable = false }, "BiWWgEo<sdi>" },
+			pre_amend = {
+				motions.WORD_start_prev,
+			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},

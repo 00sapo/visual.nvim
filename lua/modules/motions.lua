@@ -25,10 +25,11 @@ local function iskeyword_pattern()
 	return pattern .. "]"
 end
 
--- return true if col is at a `direction`-side word boundary in line
--- word here has the same concept as nvim
--- TODO: doesn't take into account iskeyword option
-function M.is_word_boundary(pos, direction)
+-- * return true if col is at a `direction`-side word boundary in line
+-- * word here has the same concept as nvim
+-- * if `punctuation` is true, then word punctuation create words by themselves (as
+-- in w), otherwise it's like W
+function M.is_word_boundary(pos, direction, punctuation)
   local kwpattern = iskeyword_pattern()
 
 	local count = 0
@@ -51,14 +52,14 @@ function M.is_word_boundary(pos, direction)
 	local class1, class2
 	if string.match(this_char, "%s") then
 		class1 = 1
-	elseif string.match(this_char, "%p") and string.match(this_char, kwpattern) then
+	elseif punctuation and string.match(this_char, "%p") and string.match(this_char, kwpattern) then
 		class1 = 2
 	else
 		class1 = 3
 	end
 	if string.match(next_char, "%s") then
 		class2 = 1
-	elseif string.match(next_char, "%p") and string.match(this_char, kwpattern) then
+	elseif punctuation and string.match(next_char, "%p") and string.match(this_char, kwpattern) then
 		class2 = 2
 	else
 		class2 = 3
@@ -83,16 +84,47 @@ end
 -- If the current char is at the right-side boundary, moves one word less (like usual
 -- `w`)
 function M.word_start_next()
+  M.move_start(true, "r")
+end
+
+function M.word_start_prev()
+  M.move_start(true, "l")
+end
+
+function M.WORD_start_next()
+  M.move_start(false, "r")
+end
+
+function M.WORD_start_prev()
+  M.move_start(false, "l")
+end
+
+function M.move_start(punctuation, side)
 	local count1 = vim.v.count1
 
+  local w, e
+  if side == "r" and punctuation then
+    w = "w"
+    e = "e"
+  elseif side == "l" and punctuation then
+    w = "ge"
+    e = "b"
+  elseif side == "r" and not punctuation then
+    w = "W"
+    e = "E"
+  elseif side == "l" and not punctuation then
+    w = "gE"
+    e = "B"
+  end
+
 	-- handle pre-selection stuffs
-	if M.is_word_boundary(utils.get_cursor(), "r") then
+	if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
 		if sd.active then
 			utils.enter("n")
-			vim.api.nvim_feedkeys("w", "n", true)
+			vim.api.nvim_feedkeys(w, "n", true)
 			-- if after w, we are still at the right-side boundary, this is a
 			-- one-char word
-			if M.is_word_boundary(utils.get_cursor(), "r") then
+			if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
 				count1 = vim.v.count1 - 1
 			end
 		elseif vim.v.count1 > 1 then
@@ -100,11 +132,14 @@ function M.word_start_next()
 		end
 	end
 
+  if sd.active then
+    utils.enter("n")
+  end
 	sd.init()
 
 	-- Move the cursor till the count-th end of word.
 	for _ = 1, count1 do
-		vim.api.nvim_feedkeys("e", "n", true)
+		vim.api.nvim_feedkeys(e, "n", true)
 	end
 end
 
