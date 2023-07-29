@@ -1,5 +1,7 @@
 local visual = {}
 
+Vdbg = require("modules.debugging")
+
 local mappings = require("modules.mappings")
 local history = require("modules.history")
 local serendipity = require("modules.serendipity")
@@ -64,39 +66,52 @@ visual.options = {
 		-- prev_selection = "H", -- surf selection history backward
 	},
 	commands = { -- what each command name does
-		WORD_end_next = {
-			-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
-			-- The `countable` parameter allows each command to be counted.
-			-- It is true by default and can be specified at the whole command level or at each inner-level.
-			-- In this second case, you need to use `rhs` key for the command value (string or function).
-			-- The outer level has precedence on the inner level.
-			pre_amend = {
-				{ rhs = "<esc>v", countable = false },
-				{ rhs = "E<sdi>", countable = true },
-			},
-			-- <sdi> is a special code meaning "enter serendipity mode"
-			-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
-			post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
-			modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
-			amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
-			-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
-		},
+	-- 	example_command = {
+	-- 		-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
+	-- 		-- The `countable` parameter allows each command to be counted.
+	-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
+	-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
+	-- 		-- The outer level has precedence on the inner level.
+  -- 		countable = true,
+	-- 		pre_amend = {
+	-- 			{ rhs = "<esc>v", countable = false },
+	-- 			{ rhs = "E<sdi>", countable = true },
+	-- 		},
+	-- 		-- <sdi> is a special code meaning "enter serendipity mode"
+	-- 		-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
+	-- 		post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
+	-- 		modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
+	-- 		amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
+	-- 		-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
+	-- 	},
 
 		word_end_next = {
 			pre_amend = {
-				{ rhs = "<esc>v", countable = false },
-				{ rhs = "e<sdi>", countable = true },
+				motions.word_start_next,
+        {rhs = "o", countable = false}
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_end_next = {
+			pre_amend = {
+				motions.WORD_start_next,
+        {rhs = "o", countable = false}
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_end_prev = {
+			pre_amend = {
+				motions.word_start_prev,
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		WORD_end_prev = {
-			pre_amend = { { rhs = "<esc>v", countable = false }, "gE<sdi>" },
-			post_amend = {},
-			modes = { "n", "sd" },
-		},
-		word_end_prev = {
-			pre_amend = { { rhs = "<esc>v", countable = false }, "ge<sdi>" },
+			pre_amend = {
+				motions.WORD_start_prev,
+			},
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
@@ -117,6 +132,7 @@ visual.options = {
 		word_start_prev = {
 			pre_amend = {
 				motions.word_start_prev,
+        {rhs = "o", countable = false}
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -124,6 +140,7 @@ visual.options = {
 		WORD_start_prev = {
 			pre_amend = {
 				motions.WORD_start_prev,
+        {rhs = "o", countable = false}
 			},
 			post_amend = {},
 			modes = { "n", "sd" },

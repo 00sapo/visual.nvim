@@ -30,7 +30,7 @@ end
 -- * if `punctuation` is true, then word punctuation create words by themselves (as
 -- in w), otherwise it's like W
 function M.is_word_boundary(pos, direction, punctuation)
-  local kwpattern = iskeyword_pattern()
+	local kwpattern = iskeyword_pattern()
 
 	local count = 0
 
@@ -84,63 +84,86 @@ end
 -- If the current char is at the right-side boundary, moves one word less (like usual
 -- `w`)
 function M.word_start_next()
-  M.move_start(true, "r")
+	M.word_motion(true, "r")
 end
 
 function M.word_start_prev()
-  M.move_start(true, "l")
+	M.word_motion(true, "l")
 end
 
 function M.WORD_start_next()
-  M.move_start(false, "r")
+	M.word_motion(false, "r")
 end
 
 function M.WORD_start_prev()
-  M.move_start(false, "l")
+	M.word_motion(false, "l")
 end
 
-function M.move_start(punctuation, side)
+function M.word_motion(punctuation, side)
 	local count1 = vim.v.count1
 
-  local w, e
-  if side == "r" and punctuation then
-    w = "w"
-    e = "e"
-  elseif side == "l" and punctuation then
-    w = "ge"
-    e = "b"
-  elseif side == "r" and not punctuation then
-    w = "W"
-    e = "E"
-  elseif side == "l" and not punctuation then
-    w = "gE"
-    e = "B"
-  end
+  -- choosing actions
+	local w, e
+	if side == "r" and punctuation then
+		w = "w"
+		e = "e"
+	elseif side == "l" and punctuation then
+		w = "ge"
+		e = "b"
+	elseif side == "r" and not punctuation then
+		w = "W"
+		e = "E"
+	elseif side == "l" and not punctuation then
+		w = "gE"
+		e = "B"
+	end
+
+  -- if we are not at proper side, change it
+  Vdbg("---------------------------------")
+	local oside = "l"
+	if side == "l" then
+		oside = "r"
+	end
+  if sd.active and M.is_word_boundary(utils.get_cursor(), oside, punctuation) then
+    Vdbg("o")
+		vim.api.nvim_feedkeys("o", "n", true)
+	end
 
 	-- handle pre-selection stuffs
 	if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
 		if sd.active then
+      Vdbg("<esc>")
 			utils.enter("n")
+      Vdbg(w)
 			vim.api.nvim_feedkeys(w, "n", true)
 			-- if after w, we are still at the right-side boundary, this is a
 			-- one-char word
 			if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
+        Vdbg("c-1")
 				count1 = vim.v.count1 - 1
 			end
 		elseif vim.v.count1 > 1 then
+      Vdbg("c-1")
 			count1 = vim.v.count1 - 1
 		end
-	end
-
-  if sd.active then
-    utils.enter("n")
   end
+
+	if sd.active then
+    Vdbg("<esc>")
+		utils.enter("n")
+    vim.api.nvim_feedkeys("", "x", true)
+	end
+  Vdbg("<sdi>")
 	sd.init()
 
 	-- Move the cursor till the count-th end of word.
 	for _ = 1, count1 do
+    Vdbg(e)
 		vim.api.nvim_feedkeys(e, "n", true)
 	end
+
+  Vdbg("o")
+	vim.api.nvim_feedkeys("o", "n", true)
 end
 
 return M
