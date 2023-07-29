@@ -1,8 +1,15 @@
 local history = {}
+history.last_command = nil
 history.selection_history = {}
 history.cur_history_idx = 0
 
 local utils = require('modules.utils')
+
+function history.run_last_command()
+  history._lock = true
+  history.last_command[vim.fn.mode()]()
+  history._lock = false
+end
 
 -- selection_history is a simple stack with push/pop methods and maximum size
 -- defined by history.history_size

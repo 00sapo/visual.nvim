@@ -40,6 +40,8 @@ local function make_rhs(keys)
 	end
 
 	local function f(original)
+
+    history.last_command[mode] = f
     local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
 			apply_key(key, countable, count)
