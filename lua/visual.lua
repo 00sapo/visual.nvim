@@ -102,11 +102,7 @@ visual.options = {
 		},
 		word_start_next = {
 			pre_amend = {
-				{ rhs = "<esc>", countable = false },
-				motions.start_word_next,
-				{ rhs = "v", countable = false },
-				motions.end_word,
-				{ rhs = "<sdi>", countable = false },
+				motions.word_start_next,
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
