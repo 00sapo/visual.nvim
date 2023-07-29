@@ -1,5 +1,3 @@
--- local keys_amend = require("keymap-amend")
-local keys_amend = require("modules.keymap-amend")
 local utils = require("modules.utils")
 
 local M = {
@@ -14,26 +12,26 @@ local M = {
 	options = { -- filled from visual.options.serendipity
 		guicursor = "a:hor100",
 		highlight = "guibg=LightCyan guifg=none",
-    v_got_to_visual = true -- if true, pressing v leads to visual mode, not to normal allows to select text objects like viw vaw
+		v_got_to_visual = true, -- if true, pressing v leads to visual mode, not to normal allows to select text objects like viw vaw
 	},
 }
 M.active = false
 
 -- returns a table representing the same input command as str but serendipity special codes are substituted with functions
 function M.serendipity_specialcodes(str)
-  if type(str) ~= "string" then
-    return { str }
-  end
+	if type(str) ~= "string" then
+		return { str }
+	end
 	-- splitting str by special codes
 	local codes = vim.tbl_values(M.term_codes)
 	local out = {}
-	local prev_code_end = 0
+	local prev_code_end = 0 ---@type integer|nil
 	local next_code_start, next_code_end, code = utils.find_first_pattern(str, codes, 1)
 	while code do
-    local substr = string.sub(str, prev_code_end + 1, next_code_start - 1)
-    if #substr > 0 then
-      table.insert(out, substr)
-    end
+		local substr = string.sub(str, prev_code_end + 1, next_code_start - 1)
+		if #substr > 0 then
+			table.insert(out, substr)
+		end
 		local func
 		if code == M.term_codes.toggle then
 			func = M.toggle
@@ -51,10 +49,10 @@ function M.serendipity_specialcodes(str)
 		prev_code_end = next_code_end
 		next_code_start, next_code_end, code = utils.find_first_pattern(str, codes, prev_code_end + 1)
 	end
-  local remaining = string.sub(str, prev_code_end + 1, #str)
-  if #remaining > 0 then
-    table.insert(out, remaining)
-  end
+	local remaining = string.sub(str, prev_code_end + 1, #str)
+	if #remaining > 0 then
+		table.insert(out, remaining)
+	end
 
 	return out
 end
@@ -93,9 +91,11 @@ function M.init()
 		utils.keys_amend_noremap_nowait(lhs, rhs, "v")
 	end
 
-  if M.options.v_got_to_visual then
-    vim.keymap.set("v", "v", function() M.exit() end, {noremap = true, nowait = true})
-  end
+	if M.options.v_got_to_visual then
+		vim.keymap.set("v", "v", function()
+			M.exit()
+		end, { noremap = true, nowait = true })
+	end
 
 	-- setup auto commands for exiting when mode changes from visual
 	local gid = vim.api.nvim_create_augroup("Visualserendipity", { clear = true })
@@ -115,7 +115,7 @@ function M.exit()
 		return
 	end
 	if M.avoid_next_exit then
-    -- print("disabling avoid_next_exit 2")
+		-- print("disabling avoid_next_exit 2")
 		M.avoid_next_exit = false
 		return
 	end
@@ -157,6 +157,12 @@ function M.toggle()
 	else
 		M.init()
 	end
+end
+
+function M.reset()
+	utils.enter("n")
+	vim.api.nvim_feedkeys("", "x", true)
+	M.init()
 end
 
 -- M.keymaps["<esc>"] = function() M:toggle() end

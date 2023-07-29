@@ -1,4 +1,4 @@
-history = {}
+local history = {}
 history.selection_history = {}
 history.cur_history_idx = 0
 
