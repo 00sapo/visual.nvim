@@ -41,7 +41,9 @@ local function make_rhs(keys)
 
 	local function f(original)
 
-    history.last_command[mode] = f
+    Vdbg("Storing last command: ")
+    Vdbg(keys)
+    history.last_command = keys
     local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
 			apply_key(key, countable, count)
@@ -67,6 +69,13 @@ local function make_rhs(keys)
 		-- end
 	end
 	return f
+end
+
+function mappings.run_last_command(original)
+  local f = make_rhs(history.last_command)
+  Vdbg("Running last command: ")
+  Vdbg(history.last_command)
+  return f(original)
 end
 
 -- general mappings

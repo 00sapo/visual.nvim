@@ -62,7 +62,7 @@ visual.options = {
 		decrease_indent = "<", -- decrease indent in visual mode
 		increase_indent_sd = ">", -- increase indent in serendipity mode
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
-    repeat_command = "\\",
+    repeat_command = ","
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},
@@ -168,7 +168,7 @@ visual.options = {
 			modes = { "n", "sd" },
 		},
     repeat_command = {
-      pre_amend = { require'visual'.history.run_last_command },
+      pre_amend = { mappings.run_last_command },
       post_amend = {},
       modes = { "n", "sd", "v" }
     },

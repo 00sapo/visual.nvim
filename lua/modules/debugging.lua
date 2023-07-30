@@ -23,8 +23,13 @@ return function(...)
 		end
 		-- Serialize the input data
 		local serialized_x = vim.inspect(...)
-		-- Append the serialized string to the bottom of the buffer
-		vim.api.nvim_buf_set_lines(buffer, -1, -1, false, { serialized_x })
+		-- Split the serialized string into lines
+		local lines = {}
+		for s in serialized_x:gmatch("[^\r\n]+") do
+		    table.insert(lines, s)
+		end
+		-- Append the lines to the bottom of the buffer
+		vim.api.nvim_buf_set_lines(buffer, -1, -1, false, lines)
 		-- scroll the window to the bottom
 		vim.api.nvim_win_set_cursor(window, { vim.api.nvim_buf_line_count(buffer), 0 })
 	end
