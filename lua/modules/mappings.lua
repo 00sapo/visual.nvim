@@ -1,78 +1,71 @@
-local keys_amend = require("modules.keymap-amend")
-
 local history = require("modules.history")
-local extending = require("modules.extending")
+local serendipity = require("modules.serendipity")
 local utils = require("modules.utils")
 local mappings = {}
 
-local function apply_key(key, count)
-	if type(key) == "function" then
-		key()
-	elseif type(key) == "string" then
-		if count >= 1 then
-			key = count .. key
+local function apply_key(key, countable, count)
+	-- parse countability
+	if countable == nil then
+		if type(key) == "string" or type(key) == "function" or key.countable == nil then
+			countable = true
+		else
+			countable = key.countable
 		end
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), "n", false)
 	end
-end
 
--- return a proper value for counting commands and remove the field `countable` from `opts`
-local function parse_counts(opts)
-	local countable, counts
-	if opts.countable == nil then
-		countable = true
-	else
-		countable = opts.countable
+	-- apply keys with special codes replaced
+	if type(key) == "table" then
+		key = key["rhs"]
 	end
-	if countable then
-		counts = vim.v.count
-	else
-		counts = 0
+	for _, el in ipairs(serendipity.serendipity_specialcodes(key)) do
+		if type(el) == "function" then
+			el()
+		elseif type(el) == "string" then
+			el = count .. el
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(el, true, false, true), "n", false)
+		end
 	end
-	opts.countable = nil
-	return counts
 end
 
 -- Return a function that can be used as rhs in keys-amend.nvim
-local function make_rhs(keys, lhs)
+function mappings.make_rhs(keys, history_store)
 	local pre_amend = keys.pre_amend or keys[1]
 	local post_amend = keys.post_amend or keys[2]
 	---@diagnostic disable-next-line: unused-local
 	local mode = keys.mode or keys[3]
 	local amend = keys.amend
+	local countable = keys.countable
 	if amend == nil then
 		amend = false
 	end
 
 	local function f(original)
-		if extending.active then
-			return extending.feedkeys(lhs, original)
-		end
-		local counts = parse_counts(pre_amend)
+		local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
-			apply_key(key, counts)
+			apply_key(key, countable, count)
 		end
 
 		if amend then
-      print('amending')
 			original()
 		end
 
-		counts = parse_counts(post_amend)
 		for _, key in pairs(post_amend) do
-			apply_key(key, counts)
+			apply_key(key, countable, count)
 		end
 
 		-- if utils.mode_is_visual() then
 		-- 	-- Save current selection to history
-		-- 	local selection = {
-		-- 		vim.fn.getpos("v"),
-		-- 		vim.fn.getpos("."),
-		-- 	}
+  --     local selection = utils.get_selection()
+  --     Vdbg("Pushing selection: ", selection)
 		-- 	history:push(selection)
 		-- else
-		-- 	print("not pushing")
+		-- 	Vdbg("not pushing")
 		-- end
+		if history_store then
+			Vdbg("Storing last command: ")
+			Vdbg(keys)
+			history.last_command = keys
+		end
 	end
 	return f
 end
@@ -81,31 +74,28 @@ end
 function mappings.apply_mappings(opts)
 	for name, lhs in pairs(opts.mappings) do
 		if opts.commands[name] == nil then
-			print("Visual.nvim: No mapping for " .. name)
+			vim.notify("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
+			local rhs = mappings.make_rhs(opts.commands[name], name~=history.repeat_mapping_name)
 			for i = 1, #modes do
-				keys_amend(modes[i], lhs, make_rhs(opts.commands[name], lhs), { noremap = true, nowait=true})
+				if modes[i] == serendipity.mode_value then
+					serendipity.mappings[lhs] = rhs
+				else
+					utils.keys_amend_noremap_nowait(lhs, rhs, modes[i])
+				end
 			end
 		end
 	end
-
-	-- mapping the extending mode toggle
-	vim.keymap.set("n", "-", function()
-		extending:toggle()
-	end, { nowait=true, noremap = true, silent = true })
-	vim.keymap.set("v", "-", function()
-		extending:toggle()
-	end, { nowait=true, noremap = true, silent = true })
 end
 
 -- unmappings
 function mappings.unmaps(opts, mode)
 	local u = opts[mode .. "unmaps"]
-	for _, v in pairs(u) do
-		vim.keymap.set(mode, v, function() end, {nowait=true})
+	for _, v in ipairs(u) do
+		vim.keymap.set(mode, v, function() end, { nowait = true })
 		if mode == "v" then
-			vim.keymap.set("x", v, function() end, {nowait=true})
+			vim.keymap.set("x", v, function() end, { nowait = true })
 		end
 	end
 end

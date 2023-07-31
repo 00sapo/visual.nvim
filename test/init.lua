@@ -46,6 +46,9 @@ require("lazy").setup({
 		end,
 	},
 	{ "nvim-treesitter/nvim-treesitter-textobjects" },
+}, {
+	root = vim.fn.stdpath("run") .. "/visual.nvim-test/plugins",
+	sate = vim.fn.stdpath("run") .. "/visual.nvim-test/lazy.json",
 })
 
-vim.cmd"hi Visual guifg=black guibg=lightyellow ctermfg=black ctermbg=lightyellow"
+vim.cmd("hi Visual guifg=black guibg=lightyellow ctermfg=black ctermbg=lightyellow")

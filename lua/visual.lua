@@ -1,27 +1,27 @@
 local visual = {}
 
+Vdbg = require("modules.debugging")
+
 local mappings = require("modules.mappings")
 local history = require("modules.history")
-local extending = require("modules.extending")
-local compatibility = require("modules.compatibility")
+local serendipity = require("modules.serendipity")
+-- local compatibility = require("modules.compatibility")
 local surround = require("modules.surround")
+local motions = require("modules.motions")
 
 visual.utils = require("modules.utils")
 visual.mappings = mappings
 visual.history = history
-visual.extending = extending
+visual.serendipity = serendipity
 visual.surround = surround
 
 visual.options = {
-	-- commands that will be unmapped from normal or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
+	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
+	sdunmaps = {},
 	vunmaps = {},
-	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "<S-v>", "<C-v>", "gc", ">", "<", "va", "vi"},
-	treesitter_textobjects = {
-		enable = false, -- only needed if you want to use a different init_key
-		init_key = "v", -- the key with which the text object selection start (e.g. vaf, vif have init_key=v)
-	},
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "gc", ">", "<" },
 	history_size = 50, -- how many selections we should remember in the history
-	extending = {}, -- options for extending mode
+	serendipity = {}, -- options for serendipity mode
 	mappings = {
 		-- a list of command names and of their key-maps; what each command does is defined below
 		WORD_end_next = "E", -- select next WORD (punctuation included), cursor at end, previous space included
@@ -32,117 +32,211 @@ visual.options = {
 		word_start_next = "w", -- same as W but without punctuation
 		WORD_start_prev = "B", -- select previous WORD including its next space, with punctuation, cursor at beginnning
 		word_start_prev = "b", -- same as B but without punctuation
-		toggle_visual_mode = "v", -- toggle visual mode, here to override possible mappings from other plugins
+		toggle_serendipity = "-", -- toggle visual mode, here to override possible mappings from other plugins
 		find_next = "f", -- select to next char
 		find_prev = "F", -- select to previous char
 		till_next = "t", -- select till next char
 		till_prev = "T", -- select till previous char
-		append_at_cursor = "A", -- append at cursor position in visual mode
-		insert_at_cursor = "I", -- insert at cursor position in visual mode
-		-- visual_inside = "si", -- select inside
-		-- visual_around = "sa", -- select around
-		line_visual = "x", -- enter line-visual mode
-		block_visual = "<S-x>", -- enter block-visual mode
-		delete_char = "y", -- delete char under cursor
+		append_at_cursor = "a", -- append at cursor position in visual mode
+		insert_at_cursor = "i", -- insert at cursor position in visual mode
+		sd_inside = "I", -- select inside from serendipity mode
+		sd_around = "A", -- select around from serendipity mode
+		-- line_visual = "x", -- enter line-visual mode
+		-- block_visual = "<S-x>", -- enter block-visual mode
+		-- delete_char = "y", -- delete char under cursor
 		restart_visual = "'", -- collapse the visual selection to the char under cursor
-		delete_single_char = "D", -- delete the char under cursor while in visual mode
-		replace_single_char = "R", -- replace the char under cursor while in visual mode
-		move_down_then_normal = "j", -- move down and enter normal mode
-		move_up_then_normal = "k", -- move up and enter normal mode
-		move_left_then_normal = "l", -- move left and enter normal mode
-		move_right_then_normal = "h", -- move right and enter normal mode
-		move_down_visual = "<a-j>", -- move down staying in visual mode
-		move_up_visual = "<a-k>", -- move up staying in visual mode
-		move_left_visual = "<a-l>", -- move left staying in visual mode
-		move_right_visual = "<a-h>", -- move right staying in visual mode
-    surround_change = "sc", -- change chars at the extremes of the selection
-    surround_add = "sa", -- insert chars at the extremes of the selection
-    surround_delete = "sd", -- delete chars at the extremes of the selection
-		next_selection = "L", -- surf selection history forward
-		prev_selection = "H", -- surf selection history backward
+		delete_single_char = "x", -- delete the char under cursor while in visual mode
+		replace_single_char = "r", -- replace the char under cursor while in visual mode
+		-- move_down_then_normal = "j", -- move down and enter normal mode
+		-- move_up_then_normal = "k", -- move up and enter normal mode
+		-- move_left_then_normal = "l", -- move left and enter normal mode
+		-- move_right_then_normal = "h", -- move right and enter normal mode
+		-- move_down_visual = "<a-j>", -- move down staying in visual mode
+		-- move_up_visual = "<a-k>", -- move up staying in visual mode
+		-- move_left_visual = "<a-l>", -- move left staying in visual mode
+		-- move_right_visual = "<a-h>", -- move right staying in visual mode
+		surround_change = "sc", -- change chars at the extremes of the selection
+		surround_add = "sa", -- insert chars at the extremes of the selection
+		surround_delete = "sd", -- delete chars at the extremes of the selection
+		increase_indent = ">", -- increase indent in visual mode
+		decrease_indent = "<", -- decrease indent in visual mode
+		increase_indent_sd = ">", -- increase indent in serendipity mode
+		decrease_indent_sd = "<", -- decrease indent in serendipity mode
+		repeat_command = ",",
+		-- next_selection = "L", -- surf selection history forward
+		-- prev_selection = "H", -- surf selection history backward
 	},
 	commands = { -- what each command name does
-		WORD_end_next = {
-			-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
-			-- The `countable` parameter allows each command to be counted.
-			-- It is true by default.
-			pre_amend = { "<esc>", "EvgElo", countable = true },
-			post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
-			modes = { "n", "v" }, -- A list of modes where this command will be mappe
-			amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
-			-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
-		},
+		-- 	example_command = {
+		-- 		-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
+		-- 		-- The `countable` parameter allows each command to be counted.
+		-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
+		-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
+		-- 		-- The outer level has precedence on the inner level.
+		-- 		countable = true,
+		-- 		pre_amend = {
+		-- 			{ rhs = "<esc>v", countable = false },
+		-- 			{ rhs = "E<sdi>", countable = true },
+		-- 		},
+		-- 		-- <sdi> is a special code meaning "enter serendipity mode"
+		-- 		-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
+		-- 		post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
+		-- 		modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
+		-- 		amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
+		-- 		-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
+		-- 	},
 
-		word_end_next = { pre_amend = { "<esc>", "evgelo" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_end_prev = { pre_amend = { "<esc>", "gEvgElo" }, post_amend = {}, modes = { "n", "v" } },
-		word_end_prev = { pre_amend = { "<esc>", "gevgelo" }, post_amend = {}, modes = { "n", "v" } },
-		word_start_next = { pre_amend = { "<esc>", "wvwho" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_start_next = { pre_amend = { "<esc>", "WvWho" }, post_amend = {}, modes = { "n", "v" } },
-		word_start_prev = { pre_amend = { "<esc>", "bviwwho" }, post_amend = {}, modes = { "n", "v" } },
-		WORD_start_prev = { pre_amend = { "<esc>", "BviWWho" }, post_amend = {}, modes = { "n", "v" } },
-		toggle_visual_mode = { pre_amend = { "v" }, post_amend = {}, modes = { "n", "v" } },
-		find_next = { pre_amend = { "<esc>", "vf" }, post_amend = {}, modes = { "n", "v" } },
-		find_prev = { pre_amend = { "<esc>", "vF" }, post_amend = {}, modes = { "n", "v" } },
-		till_next = { pre_amend = { "<esc>", "vt" }, post_amend = {}, modes = { "n", "v" } },
-		till_prev = { pre_amend = { "<esc>", "vT" }, post_amend = {}, modes = { "n", "v" } },
-		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "v" } },
-		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "v" } },
-    surround_delete = { pre_amend = { function () require("visual").surround.delete() end }, post_amend = {}, modes = { "v" } },
-    surround_add = { pre_amend = { '<cmd>lua require("visual").surround.add()<cr>' }, post_amend = {}, modes = { "v" } },
-    surround_change = { pre_amend = { '<cmd>lua require("visual").surround.change()<cr>' }, post_amend = {}, modes = { "v" } },
-		prev_selection = {
+		word_end_next = {
 			pre_amend = {
-				function()
-					require("visual").history.set_history_prev()
-				end,
+				motions.word_start_next,
+				{ rhs = "o", countable = false },
 			},
 			post_amend = {},
-			modes = { "n", "v" },
+			modes = { "n", "sd" },
+		},
+		WORD_end_next = {
+			pre_amend = {
+				motions.WORD_start_next,
+				{ rhs = "o", countable = false },
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_end_prev = {
+			pre_amend = {
+				motions.word_start_prev,
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_end_prev = {
+			pre_amend = {
+				motions.WORD_start_prev,
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_start_next = {
+			pre_amend = {
+				motions.word_start_next,
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_start_next = {
+			pre_amend = {
+				motions.WORD_start_next,
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		word_start_prev = {
+			pre_amend = {
+				motions.word_start_prev,
+				{ rhs = "o", countable = false },
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		WORD_start_prev = {
+			pre_amend = {
+				motions.WORD_start_prev,
+				{ rhs = "o", countable = false },
+			},
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		toggle_serendipity = { pre_amend = { "<sdt>" }, post_amend = {}, modes = { "n", "sd", "v" }, countable = false },
+		find_next = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "f" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		find_prev = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "F" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		till_next = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "t" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		till_prev = {
+			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "T" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+		repeat_command = {
+			pre_amend = { history.run_last_command },
+			post_amend = {},
+			modes = { "n", "sd", "v" },
+		},
+		prev_selection = {
+			pre_amend = {
+				history.set_history_prev,
+			},
+			post_amend = {},
+			modes = { "n", "v", "sd" },
 		},
 		next_selection = {
 			pre_amend = {
-				function()
-					require("visual").history.set_history_next()
-				end,
+				history.set_history_next,
 			},
 			post_amend = {},
-			modes = { "n", "v" },
-		},
-		line_visual = {
-			pre_amend = {
-				function()
-					require("visual").extending:enter()
-				end,
-				"V",
-			},
-			post_amend = {},
-			modes = { "n", "v" },
-		},
-		block_visual = {
-			pre_amend = {
-				function()
-					require("visual").extending:enter()
-				end,
-				"<C-v>",
-			},
-			post_amend = {},
-			modes = { "n", "v" },
+			modes = { "n", "v", "sd" },
 		},
 
 		-- mapping applied to normal mode only
-		delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
+		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
-		restart_visual = { pre_amend = { "<esc>", "v" }, post_amend = {}, modes = { "v" } },
-		delete_single_char = { pre_amend = { "<esc>", "vxgv" }, post_amend = {}, modes = { "v" } },
-		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "v" } },
-		move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "v" } },
-		move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "v" } },
-		move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "v" } },
-		move_right_then_normal = { pre_amend = { "h<esc>" }, post_amend = {}, modes = { "v" } },
-		move_down_visual = { pre_amend = { "j" }, post_amend = {}, modes = { "v" } },
-		move_up_visual = { pre_amend = { "k" }, post_amend = {}, modes = { "v" } },
-		move_left_visual = { pre_amend = { "l" }, post_amend = {}, modes = { "v" } },
-		move_right_visual = { pre_amend = { "h" }, post_amend = {}, modes = { "v" } },
+		sd_around = { pre_amend = { "<esc>", "va<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		sd_inside = { pre_amend = { "<esc>", "vi<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
+		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
+		surround_delete = {
+			pre_amend = { '<cmd>lua require("visual").surround.delete()<cr><sdi>' },
+			post_amend = {},
+			modes = { "v", "sd" },
+			countable = false,
+		},
+		surround_add = {
+			pre_amend = { '<cmd>lua require("visual").surround.add()<cr><sdi>' },
+			post_amend = {},
+			modes = { "v", "sd" },
+			countable = false,
+		},
+		surround_change = {
+			pre_amend = { '<cmd>lua require("visual").surround.change()<cr><sdi>' },
+			post_amend = {},
+			modes = { "v", "sd" },
+			countable = false,
+		},
+		restart_visual = {
+			pre_amend = { "<esc>", "<sde>", "<sdi>" },
+			post_amend = {},
+			modes = { "sd" },
+			countable = false,
+		},
+		delete_single_char = {
+			pre_amend = { "<esc>", "xgv<sdi>" },
+			post_amend = {},
+			modes = { "sd" },
+			countable = false,
+		},
+		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
+		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_right_then_normal = { pre_amend = { "h<esc>" }, post_amend = {}, modes = { "sd" } },
+		-- move_down_visual = { pre_amend = { "j" }, post_amend = {}, modes = { "sd" } },
+		-- move_up_visual = { pre_amend = { "k" }, post_amend = {}, modes = { "sd" } },
+		-- move_left_visual = { pre_amend = { "l" }, post_amend = {}, modes = { "sd" } },
+		-- move_right_visual = { pre_amend = { "h" }, post_amend = {}, modes = { "sd" } },
+		decrease_indent = { pre_amend = { "<gv" }, post_amend = {}, modes = { "v" } },
+		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
+		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },
+		increase_indent_sd = { pre_amend = { ">gv<sdi>" }, post_amend = {}, modes = { "sd" } },
 	},
 }
 
@@ -152,13 +246,68 @@ function visual.setup(options)
 	if type(options) == "table" then
 		visual.options = vim.tbl_deep_extend("force", visual.options, options)
 	end
-	extending.options = vim.tbl_deep_extend("force", extending.options, visual.options.extending)
-	history.history_size = visual.options.history_size
+	-- backup mappings
+	visual._backup_mapping = visual.utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
+
+	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
+	serendipity.unmappings = visual.options.sdunmaps
+	history.setup(visual.options)
 	mappings.unmaps(visual.options, "v")
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
-	if visual.options.treesitter_textobjects.enable then
-		compatibility.treesitter_textobjects(visual.options.treesitter_textobjects.init_key)
+	visual.enabled = true
+	-- if visual.options.treesitter_textobjects.enable then
+	-- 	compatibility.treesitter_textobjects(
+	-- 		visual.options.mappings.toggle_visual_mode,
+	-- 		visual.options.mappings.visual_inside,
+	-- 		visual.options.mappings.visual_around
+	-- 	)
+	-- end
+end
+
+function visual.disable()
+	if visual.enabled then
+		-- delete visual.nvim mappings
+		for name, lhs in pairs(visual.options.mappings) do
+			local _modes = visual.options.commands[name].modes
+			local modes = {}
+			for i = 1, #_modes do
+				if _modes[i] ~= "sd" then
+					table.insert(modes, _modes[i])
+				end
+			end
+			vim.keymap.del(modes, lhs)
+		end
+		-- for _, lhs in ipairs(visual.options.vunmaps) do
+		-- vim.keymap.del("v", lhs)
+		-- vim.keymap.del("x", lhs)
+		-- end
+		-- for _, lhs in ipairs(visual.options.nunmaps) do
+		-- vim.keymap.del("n", lhs)
+		-- end
+		-- restore original mappings
+		for _, map in ipairs(visual._backup_mapping) do
+			map.rhs = map.rhs or ""
+			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
+			local buf = map.buffer == 1
+			local mode = map.mode
+			if mode == " " then
+				mode = "v"
+			end
+			vim.keymap.set(
+				mode,
+				map.lhs,
+				map.rhs,
+				{
+					noremap = map.noremap,
+					silent = map.silent,
+					nowait = map.nowait,
+					callback = map.callback,
+					buffer = buf,
+				}
+			)
+		end
+		visual.enabled = false
 	end
 end
 
