@@ -4,7 +4,7 @@ local utils = require("modules.utils")
 local mappings = {}
 
 local function apply_key(key, countable, count)
-  -- parse countability
+	-- parse countability
 	if countable == nil then
 		if type(key) == "string" or type(key) == "function" or key.countable == nil then
 			countable = true
@@ -13,38 +13,34 @@ local function apply_key(key, countable, count)
 		end
 	end
 
-  -- apply keys with special codes replaced
-  if type(key) == "table" then
-    key = key['rhs']
-  end
+	-- apply keys with special codes replaced
+	if type(key) == "table" then
+		key = key["rhs"]
+	end
 	for _, el in ipairs(serendipity.serendipity_specialcodes(key)) do
 		if type(el) == "function" then
 			el()
 		elseif type(el) == "string" then
-      el = count .. el
+			el = count .. el
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(el, true, false, true), "n", false)
 		end
 	end
 end
 
 -- Return a function that can be used as rhs in keys-amend.nvim
-local function make_rhs(keys)
+function mappings.make_rhs(keys, history_store)
 	local pre_amend = keys.pre_amend or keys[1]
 	local post_amend = keys.post_amend or keys[2]
 	---@diagnostic disable-next-line: unused-local
 	local mode = keys.mode or keys[3]
 	local amend = keys.amend
-  local countable = keys.countable
+	local countable = keys.countable
 	if amend == nil then
 		amend = false
 	end
 
 	local function f(original)
-
-    Vdbg("Storing last command: ")
-    Vdbg(keys)
-    history.last_command = keys
-    local count = vim.v.count1
+		local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
 			apply_key(key, countable, count)
 		end
@@ -67,15 +63,13 @@ local function make_rhs(keys)
 		-- else
 		-- 	print("not pushing")
 		-- end
+		if history_store then
+			Vdbg("Storing last command: ")
+			Vdbg(keys)
+			history.last_command = keys
+		end
 	end
 	return f
-end
-
-function mappings.run_last_command(original)
-  local f = make_rhs(history.last_command)
-  Vdbg("Running last command: ")
-  Vdbg(history.last_command)
-  return f(original)
 end
 
 -- general mappings
@@ -85,7 +79,7 @@ function mappings.apply_mappings(opts)
 			vim.notify("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
-			local rhs = make_rhs(opts.commands[name])
+			local rhs = mappings.make_rhs(opts.commands[name], name~=history.repeat_mapping_name)
 			for i = 1, #modes do
 				if modes[i] == serendipity.mode_value then
 					serendipity.mappings[lhs] = rhs

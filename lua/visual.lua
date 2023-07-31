@@ -168,7 +168,7 @@ visual.options = {
 			modes = { "n", "sd" },
 		},
     repeat_command = {
-      pre_amend = { mappings.run_last_command },
+      pre_amend = { history.run_last_command },
       post_amend = {},
       modes = { "n", "sd", "v" }
     },
@@ -266,7 +266,7 @@ function visual.setup(options)
 	end
 	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
 	serendipity.unmappings = visual.options.sdunmaps
-	history.history_size = visual.options.history_size
+  history.setup(visual.options)
 	mappings.unmaps(visual.options, "v")
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
