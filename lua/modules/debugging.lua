@@ -22,7 +22,10 @@ return function(...)
 			)
 		end
 		-- Serialize the input data
-		local serialized_x = vim.inspect(...)
+		local serialized_x = ""
+		for _, v in ipairs({...}) do
+		    serialized_x = serialized_x .. vim.inspect(v)
+		end
 		-- Split the serialized string into lines
 		local lines = {}
 		for s in serialized_x:gmatch("[^\r\n]+") do
