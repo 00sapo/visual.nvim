@@ -9,7 +9,7 @@ if vim.g.loaded_visual == 1 then
 end
 vim.g.loaded_visual = 1
 
-vim.api.nvim_create_user_command("VisualEnable", require("visual").setup(), {})
-vim.api.nvim_create_user_command("VisualDisable", require("visual").disable(), {})
+vim.api.nvim_create_user_command("VisualEnable", require("visual").setup, {})
+vim.api.nvim_create_user_command("VisualDisable", require("visual").disable, {})
 
 require("visual").setup()
