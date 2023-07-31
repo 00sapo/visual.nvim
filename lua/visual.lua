@@ -47,14 +47,14 @@ visual.options = {
 		restart_visual = "'", -- collapse the visual selection to the char under cursor
 		delete_single_char = "x", -- delete the char under cursor while in visual mode
 		replace_single_char = "r", -- replace the char under cursor while in visual mode
-		move_down_then_normal = "j", -- move down and enter normal mode
-		move_up_then_normal = "k", -- move up and enter normal mode
-		move_left_then_normal = "l", -- move left and enter normal mode
-		move_right_then_normal = "h", -- move right and enter normal mode
-		move_down_visual = "<a-j>", -- move down staying in visual mode
-		move_up_visual = "<a-k>", -- move up staying in visual mode
-		move_left_visual = "<a-l>", -- move left staying in visual mode
-		move_right_visual = "<a-h>", -- move right staying in visual mode
+		-- move_down_then_normal = "j", -- move down and enter normal mode
+		-- move_up_then_normal = "k", -- move up and enter normal mode
+		-- move_left_then_normal = "l", -- move left and enter normal mode
+		-- move_right_then_normal = "h", -- move right and enter normal mode
+		-- move_down_visual = "<a-j>", -- move down staying in visual mode
+		-- move_up_visual = "<a-k>", -- move up staying in visual mode
+		-- move_left_visual = "<a-l>", -- move left staying in visual mode
+		-- move_right_visual = "<a-h>", -- move right staying in visual mode
 		surround_change = "sc", -- change chars at the extremes of the selection
 		surround_add = "sa", -- insert chars at the extremes of the selection
 		surround_delete = "sd", -- delete chars at the extremes of the selection
@@ -246,12 +246,16 @@ function visual.setup(options)
 	if type(options) == "table" then
 		visual.options = vim.tbl_deep_extend("force", visual.options, options)
 	end
+	-- backup mappings
+	visual._backup_mapping = visual.utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
+
 	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
 	serendipity.unmappings = visual.options.sdunmaps
 	history.setup(visual.options)
 	mappings.unmaps(visual.options, "v")
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
+	visual.enabled = true
 	-- if visual.options.treesitter_textobjects.enable then
 	-- 	compatibility.treesitter_textobjects(
 	-- 		visual.options.mappings.toggle_visual_mode,
@@ -259,6 +263,52 @@ function visual.setup(options)
 	-- 		visual.options.mappings.visual_around
 	-- 	)
 	-- end
+end
+
+function visual.disable()
+	if visual.enabled then
+		-- delete visual.nvim mappings
+		for name, lhs in pairs(visual.options.mappings) do
+			local _modes = visual.options.commands[name].modes
+			local modes = {}
+			for i = 1, #_modes do
+				if _modes[i] ~= "sd" then
+					table.insert(modes, _modes[i])
+				end
+			end
+			vim.keymap.del(modes, lhs)
+		end
+		-- for _, lhs in ipairs(visual.options.vunmaps) do
+		-- vim.keymap.del("v", lhs)
+		-- vim.keymap.del("x", lhs)
+		-- end
+		-- for _, lhs in ipairs(visual.options.nunmaps) do
+		-- vim.keymap.del("n", lhs)
+		-- end
+		-- restore original mappings
+		for _, map in ipairs(visual._backup_mapping) do
+			map.rhs = map.rhs or ""
+			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
+			local buf = map.buffer == 1
+			local mode = map.mode
+			if mode == " " then
+				mode = "v"
+			end
+			vim.keymap.set(
+				mode,
+				map.lhs,
+				map.rhs,
+				{
+					noremap = map.noremap,
+					silent = map.silent,
+					nowait = map.nowait,
+					callback = map.callback,
+					buffer = buf,
+				}
+			)
+		end
+		visual.enabled = false
+	end
 end
 
 return visual
