@@ -54,14 +54,12 @@ function mappings.make_rhs(keys, history_store)
 		end
 
 		-- if utils.mode_is_visual() then
-		-- 	-- Save current selection to history
-		-- 	local selection = {
-		-- 		vim.fn.getpos("v"),
-		-- 		vim.fn.getpos("."),
-		-- 	}
-		-- 	history:push(selection)
+			-- Save current selection to history
+      local selection = utils.get_selection()
+      Vdbg("Pushing selection: ", selection)
+			history:push(selection)
 		-- else
-		-- 	print("not pushing")
+		-- 	Vdbg("not pushing")
 		-- end
 		if history_store then
 			Vdbg("Storing last command: ")

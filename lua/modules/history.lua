@@ -100,22 +100,12 @@ function history:forward()
 	return history.selection_history[history.cur_history_idx]
 end
 
-function history.set_selection(selection)
-  if selection ~= nil then
-    utils.enter("n")
-    -- print(vim.inspect(selection))
-    vim.fn.cursor(selection[1][2], selection[1][3])
-    utils.enter("v")
-    vim.fn.cursor(selection[2][2], selection[2][3])
-  end
-end
-
 function history.set_history_next()
-	history.set_selection(history:forward())
+	utils.set_selection(history:forward())
 end
 
 function history.set_history_prev()
-	history.set_selection(history:back())
+	utils.set_selection(history:back())
 end
 
 return history

@@ -82,7 +82,9 @@ function utils.mode_is_visual_arg(mode)
 end
 
 function utils.mode_is_visual()
+  vim.api.nvim_feedkeys("", "x", true)
 	local mode = vim.fn.mode()
+  Vdbg("Detected mode: " .. mode)
 	return utils.mode_is_visual_arg(mode)
 end
 

@@ -62,34 +62,34 @@ visual.options = {
 		decrease_indent = "<", -- decrease indent in visual mode
 		increase_indent_sd = ">", -- increase indent in serendipity mode
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
-    repeat_command = ","
+		repeat_command = ",",
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},
 	commands = { -- what each command name does
-	-- 	example_command = {
-	-- 		-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
-	-- 		-- The `countable` parameter allows each command to be counted.
-	-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
-	-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
-	-- 		-- The outer level has precedence on the inner level.
-  -- 		countable = true,
-	-- 		pre_amend = {
-	-- 			{ rhs = "<esc>v", countable = false },
-	-- 			{ rhs = "E<sdi>", countable = true },
-	-- 		},
-	-- 		-- <sdi> is a special code meaning "enter serendipity mode"
-	-- 		-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
-	-- 		post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
-	-- 		modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
-	-- 		amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
-	-- 		-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
-	-- 	},
+		-- 	example_command = {
+		-- 		-- Send the following keys to standard nvim, this can also be a function, or of mix of strings and functions
+		-- 		-- The `countable` parameter allows each command to be counted.
+		-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
+		-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
+		-- 		-- The outer level has precedence on the inner level.
+		-- 		countable = true,
+		-- 		pre_amend = {
+		-- 			{ rhs = "<esc>v", countable = false },
+		-- 			{ rhs = "E<sdi>", countable = true },
+		-- 		},
+		-- 		-- <sdi> is a special code meaning "enter serendipity mode"
+		-- 		-- similarly, you can use <sde> and <sdt> for exit and toggle serendipity mode
+		-- 		post_amend = {}, -- Same as above, but run after the amended key (see the `amend` parameter below)
+		-- 		modes = { "n", "sd" }, -- A list of modes where this command will be mapped; "sd" is serendipity mode
+		-- 		amend = false, -- if `amend` is true, the lhs is run as mapped by other plugins or configs (thanks keys-amend.nvim!)
+		-- 		-- You can also avoid the keys pre_amend, amend, post_amend, mode, and just use positional arguments. You can also avoid the `amend` parameter and it will default to false. Setting it to true may help avoiding collisions with other plugins.
+		-- 	},
 
 		word_end_next = {
 			pre_amend = {
 				motions.word_start_next,
-        {rhs = "o", countable = false}
+				{ rhs = "o", countable = false },
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -97,7 +97,7 @@ visual.options = {
 		WORD_end_next = {
 			pre_amend = {
 				motions.WORD_start_next,
-        {rhs = "o", countable = false}
+				{ rhs = "o", countable = false },
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -133,7 +133,7 @@ visual.options = {
 		word_start_prev = {
 			pre_amend = {
 				motions.word_start_prev,
-        {rhs = "o", countable = false}
+				{ rhs = "o", countable = false },
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -141,7 +141,7 @@ visual.options = {
 		WORD_start_prev = {
 			pre_amend = {
 				motions.WORD_start_prev,
-        {rhs = "o", countable = false}
+				{ rhs = "o", countable = false },
 			},
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -167,43 +167,25 @@ visual.options = {
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
-    repeat_command = {
-      pre_amend = { history.run_last_command },
-      post_amend = {},
-      modes = { "n", "sd", "v" }
-    },
-		-- prev_selection = {
-		-- 	pre_amend = {
-		-- 		function()
-		-- 			require("visual").history.set_history_prev()
-		-- 		end,
-		-- 	},
-		-- 	post_amend = {},
-		-- 	modes = { "n", "v" },
-		-- },
-		-- next_selection = {
-		-- 	pre_amend = {
-		-- 		function()
-		-- 			require("visual").history.set_history_next()
-		-- 		end,
-		-- 	},
-		-- 	post_amend = {},
-		-- 	modes = { "n", "v" },
-		-- },
-		-- line_visual = {
-		-- 	pre_amend = {
-		-- 		"<sdi>V",
-		-- 	},
-		-- 	post_amend = {},
-		-- 	modes = { "sd" },
-		-- },
-		-- block_visual = {
-		-- 	pre_amend = {
-		-- 		"<sdi><C-v>",
-		-- 	},
-		-- 	post_amend = {},
-		-- 	modes = { "sd" },
-		-- },
+		repeat_command = {
+			pre_amend = { history.run_last_command },
+			post_amend = {},
+			modes = { "n", "sd", "v" },
+		},
+		prev_selection = {
+			pre_amend = {
+				history.set_history_prev,
+			},
+			post_amend = {},
+			modes = { "n", "v", "sd" },
+		},
+		next_selection = {
+			pre_amend = {
+				history.set_history_next,
+			},
+			post_amend = {},
+			modes = { "n", "v", "sd" },
+		},
 
 		-- mapping applied to normal mode only
 		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
@@ -266,7 +248,7 @@ function visual.setup(options)
 	end
 	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
 	serendipity.unmappings = visual.options.sdunmaps
-  history.setup(visual.options)
+	history.setup(visual.options)
 	mappings.unmaps(visual.options, "v")
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
