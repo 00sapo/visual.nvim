@@ -54,10 +54,10 @@ function mappings.make_rhs(keys, history_store)
 		end
 
 		-- if utils.mode_is_visual() then
-			-- Save current selection to history
-      local selection = utils.get_selection()
-      Vdbg("Pushing selection: ", selection)
-			history:push(selection)
+		-- 	-- Save current selection to history
+  --     local selection = utils.get_selection()
+  --     Vdbg("Pushing selection: ", selection)
+		-- 	history:push(selection)
 		-- else
 		-- 	Vdbg("not pushing")
 		-- end
