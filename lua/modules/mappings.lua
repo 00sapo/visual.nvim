@@ -92,7 +92,7 @@ end
 -- unmappings
 function mappings.unmaps(opts, mode)
 	local u = opts[mode .. "unmaps"]
-	for _, v in pairs(u) do
+	for _, v in ipairs(u) do
 		vim.keymap.set(mode, v, function() end, { nowait = true })
 		if mode == "v" then
 			vim.keymap.set("x", v, function() end, { nowait = true })
