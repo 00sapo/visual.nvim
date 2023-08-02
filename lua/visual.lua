@@ -19,7 +19,7 @@ visual.options = {
 	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
 	sdunmaps = {},
 	vunmaps = {},
-	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "s", "gc", ">", "<" },
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "gc", ">", "<" },
 	history_size = 50, -- how many selections we should remember in the history
 	serendipity = {}, -- options for serendipity mode
 	mappings = {
@@ -41,7 +41,7 @@ visual.options = {
 		insert_at_cursor = "i", -- insert at cursor position in visual mode
 		sd_inside = "I", -- select inside from serendipity mode
 		sd_around = "A", -- select around from serendipity mode
-		-- line_visual = "x", -- enter line-visual mode
+		line_visual = "d", -- enter line-visual mode
 		-- block_visual = "<S-x>", -- enter block-visual mode
 		-- delete_char = "y", -- delete char under cursor
 		restart_visual = "'", -- collapse the visual selection to the char under cursor
@@ -62,7 +62,7 @@ visual.options = {
 		decrease_indent = "<", -- decrease indent in visual mode
 		increase_indent_sd = ">", -- increase indent in serendipity mode
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
-		repeat_command = ",",
+		repeat_command = "<A-.>",
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},
@@ -148,22 +148,22 @@ visual.options = {
 		},
 		toggle_serendipity = { pre_amend = { "<sdt>" }, post_amend = {}, modes = { "n", "sd", "v" }, countable = false },
 		find_next = {
-			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "f" },
+			pre_amend = { { rhs = "<sdi>", countable = false }, "f" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		find_prev = {
-			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "F" },
+			pre_amend = { { rhs = "<sdi>", countable = false }, "F" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		till_next = {
-			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "t" },
+			pre_amend = { { rhs = "<sdi>", countable = false }, "t" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		till_prev = {
-			pre_amend = { { rhs = "<esc>", countable = false }, { rhs = "v<sdi>", countable = false }, "T" },
+			pre_amend = { { rhs = "<sdi>", countable = false }, "T" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
@@ -186,6 +186,11 @@ visual.options = {
 			post_amend = {},
 			modes = { "n", "v", "sd" },
 		},
+    line_visual = {
+      pre_amend = {{ rhs="<sdi>V", countable=false }},
+      post_amend = {},
+      modes = { "n" }
+    },
 
 		-- mapping applied to normal mode only
 		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
@@ -195,27 +200,27 @@ visual.options = {
 		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
 		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		surround_delete = {
-			pre_amend = { '<cmd>lua require("visual").surround.delete()<cr><sdi>' },
+			pre_amend = { surround.delete, '<sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_add = {
-			pre_amend = { '<cmd>lua require("visual").surround.add()<cr><sdi>' },
+			pre_amend = { surround.add, '<sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_change = {
-			pre_amend = { '<cmd>lua require("visual").surround.change()<cr><sdi>' },
+			pre_amend = { surround.change, '<sdi>' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		restart_visual = {
-			pre_amend = { "<esc>", "<sde>", "<sdi>" },
+			pre_amend = { "<esc>v" },
 			post_amend = {},
-			modes = { "sd" },
+			modes = { "sd", "v" },
 			countable = false,
 		},
 		delete_single_char = {

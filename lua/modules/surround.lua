@@ -99,6 +99,8 @@ function M.change()
 	-- replace char_pair at start_pos and end_pos
 	M.replacechar(first_pos, char_pair[1])
 	M.replacechar(second_pos, char_pair[2])
+  first_pos = decrement_pos(first_pos)
+  second_pos = decrement_pos(second_pos)
 	-- reset selection
 	utils.set_selection({first_pos, second_pos})
 end
