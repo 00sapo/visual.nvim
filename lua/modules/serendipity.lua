@@ -12,7 +12,7 @@ local M = {
 	options = { -- filled from visual.options.serendipity
 		guicursor = "a:hor100",
 		highlight = "guibg=LightCyan guifg=none",
-		v_got_to_visual = true, -- if true, pressing v leads to visual mode, not to normal allows to select text objects like viw vaw
+		v_go_to_visual = true, -- if true, pressing v leads to visual mode, not to normal allows to select text objects like viw vaw
 	},
 }
 M.active = false
@@ -36,16 +36,11 @@ function M.serendipity_specialcodes(str)
 		if code == M.term_codes.toggle then
 			func = M.toggle
 		elseif code == M.term_codes.init then
-			func = function()
-				-- M.avoid_next_exit = true
-				M.init()
-			end
+			func = M.init
 		elseif code == M.term_codes.exit then
 			func = M.exit
 		end
-		table.insert(out, function()
-			func()
-		end)
+		table.insert(out, func)
 		prev_code_end = next_code_end
 		next_code_start, next_code_end, code = utils.find_first_pattern(str, codes, prev_code_end + 1)
 	end
@@ -58,20 +53,26 @@ function M.serendipity_specialcodes(str)
 end
 
 function M.init()
+
+	-- Enter visual mode
+  vim.api.nvim_feedkeys("", "x", true)
+  local mode = vim.fn.mode()
+	if not utils.mode_is_visual_arg(mode) then
+		-- we need to press <esc> to enter visual mode, so let's do it only if we
+		-- are not in visual mode, otherwise we lose the selection
+    Vdbg("Entering visual mode at <sdi>")
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>v", true, false, true), "n", false)
+  vim.api.nvim_feedkeys("", "x", true)
+	end
+
 	if M.active then
+    Vdbg("Serendipity already active!")
 		return
 	end
 	M.active = true
-	M._old_mode = vim.fn.mode()
+	M._old_mode = mode
 	M._old_cursor = vim.o.guicursor
 	M._old_highlight = vim.api.nvim_exec2("hi Visual", { output = true }).output:gsub("xxx", "")
-
-	-- Enter visual mode
-	if not utils.mode_is_visual_arg(M._old_mode) then
-		-- we need to press <esc> to enter visual mode, so let's do it only if we
-		-- are not in visual mode, otherwise we lose the selection
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>v", true, false, true), "n", false)
-	end
 	-- Change cursor
 	vim.opt.guicursor = M.options.guicursor
 
@@ -91,7 +92,7 @@ function M.init()
 		utils.keys_amend_noremap_nowait(lhs, rhs, "v")
 	end
 
-	if M.options.v_got_to_visual then
+	if M.options.v_go_to_visual then
 		vim.keymap.set("v", "v", function()
 			M.exit()
 		end, { noremap = true, nowait = true })
