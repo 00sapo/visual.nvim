@@ -37,6 +37,9 @@ visual.options = {
 		find_prev = "F", -- select to previous char
 		till_next = "t", -- select till next char
 		till_prev = "T", -- select till previous char
+		start_line = "0", -- select to start of line
+		start_text = "_", -- select to start of text
+		end_line = "$", -- select to end of line
 		append_at_cursor = "a", -- append at cursor position in visual mode
 		insert_at_cursor = "i", -- insert at cursor position in visual mode
 		sd_inside = "I", -- select inside from serendipity mode
@@ -148,22 +151,37 @@ visual.options = {
 		},
 		toggle_serendipity = { pre_amend = { "<sdt>" }, post_amend = {}, modes = { "n", "sd", "v" }, countable = false },
 		find_next = {
-			pre_amend = { { rhs = "<sdi>", countable = false }, "f" },
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "f" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		find_prev = {
-			pre_amend = { { rhs = "<sdi>", countable = false }, "F" },
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "F" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		till_next = {
-			pre_amend = { { rhs = "<sdi>", countable = false }, "t" },
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "t" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
 		till_prev = {
-			pre_amend = { { rhs = "<sdi>", countable = false }, "T" },
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "T" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+    start_line = {
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "0" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+    start_text = {
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "_" },
+			post_amend = {},
+			modes = { "n", "sd" },
+		},
+    end_line = {
+			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "$" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
@@ -195,24 +213,24 @@ visual.options = {
 		-- mapping applied to normal mode only
 		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
-		sd_around = { pre_amend = { "<esc>", "va<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
-		sd_inside = { pre_amend = { "<esc>", "vi<sdi>" }, post_amend = {}, modes = { "sd" }, countable = false },
+		sd_around = { pre_amend = { "<esc>", "<sdi>a" }, post_amend = {}, modes = { "sd" }, countable = false },
+		sd_inside = { pre_amend = { "<esc>", "<sdi>i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
 		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		surround_delete = {
-			pre_amend = { surround.delete, '<sdi>' },
+			pre_amend = { surround.delete, '<sdi>o' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_add = {
-			pre_amend = { surround.add, '<sdi>' },
+			pre_amend = { surround.add, '<sdi>o' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_change = {
-			pre_amend = { surround.change, '<sdi>' },
+			pre_amend = { surround.change, '<sdi>o' },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,

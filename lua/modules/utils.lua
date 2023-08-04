@@ -78,6 +78,7 @@ function utils.enter(mode)
 end
 
 function utils.mode_is_visual_arg(mode)
+  vim.api.nvim_feedkeys("", "x", true)
 	return mode:sub(1, 1) == "v" or mode:sub(1, 1) == "V" or mode:sub(1, 1) == ""
 end
 
