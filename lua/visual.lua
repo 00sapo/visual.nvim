@@ -71,6 +71,8 @@ visual.options = {
 		-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
 		-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
 		-- 		-- The outer level has precedence on the inner level.
+    -- 		-- If a command is a function, `countable` is ignored (you shoulkd take
+    -- 		care of v:count in the function).
 		-- 		countable = true,
 		-- 		pre_amend = {
 		-- 			{ rhs = "<esc>v", countable = false },
