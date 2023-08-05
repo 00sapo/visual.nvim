@@ -12,6 +12,7 @@ local function apply_key(key, countable, count)
 			countable = key.countable
 		end
 	end
+	Vdbg("Parsing countability: " .. tostring(countable))
 
 	-- apply keys with special codes replaced
 	if type(key) == "table" then
@@ -21,7 +22,10 @@ local function apply_key(key, countable, count)
 		if type(el) == "function" then
 			el()
 		elseif type(el) == "string" then
-			el = count .. el
+			if countable and count > 1 then
+				el = count .. el
+			end
+      Vdbg("Applying key: ".. el)
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(el, true, false, true), "n", false)
 		end
 	end
