@@ -212,8 +212,8 @@ visual.options = {
 		-- mapping applied to visual mode only
 		sd_around = { pre_amend = { "<esc>", "<sdi>a" }, post_amend = {}, modes = { "sd" }, countable = false },
 		sd_inside = { pre_amend = { "<esc>", "<sdi>i" }, post_amend = {}, modes = { "sd" }, countable = false },
-		append_at_cursor = { pre_amend = { "<esc>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
-		insert_at_cursor = { pre_amend = { "<esc>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
+		append_at_cursor = { pre_amend = { "<esc><sde>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
+		insert_at_cursor = { pre_amend = { "<esc><sde>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		surround_delete = {
 			pre_amend = { surround.delete, '<sdi>o' },
 			post_amend = {},
@@ -244,7 +244,7 @@ visual.options = {
 			modes = { "sd" },
 			countable = false,
 		},
-		replace_single_char = { pre_amend = { "<esc>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
+		replace_single_char = { pre_amend = { "<esc><sde>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
 		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
