@@ -2,11 +2,17 @@ local keys_amend = require("visual.keymap-amend")
 
 local utils = {}
 
-function utils.feedkeys_noserendipityautocmd(m, k, r)
-	local sd = require("visual.serendipity")
-	-- print("avoiding next exit 3")
-	sd.avoid_next_exit = true
-	vim.api.nvim_feedkeys(m, k, r)
+-- return a function that feeds keys to vim, ask for some argument, feed the argument
+-- `expr` is the argument for `vim.fn.getchar`
+function utils.feedkey_witharg(keys, expr)
+	return function()
+		-- keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
+    Vdbg("keys: " .. keys)
+		vim.api.nvim_feedkeys(keys, "n", true)
+		local arg = string.char(vim.fn.getchar(expr))
+    Vdbg("arg: " .. arg)
+		vim.api.nvim_feedkeys(arg, "n", true)
+	end
 end
 
 function utils.find_first_pattern(str, patterns, start)
@@ -78,14 +84,14 @@ function utils.enter(mode)
 end
 
 function utils.mode_is_visual_arg(mode)
-  vim.api.nvim_feedkeys("", "x", true)
+	vim.api.nvim_feedkeys("", "x", true)
 	return mode:sub(1, 1) == "v" or mode:sub(1, 1) == "V" or mode:sub(1, 1) == ""
 end
 
 function utils.mode_is_visual()
-  vim.api.nvim_feedkeys("", "x", true)
+	vim.api.nvim_feedkeys("", "x", true)
 	local mode = vim.fn.mode()
-  Vdbg("Detected mode: " .. mode)
+	Vdbg("Detected mode: " .. mode)
 	return utils.mode_is_visual_arg(mode)
 end
 

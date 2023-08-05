@@ -244,7 +244,7 @@ visual.options = {
 			modes = { "sd" },
 			countable = false,
 		},
-		replace_single_char = { pre_amend = { "<esc><sde>", "r" }, post_amend = {}, modes = { "sd" }, countable = false },
+		replace_single_char = { pre_amend = { "<esc>", utils.feedkey_witharg("r", nil)}, post_amend = {}, modes = { "sd" }, countable = false },
 		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
