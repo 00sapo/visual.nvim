@@ -59,7 +59,7 @@ function M.is_word_boundary(pos, direction, punctuation)
 	end
 	if string.match(next_char, "%s") then
 		class2 = 1
-	elseif punctuation and string.match(next_char, "%p") and string.match(this_char, kwpattern) then
+	elseif punctuation and string.match(next_char, "%p") and string.match(next_char, kwpattern) then
 		class2 = 2
 	else
 		class2 = 3
@@ -74,8 +74,12 @@ function M.is_word_boundary(pos, direction, punctuation)
 	end
 
 	if class1 ~= class2 or (end_of_line and direction == "r") or (start_of_line and direction == "l") then
+    Vdbg("detected word boundary with " .. direction .. " and " .. tostring(punctuation))
+    Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
 		return true
 	else
+    Vdbg("not detected word boundary with " .. direction .. " and " .. tostring(punctuation))
+    Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
 		return false
 	end
 end
