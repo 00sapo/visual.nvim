@@ -53,20 +53,19 @@ function M.serendipity_specialcodes(str)
 end
 
 function M.init()
-
 	-- Enter visual mode
-  vim.api.nvim_feedkeys("", "x", true)
-  local mode = vim.fn.mode()
+	vim.api.nvim_feedkeys("", "x", true)
+	local mode = vim.fn.mode()
 	if not utils.mode_is_visual_arg(mode) then
 		-- we need to press <esc> to enter visual mode, so let's do it only if we
 		-- are not in visual mode, otherwise we lose the selection
-    Vdbg("Entering visual mode at <sdi>")
+		Vdbg("Entering visual mode at <sdi>")
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>v", true, false, true), "n", false)
-  vim.api.nvim_feedkeys("", "x", true)
+		vim.api.nvim_feedkeys("", "x", true)
 	end
 
 	if M.active then
-    Vdbg("Serendipity already active!")
+		Vdbg("Serendipity already active!")
 		return
 	end
 	M.active = true
