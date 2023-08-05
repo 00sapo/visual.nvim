@@ -27,8 +27,8 @@ end
 
 -- mapping the write function
 if dbg then
-  vim.api.nvim_create_user_command('Debug', write, {})
-  vim.keymap.set({"n", "v", "i"}, "<c-s-d>", write, {nowait=true})
+	vim.api.nvim_create_user_command("Debug", write, {})
+	vim.keymap.set({ "n", "v", "i" }, "<c-s-d>", write, { nowait = true })
 end
 
 --- Function to debug and log serialized string to a buffer
@@ -38,7 +38,14 @@ return function(...)
 	-- Check if debug mode is enabled
 	if dbg then
 		-- Serialize the input data
-		local serialized_x = ""
+		local upf = debug.getinfo(2)
+		local serialized_x = "------------------------------------------------\n"
+			.. upf.short_src
+			.. " - "
+			.. upf.name
+			.. ":"
+			.. upf.currentline
+			.. "\n"
 		for _, v in ipairs({ ... }) do
 			serialized_x = serialized_x .. vim.inspect(v)
 		end
