@@ -103,6 +103,15 @@ function M.WORD_start_prev()
 	M.word_motion(false, "l")
 end
 
+local function check_side(direction)
+  local s = utils.get_selection()
+  if direction == "r" then
+    return s[2][2] > s[1][2] or (s[2][3] > s[1][3] and s[2][2] == s[1][2])
+  elseif direction == "l" then
+    return s[2][2] < s[1][2] or (s[2][3] < s[1][3] and s[2][2] == s[1][2])
+  end
+end
+
 function M.word_motion(punctuation, side)
 	local count1 = vim.v.count1
 
@@ -123,12 +132,10 @@ function M.word_motion(punctuation, side)
 	end
 
 	-- if we are not at proper side, change it
-	Vdbg("---------------------------------")
 	local boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
 	if sd.active and not boundary then
-		-- if we have selected multiple lines, do nothing
-		local selection = utils.get_selection()
-		if selection[1][2] == selection[2][2] then
+    -- if the cursor is not on the side `side`
+    if not check_side(side) then
 			Vdbg("o")
 			vim.api.nvim_feedkeys("o", "n", true)
 			boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
