@@ -287,6 +287,7 @@ function visual.disable()
 	if visual.enabled then
 		-- delete visual.nvim mappings
 		for name, lhs in pairs(visual.options.mappings) do
+      -- changing modes so that it doesn't include `sd`
 			local _modes = visual.options.commands[name].modes
 			local modes = {}
 			for i = 1, #_modes do
@@ -294,15 +295,20 @@ function visual.disable()
 					table.insert(modes, _modes[i])
 				end
 			end
-			vim.keymap.del(modes, lhs)
+      if #modes > 0 then
+        Vdbg("Deleting mapping " .. lhs .. " in mode " .. table.concat(modes, ","))
+        vim.keymap.del(modes, lhs)
+      end
 		end
-		-- for _, lhs in ipairs(visual.options.vunmaps) do
-		-- vim.keymap.del("v", lhs)
-		-- vim.keymap.del("x", lhs)
-		-- end
-		-- for _, lhs in ipairs(visual.options.nunmaps) do
-		-- vim.keymap.del("n", lhs)
-		-- end
+		for _, lhs in ipairs(visual.options.vunmaps) do
+		    Vdbg("Deleting mapping " .. lhs .. " in visual mode")
+		    pcall(function() vim.keymap.del("v", lhs) end)
+		    pcall(function() vim.keymap.del("x", lhs) end)
+		end
+		for _, lhs in ipairs(visual.options.nunmaps) do
+		    Vdbg("Deleting mapping " .. lhs .. " in normal mode")
+		    pcall(function() vim.keymap.del("n", lhs) end)
+		end
 		-- restore original mappings
 		for _, map in ipairs(visual._backup_mapping) do
 			map.rhs = map.rhs or ""
