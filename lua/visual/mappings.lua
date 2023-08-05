@@ -1,6 +1,6 @@
-local history = require("modules.history")
-local serendipity = require("modules.serendipity")
-local utils = require("modules.utils")
+local history = require("visual.history")
+local serendipity = require("visual.serendipity")
+local utils = require("visual.utils")
 local mappings = {}
 
 local function apply_key(key, countable, count)

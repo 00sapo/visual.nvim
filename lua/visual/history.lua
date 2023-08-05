@@ -4,14 +4,14 @@ history.last_command = nil
 history.selection_history = {}
 history.cur_history_idx = 0
 
-local utils = require('modules.utils')
+local utils = require('visual.utils')
 
 function history.setup(opts)
 	history.history_size = opts.history_size
 end
 
 function history.run_last_command(original)
-  local make_rhs = require('modules.mappings').make_rhs
+  local make_rhs = require('visual.mappings').make_rhs
 	if history.last_command == nil then
 		return
 	end

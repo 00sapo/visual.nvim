@@ -1,4 +1,4 @@
-local utils = require("modules.utils")
+local utils = require("visual.utils")
 local M = {}
 M.options = {
 	matches = {

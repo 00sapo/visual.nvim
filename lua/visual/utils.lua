@@ -1,9 +1,9 @@
-local keys_amend = require("modules.keymap-amend")
+local keys_amend = require("visual.keymap-amend")
 
 local utils = {}
 
 function utils.feedkeys_noserendipityautocmd(m, k, r)
-	local sd = require("modules.serendipity")
+	local sd = require("visual.serendipity")
 	-- print("avoiding next exit 3")
 	sd.avoid_next_exit = true
 	vim.api.nvim_feedkeys(m, k, r)

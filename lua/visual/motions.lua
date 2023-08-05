@@ -1,5 +1,5 @@
-local sd = require("modules.serendipity")
-local utils = require("modules.utils")
+local sd = require("visual.serendipity")
+local utils = require("visual.utils")
 local M = {}
 
 local unpack = unpack or table.unpack

@@ -1,4 +1,4 @@
-local utils = require("modules.utils")
+local utils = require("visual.utils")
 
 local M = {
 	mode_value = "sd", -- special mode used in commands
@@ -105,7 +105,7 @@ function M.init()
 		pattern = "*",
 		callback = function()
 			if not utils.mode_is_visual_arg(vim.v.event.new_mode) then
-				require("visual").serendipity.exit()
+				require("visual.serendipity").exit()
 			end
 		end,
 	})

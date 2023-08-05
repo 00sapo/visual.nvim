@@ -1,19 +1,14 @@
 local visual = {}
 
-Vdbg = require("modules.debugging")
+Vdbg = require("visual.debugging")
 
-local mappings = require("modules.mappings")
-local history = require("modules.history")
-local serendipity = require("modules.serendipity")
--- local compatibility = require("modules.compatibility")
-local surround = require("modules.surround")
-local motions = require("modules.motions")
-
-visual.utils = require("modules.utils")
-visual.mappings = mappings
-visual.history = history
-visual.serendipity = serendipity
-visual.surround = surround
+local mappings = require("visual.mappings")
+local history = require("visual.history")
+local serendipity = require("visual.serendipity")
+-- local compatibility = require("visual.compatibility")
+local surround = require("visual.surround")
+local motions = require("visual.motions")
+local utils = require("visual.utils")
 
 visual.options = {
 	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
@@ -270,7 +265,7 @@ function visual.setup(options)
 		visual.options = vim.tbl_deep_extend("force", visual.options, options)
 	end
 	-- backup mappings
-	visual._backup_mapping = visual.utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
+	visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
 
 	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
 	serendipity.unmappings = visual.options.sdunmaps
