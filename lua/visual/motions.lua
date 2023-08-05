@@ -102,7 +102,7 @@ end
 function M.word_motion(punctuation, side)
 	local count1 = vim.v.count1
 
-  -- choosing actions
+	-- choosing actions
 	local w, e
 	if side == "r" and punctuation then
 		w = "w"
@@ -118,51 +118,53 @@ function M.word_motion(punctuation, side)
 		e = "B"
 	end
 
-  -- if we are not at proper side, change it
-  Vdbg("---------------------------------")
-	local oside = "l"
-	if side == "l" then
-		oside = "r"
-	end
-  if sd.active and M.is_word_boundary(utils.get_cursor(), oside, punctuation) then
-    Vdbg("o")
-		vim.api.nvim_feedkeys("o", "n", true)
+	-- if we are not at proper side, change it
+	Vdbg("---------------------------------")
+	local boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
+	if sd.active and not boundary then
+		-- if we have selected multiple lines, do nothing
+		local selection = utils.get_selection()
+		if selection[1][2] == selection[2][2] then
+			Vdbg("o")
+			vim.api.nvim_feedkeys("o", "n", true)
+			boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
+		end
 	end
 
 	-- handle pre-selection stuffs
-	if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
+	if boundary then
 		if sd.active then
-      Vdbg("<esc>")
+			Vdbg("<esc>")
 			utils.enter("n")
-      Vdbg(w)
+			Vdbg(w)
 			vim.api.nvim_feedkeys(w, "n", true)
 			-- if after w, we are still at the right-side boundary, this is a
 			-- one-char word
 			if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
-        Vdbg("c-1")
+				Vdbg("c-1")
 				count1 = vim.v.count1 - 1
 			end
 		elseif vim.v.count1 > 1 then
-      Vdbg("c-1")
+			Vdbg("c-1")
 			count1 = vim.v.count1 - 1
 		end
-  end
+	end
 
 	if sd.active then
-    Vdbg("<esc>")
+		Vdbg("<esc>")
 		utils.enter("n")
-    vim.api.nvim_feedkeys("", "x", true)
+		vim.api.nvim_feedkeys("", "x", true)
 	end
-  Vdbg("<sdi>")
+	Vdbg("<sdi>")
 	sd.init()
 
 	-- Move the cursor till the count-th end of word.
 	for _ = 1, count1 do
-    Vdbg(e)
+		Vdbg(e)
 		vim.api.nvim_feedkeys(e, "n", true)
 	end
 
-  Vdbg("o")
+	Vdbg("o")
 	vim.api.nvim_feedkeys("o", "n", true)
 end
 
