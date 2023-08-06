@@ -1,42 +1,42 @@
-local dbg = false
-
-local window = nil
-local buffer = nil
-
-local heap = {}
+local M = {}
+M.dbg = false
+M.window = nil
+M.buffer = nil
+M.heap = {}
 
 local function write()
-	if dbg then
+	if M.dbg then
 		-- Check if buffer is not initialized
-		if buffer == nil then
+		if M.buffer == nil then
 			-- Set the buffer to the `buffer` variable
-			buffer = vim.api.nvim_create_buf(false, true)
+			M.buffer = vim.api.nvim_create_buf(false, true)
 			-- Create a window at the bottom
-			window = vim.api.nvim_open_win(
-				buffer,
+			M.window = vim.api.nvim_open_win(
+				M.buffer,
 				false,
 				{ relative = "editor", width = 150, height = 20, col = 12, row = 23 }
 			)
 		end
 		-- Append the lines to the bottom of the buffer
-		vim.api.nvim_buf_set_lines(buffer, -1, -1, false, heap)
+		vim.api.nvim_buf_set_lines(M.buffer, -1, -1, false, M.heap)
 		-- scroll the window to the bottom
-		vim.api.nvim_win_set_cursor(window, { vim.api.nvim_buf_line_count(buffer), 0 })
+		vim.api.nvim_win_set_cursor(M.window, { vim.api.nvim_buf_line_count(M.buffer), 0 })
     -- empty the heap
-    heap = {}
+    M.heap = {}
 	end
 end
 
 local function clean()
-  if dbg then
-    if buffer ~= nil then
-      vim.api.nvim_buf_set_lines(buffer, 0, -1, false, {""})
+  if M.dbg then
+    M.heap = {}
+    if M.buffer ~= nil then
+      vim.api.nvim_buf_set_lines(M.buffer, 0, -1, false, {""})
     end
   end
 end
 
 -- mapping the write function
-if dbg then
+if M.dbg then
 	vim.api.nvim_create_user_command("VdbgUpdate", write, {})
 	vim.keymap.set({ "n", "v", "i" }, "<a-d>u", write, { nowait = true })
 	vim.api.nvim_create_user_command("VdbgClean", clean, {})
@@ -48,7 +48,7 @@ end
 -- @return nil
 return function(...)
 	-- Check if debug mode is enabled
-	if dbg then
+	if M.dbg then
 		-- Serialize the input data
 		local upf = debug.getinfo(2)
 		local serialized_x = "------------------------------------------------\n"
@@ -63,7 +63,7 @@ return function(...)
 		end
 		-- Split the serialized string into lines
 		for s in serialized_x:gmatch("[^\r\n]+") do
-			table.insert(heap, s)
+			table.insert(M.heap, s)
 		end
 	end
 end
