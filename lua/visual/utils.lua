@@ -8,10 +8,10 @@ local utils = {}
 function utils.feedkey_witharg(keys, expr)
 	return function()
 		-- keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
-    Vdbg("keys: " .. keys)
+		Vdbg("keys: " .. keys)
 		vim.api.nvim_feedkeys(keys, "n", true)
 		local arg = string.char(vim.fn.getchar(expr))
-    Vdbg("arg: " .. arg)
+		Vdbg("arg: " .. arg)
 		vim.api.nvim_feedkeys(arg, "n", true)
 	end
 end
@@ -50,7 +50,15 @@ end
 function utils.set_selection(selection)
 	local start_pos, end_pos = selection[1], selection[2]
 	local esc_tc = vim.api.nvim_replace_termcodes("<esc>", true, true, true)
-	local args = esc_tc .. start_pos[2] .. "G0" .. start_pos[3] .. "lv" .. end_pos[2] .. "G0" .. end_pos[3] .. "l"
+	local args = esc_tc .. start_pos[2] .. "G0"
+
+	if start_pos[3] > 1 then
+		args = args .. start_pos[3] - 1 .. "l"
+	end
+	args = args .. "v" .. end_pos[2] .. "G0"
+	if end_pos[3] > 1 then
+		args = args .. end_pos[3] - 1 .. "l"
+	end
 	vim.cmd("normal! " .. args)
 end
 
