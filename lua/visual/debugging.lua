@@ -22,13 +22,25 @@ local function write()
 		vim.api.nvim_buf_set_lines(buffer, -1, -1, false, heap)
 		-- scroll the window to the bottom
 		vim.api.nvim_win_set_cursor(window, { vim.api.nvim_buf_line_count(buffer), 0 })
+    -- empty the heap
+    heap = {}
 	end
+end
+
+local function clean()
+  if dbg then
+    if buffer ~= nil then
+      vim.api.nvim_buf_set_lines(buffer, 0, -1, false, {""})
+    end
+  end
 end
 
 -- mapping the write function
 if dbg then
-	vim.api.nvim_create_user_command("Debug", write, {})
-	vim.keymap.set({ "n", "v", "i" }, "<c-s-d>", write, { nowait = true })
+	vim.api.nvim_create_user_command("VdbgUpdate", write, {})
+	vim.keymap.set({ "n", "v", "i" }, "<a-d>u", write, { nowait = true })
+	vim.api.nvim_create_user_command("VdbgClean", clean, {})
+	vim.keymap.set({ "n", "v", "i" }, "<a-d>c", clean, { nowait = true })
 end
 
 --- Function to debug and log serialized string to a buffer
