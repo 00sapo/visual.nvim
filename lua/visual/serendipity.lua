@@ -1,4 +1,5 @@
 local utils = require("visual.utils")
+local Vdbg = require("visual.debugging")
 
 local M = {
 	mode_value = "sd", -- special mode used in commands

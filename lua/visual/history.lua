@@ -1,4 +1,5 @@
 local history = {}
+local Vdbg = require("visual.debugging")
 history.repeat_mapping_name = 'repeat_command'
 history.last_command = nil
 history.selection_history = {}

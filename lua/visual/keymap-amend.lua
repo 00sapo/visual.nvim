@@ -1,4 +1,5 @@
 local api = vim.api
+local Vdbg = require("visual.debugging")
 
 ---Shortcut for `nvim_replace_termcodes`.
 ---@param keys string

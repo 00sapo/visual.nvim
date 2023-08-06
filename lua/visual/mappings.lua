@@ -1,6 +1,7 @@
 local history = require("visual.history")
 local serendipity = require("visual.serendipity")
 local utils = require("visual.utils")
+local Vdbg = require("visual.debugging")
 local mappings = {}
 
 local function apply_key(key, countable, count)

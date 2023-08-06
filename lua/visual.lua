@@ -1,6 +1,6 @@
 local visual = {}
 
-Vdbg = require("visual.debugging")
+local Vdbg = require("visual.debugging")
 
 local mappings = require("visual.mappings")
 local history = require("visual.history")

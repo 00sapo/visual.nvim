@@ -1,5 +1,6 @@
 -- Tools for improving compatibility with other plugins
 local utils = require("visual.utils")
+local Vdbg = require("visual.debugging")
 local M = {}
 
 function M.treesitter_textobjects(init_key, visual_inside, visual_around)

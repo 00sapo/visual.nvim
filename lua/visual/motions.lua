@@ -1,5 +1,6 @@
 local sd = require("visual.serendipity")
 local utils = require("visual.utils")
+local Vdbg = require("visual.debugging")
 local M = {}
 
 local unpack = unpack or table.unpack
