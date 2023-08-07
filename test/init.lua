@@ -15,40 +15,67 @@ vim.opt.rtp:prepend(lazypath)
 -- Example using a list of specs with the default options
 vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
 
-require("lazy").setup({
-	{ "00sapo/visual.nvim" },
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		config = function()
-			local configs = require("nvim-treesitter.configs")
+vim.cmd("hi Visual guifg=black guibg=lightyellow ctermfg=black ctermbg=lightyellow")
 
-			configs.setup({
-				ensure_installed = { "lua" }, -- add here the languages for your test case
-				sync_install = false,
-				highlight = { enable = true },
-				indent = { enable = true },
-				textobjects = {
-					select = {
-						enable = true,
-						lookahead = true,
-						keymaps = {
-							["af"] = "@function.outer",
-							["if"] = "@function.inner",
-							["ac"] = "@class.outer",
-							["ic"] = "@class.inner",
-							["aa"] = "@class.outer",
-							["ia"] = "@class.inner",
-						},
-					},
-				},
+require("lazy").setup({
+	{ dir = "/home/sapo/develop/visual.nvim" },
+  -- uncomment the followings for testing cmp sources
+	-- { "neovim/nvim-lspconfig" },
+	-- { "hrsh7th/cmp-nvim-lsp" },
+	-- { "L3MON4D3/LuaSnip" },
+	-- { "saadparwaiz1/cmp_luasnip" },
+	-- { "hrsh7th/cmp-path" },
+	{ "hrsh7th/cmp-buffer" },
+	{
+		"hrsh7th/nvim-cmp",
+		config = function()
+			local cmp = require("cmp")
+			cmp.setup({
+        -- use one of the following for snippets
+				-- snippet = {
+				-- 	expand = function(args)
+				-- 		-- vim.fn["vsnip#anonymous"](args.body)
+				-- 		require("luasnip").lsp_expand(args.body) -- recommended
+				-- 		-- require('snippy').expand_snippet(args.body)
+				-- 		-- vim.fn["UltiSnips#Anon"](args.body)
+				-- 	end,
+				-- },
+				sources = cmp.config.sources({
+					{ name = "buffer" }, -- test one source at a time
+				}),
 			})
 		end,
 	},
-	{ "nvim-treesitter/nvim-treesitter-textobjects" },
+	-- {
+	-- 	"nvim-treesitter/nvim-treesitter",
+	-- 	build = ":TSUpdate",
+	-- 	config = function()
+	-- 		local configs = require("nvim-treesitter.configs")
+
+	-- 		configs.setup({
+	-- 			ensure_installed = { "lua" }, -- add here the languages for your test case
+	-- 			sync_install = false,
+	-- 			highlight = { enable = true },
+	-- 			indent = { enable = true },
+	-- 			textobjects = {
+	-- 				select = {
+	-- 					enable = true,
+	-- 					lookahead = true,
+	-- 					keymaps = {
+	-- 						["af"] = "@function.outer",
+	-- 						["if"] = "@function.inner",
+	-- 						["ac"] = "@class.outer",
+	-- 						["ic"] = "@class.inner",
+	-- 						["aa"] = "@class.outer",
+	-- 						["ia"] = "@class.inner",
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
+	-- { "nvim-treesitter/nvim-treesitter-textobjects" },
 }, {
 	root = vim.fn.stdpath("run") .. "/visual.nvim-test/plugins",
 	sate = vim.fn.stdpath("run") .. "/visual.nvim-test/lazy.json",
 })
-
-vim.cmd("hi Visual guifg=black guibg=lightyellow ctermfg=black ctermbg=lightyellow")
