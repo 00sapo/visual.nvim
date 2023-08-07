@@ -14,7 +14,7 @@ visual.options = {
 	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
 	sdunmaps = {},
 	vunmaps = {},
-	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "gc", ">", "<" },
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "gc" },
 	history_size = 50, -- how many selections we should remember in the history
 	serendipity = {}, -- options for serendipity mode
 	mappings = {
@@ -61,6 +61,8 @@ visual.options = {
 		decrease_indent = "<", -- decrease indent in visual mode
 		increase_indent_sd = ">", -- increase indent in serendipity mode
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
+    increase_indent_normal = ">", -- increase indent in normal mode
+    decrease_indent_normal = "<", -- decrease indent in normal mode
 		repeat_command = "<A-.>",
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
@@ -264,6 +266,8 @@ visual.options = {
 		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
 		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },
 		increase_indent_sd = { pre_amend = { ">gv<sdi>" }, post_amend = {}, modes = { "sd" } },
+    decrease_indent_normal = { pre_amend = { "<<" }, post_amend = {}, modes = { "n" } },
+    increase_indent_normal = { pre_amend = { ">>" }, post_amend = {}, modes = { "n" } },
 	},
 }
 
