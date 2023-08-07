@@ -37,6 +37,7 @@ visual.options = {
 		end_line = "$", -- select to end of line
 		append_at_cursor = "a", -- append at cursor position in visual mode
 		insert_at_cursor = "i", -- insert at cursor position in visual mode
+		sd_change = "c", -- change selection from serendipity mode (avoid clashing with nvim-cmp)
 		sd_inside = "I", -- select inside from serendipity mode
 		sd_around = "A", -- select around from serendipity mode
 		line_visual = "d", -- enter line-visual mode
@@ -71,8 +72,8 @@ visual.options = {
 		-- 		-- It is true by default and can be specified at the whole command level or at each inner-level.
 		-- 		-- In this second case, you need to use `rhs` key for the command value (string or function).
 		-- 		-- The outer level has precedence on the inner level.
-    -- 		-- If a command is a function, `countable` is ignored (you shoulkd take
-    -- 		care of v:count in the function).
+		-- 		-- If a command is a function, `countable` is ignored (you shoulkd take
+		-- 		care of v:count in the function).
 		-- 		countable = true,
 		-- 		pre_amend = {
 		-- 			{ rhs = "<esc>v", countable = false },
@@ -167,17 +168,17 @@ visual.options = {
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
-    start_line = {
+		start_line = {
 			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "0" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
-    start_text = {
+		start_text = {
 			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "_" },
 			post_amend = {},
 			modes = { "n", "sd" },
 		},
-    end_line = {
+		end_line = {
 			pre_amend = { { rhs = "<esc><sdi>", countable = false }, "$" },
 			post_amend = {},
 			modes = { "n", "sd" },
@@ -201,33 +202,34 @@ visual.options = {
 			post_amend = {},
 			modes = { "n", "v", "sd" },
 		},
-    line_visual = {
-      pre_amend = {{ rhs="<sdi>V", countable=false }},
-      post_amend = {},
-      modes = { "n" }
-    },
+		line_visual = {
+			pre_amend = { { rhs = "<sdi>V", countable = false } },
+			post_amend = {},
+			modes = { "n" },
+		},
 
 		-- mapping applied to normal mode only
 		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
+		sd_change = { pre_amend = { "<sde>", "c" }, post_amend = {}, modes = { "sd" }, countable = false },
 		sd_around = { pre_amend = { "<esc>", "<sdi>a" }, post_amend = {}, modes = { "sd" }, countable = false },
 		sd_inside = { pre_amend = { "<esc>", "<sdi>i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		append_at_cursor = { pre_amend = { "<esc><sde>", "a" }, post_amend = {}, modes = { "sd" }, countable = false },
 		insert_at_cursor = { pre_amend = { "<esc><sde>", "i" }, post_amend = {}, modes = { "sd" }, countable = false },
 		surround_delete = {
-			pre_amend = { surround.delete, '<sdi>o' },
+			pre_amend = { surround.delete, "<sdi>o" },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_add = {
-			pre_amend = { surround.add, '<sdi>o' },
+			pre_amend = { surround.add, "<sdi>o" },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
 		},
 		surround_change = {
-			pre_amend = { surround.change, '<sdi>o' },
+			pre_amend = { surround.change, "<sdi>o" },
 			post_amend = {},
 			modes = { "v", "sd" },
 			countable = false,
@@ -244,7 +246,12 @@ visual.options = {
 			modes = { "sd" },
 			countable = false,
 		},
-		replace_single_char = { pre_amend = { "<esc>", utils.feedkey_witharg("r", nil)}, post_amend = {}, modes = { "sd" }, countable = false },
+		replace_single_char = {
+			pre_amend = { "<esc>", utils.feedkey_witharg("r", nil) },
+			post_amend = {},
+			modes = { "sd" },
+			countable = false,
+		},
 		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
@@ -326,18 +333,13 @@ function visual.disable()
 			if mode == " " then
 				mode = "v"
 			end
-			vim.keymap.set(
-				mode,
-				map.lhs,
-				map.rhs,
-				{
-					noremap = map.noremap,
-					silent = map.silent,
-					nowait = map.nowait,
-					callback = map.callback,
-					buffer = buf,
-				}
-			)
+			vim.keymap.set(mode, map.lhs, map.rhs, {
+				noremap = map.noremap,
+				silent = map.silent,
+				nowait = map.nowait,
+				callback = map.callback,
+				buffer = buf,
+			})
 		end
 		visual.enabled = false
 	end
