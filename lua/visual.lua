@@ -63,7 +63,8 @@ visual.options = {
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
     increase_indent_normal = ">", -- increase indent in normal mode
     decrease_indent_normal = "<", -- decrease indent in normal mode
-		repeat_command = "<A-.>",
+		repeat_command = "<A-.>", -- repeat the last visual.nvim command
+    repeat_edit = ".", -- repeat the last edit in visual and serendipity mode
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},
@@ -189,6 +190,11 @@ visual.options = {
 			pre_amend = { history.run_last_command },
 			post_amend = {},
 			modes = { "n", "sd", "v" },
+		},
+		repeat_edit = {
+			pre_amend = { "d\".P" },
+			post_amend = {},
+			modes = { "sd", "v" },
 		},
 		prev_selection = {
 			pre_amend = {
