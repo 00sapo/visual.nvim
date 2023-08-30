@@ -255,7 +255,7 @@ visual.options = {
 			countable = false,
 		},
 		replace_single_char = {
-			pre_amend = { "<esc>", utils.feedkey_witharg("r", nil) },
+			pre_amend = { "<esc>", utils.feedkey_witharg("r", nil), "gv<sdi>" },
 			post_amend = {},
 			modes = { "sd" },
 			countable = false,

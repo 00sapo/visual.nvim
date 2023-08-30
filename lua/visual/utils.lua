@@ -7,12 +7,13 @@ local utils = {}
 -- `expr` is the argument for `vim.fn.getchar`
 function utils.feedkey_witharg(keys, expr)
 	return function()
-		-- keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
+    vim.api.nvim_feedkeys("", "x", true)
+		local arg = vim.fn.getcharstr()
+		Vdbg("arg: " .. arg)
+		keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
 		Vdbg("keys: " .. keys)
 		vim.api.nvim_feedkeys(keys, "n", true)
-		local arg = string.char(vim.fn.getchar(expr))
-		Vdbg("arg: " .. arg)
-		vim.api.nvim_feedkeys(arg, "n", true)
+		vim.api.nvim_feedkeys(arg, "nx", true)
 	end
 end
 
