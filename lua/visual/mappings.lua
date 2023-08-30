@@ -26,7 +26,7 @@ local function apply_key(key, countable, count)
 			if countable and count > 1 then
 				el = count .. el
 			end
-      Vdbg("Applying key: ".. el)
+			Vdbg("Applying key: " .. el)
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(el, true, false, true), "n", false)
 		end
 	end
@@ -82,7 +82,7 @@ function mappings.apply_mappings(opts)
 			vim.notify("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
-			local rhs = mappings.make_rhs(opts.commands[name], name ~= history.repeat_mapping_name)
+			local rhs = mappings.make_rhs(opts.commands[name], not vim.tbl_contains(history.repeat_mapping_names, name))
 			for i = 1, #modes do
 				if modes[i] == serendipity.mode_value then
 					serendipity.mappings[lhs] = rhs

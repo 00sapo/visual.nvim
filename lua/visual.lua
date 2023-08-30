@@ -64,7 +64,7 @@ visual.options = {
     increase_indent_normal = ">", -- increase indent in normal mode
     decrease_indent_normal = "<", -- decrease indent in normal mode
 		repeat_command = "<A-.>", -- repeat the last visual.nvim command
-    repeat_edit = ".", -- repeat the last edit in visual and serendipity mode
+    repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},

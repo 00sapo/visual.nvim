@@ -1,6 +1,6 @@
 local history = {}
 local Vdbg = require("visual.debugging")
-history.repeat_mapping_name = "repeat_command"
+history.repeat_mapping_names = {"repeat_command", "repeat_edit"}
 history.last_command = nil
 history.selection_history = {}
 history.cur_history_idx = 0
@@ -32,6 +32,7 @@ end
 function history.run_last_edit()
 	Vdbg("Running last inserted")
 	local inserted = ffi_get_inserted()
+  Vdbg("inserted: " .. inserted)
 	-- get the second character
 	local edit_cmd = inserted:sub(2, 2)
 	Vdbg("edit_cmd: " .. edit_cmd)
@@ -57,11 +58,6 @@ function history.run_last_edit()
 		serendipity.exit()
 		vim.api.nvim_feedkeys("0d$", "nx", false)
 		old_char_pos = "end"
-	else
-		-- just replay the full command
-		Vdbg("Replaying full command: " .. inserted:sub(2))
-		utils.play_keys(inserted:sub(2))
-		return
 	end
 
 	-- if it was and edit command, past the remaining part of the last edit
