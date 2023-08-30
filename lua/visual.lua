@@ -295,8 +295,6 @@ visual.options = {
 			modes = { "n" },
 		},
 
-		-- mapping applied to normal mode only
-		-- delete_char = { pre_amend = { "x" }, post_amend = {}, modes = { "n" } },
 		-- mapping applied to visual mode only
 		sd_change = { pre_amend = { "<sde>", "c" }, post_amend = {}, modes = { "sd" }, countable = false },
 		sd_around = { pre_amend = { "<esc>", "<sdi>a" }, post_amend = {}, modes = { "sd" }, countable = false },
@@ -349,14 +347,6 @@ visual.options = {
 			countable = false,
 			amend = true,
 		},
-		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
-		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
-		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
-		-- move_right_then_normal = { pre_amend = { "h<esc>" }, post_amend = {}, modes = { "sd" } },
-		-- move_down_visual = { pre_amend = { "j" }, post_amend = {}, modes = { "sd" } },
-		-- move_up_visual = { pre_amend = { "k" }, post_amend = {}, modes = { "sd" } },
-		-- move_left_visual = { pre_amend = { "l" }, post_amend = {}, modes = { "sd" } },
-		-- move_right_visual = { pre_amend = { "h" }, post_amend = {}, modes = { "sd" } },
 		decrease_indent = { pre_amend = { "<gv" }, post_amend = {}, modes = { "v" } },
 		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
 		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },
