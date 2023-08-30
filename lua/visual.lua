@@ -10,6 +10,84 @@ local surround = require("visual.surround")
 local motions = require("visual.motions")
 local utils = require("visual.utils")
 
+-- This function is supposed to be called explicitly by users to configure this
+-- plugin
+function visual.setup(options)
+	if type(options) == "table" then
+		visual.options = vim.tbl_deep_extend("force", visual.options, options)
+	end
+	-- backup mappings
+	visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
+
+	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
+	serendipity.unmappings = visual.options.sdunmaps
+	history.setup(visual.options)
+	mappings.unmaps(visual.options, "v")
+	mappings.unmaps(visual.options, "n")
+	mappings.apply_mappings(visual.options)
+	visual.enabled = true
+	-- if visual.options.treesitter_textobjects.enable then
+	-- 	compatibility.treesitter_textobjects(
+	-- 		visual.options.mappings.toggle_visual_mode,
+	-- 		visual.options.mappings.visual_inside,
+	-- 		visual.options.mappings.visual_around
+	-- 	)
+	-- end
+end
+
+function visual.disable()
+	if visual.enabled then
+		-- delete visual.nvim mappings
+		for name, lhs in pairs(visual.options.mappings) do
+			-- changing modes so that it doesn't include `sd`
+			local _modes = visual.options.commands[name].modes
+			local modes = {}
+			for i = 1, #_modes do
+				if _modes[i] ~= "sd" then
+					table.insert(modes, _modes[i])
+				end
+			end
+			if #modes > 0 then
+				Vdbg("Deleting mapping " .. lhs .. " in mode " .. table.concat(modes, ","))
+				vim.keymap.del(modes, lhs)
+			end
+		end
+		for _, lhs in ipairs(visual.options.vunmaps) do
+			Vdbg("Deleting mapping " .. lhs .. " in visual mode")
+			pcall(function()
+				vim.keymap.del("v", lhs)
+			end)
+			pcall(function()
+				vim.keymap.del("x", lhs)
+			end)
+		end
+		for _, lhs in ipairs(visual.options.nunmaps) do
+			Vdbg("Deleting mapping " .. lhs .. " in normal mode")
+			pcall(function()
+				vim.keymap.del("n", lhs)
+			end)
+		end
+		-- restore original mappings
+		for _, map in ipairs(visual._backup_mapping) do
+			map.rhs = map.rhs or ""
+			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
+			local buf = map.buffer == 1
+			local mode = map.mode
+			if mode == " " then
+				mode = "v"
+			end
+			vim.keymap.set(mode, map.lhs, map.rhs, {
+				noremap = map.noremap,
+				silent = map.silent,
+				nowait = map.nowait,
+				callback = map.callback,
+				buffer = buf,
+			})
+		end
+		visual.enabled = false
+	end
+end
+
 visual.options = {
 	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
 	sdunmaps = {},
@@ -61,10 +139,11 @@ visual.options = {
 		decrease_indent = "<", -- decrease indent in visual mode
 		increase_indent_sd = ">", -- increase indent in serendipity mode
 		decrease_indent_sd = "<", -- decrease indent in serendipity mode
-    increase_indent_normal = ">", -- increase indent in normal mode
-    decrease_indent_normal = "<", -- decrease indent in normal mode
+		increase_indent_normal = ">", -- increase indent in normal mode
+		decrease_indent_normal = "<", -- decrease indent in normal mode
 		repeat_command = "<A-.>", -- repeat the last visual.nvim command
-    repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
+		repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
+		macro = "q", -- same as usual `q` key, but it also disables visual.nvim (see issue https://github.com/00sapo/visual.nvim/issues/7); must be re-enabled via :VisualEnable when finished playing with macros
 		-- next_selection = "L", -- surf selection history forward
 		-- prev_selection = "H", -- surf selection history backward
 	},
@@ -260,6 +339,16 @@ visual.options = {
 			modes = { "sd" },
 			countable = false,
 		},
+		macro = {
+			pre_amend = {
+				"<sde>",
+        visual.disable
+			},
+			post_amend = {},
+			modes = { "n", "v", "sd" },
+			countable = false,
+			amend = true,
+		},
 		-- move_down_then_normal = { pre_amend = { "j<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_up_then_normal = { pre_amend = { "k<esc>" }, post_amend = {}, modes = { "sd" } },
 		-- move_left_then_normal = { pre_amend = { "l<esc>" }, post_amend = {}, modes = { "sd" } },
@@ -272,87 +361,9 @@ visual.options = {
 		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
 		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },
 		increase_indent_sd = { pre_amend = { ">gv<sdi>" }, post_amend = {}, modes = { "sd" } },
-    decrease_indent_normal = { pre_amend = { "<<" }, post_amend = {}, modes = { "n" } },
-    increase_indent_normal = { pre_amend = { ">>" }, post_amend = {}, modes = { "n" } },
+		decrease_indent_normal = { pre_amend = { "<<" }, post_amend = {}, modes = { "n" } },
+		increase_indent_normal = { pre_amend = { ">>" }, post_amend = {}, modes = { "n" } },
 	},
 }
-
--- This function is supposed to be called explicitly by users to configure this
--- plugin
-function visual.setup(options)
-	if type(options) == "table" then
-		visual.options = vim.tbl_deep_extend("force", visual.options, options)
-	end
-	-- backup mappings
-	visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
-
-	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
-	serendipity.unmappings = visual.options.sdunmaps
-	history.setup(visual.options)
-	mappings.unmaps(visual.options, "v")
-	mappings.unmaps(visual.options, "n")
-	mappings.apply_mappings(visual.options)
-	visual.enabled = true
-	-- if visual.options.treesitter_textobjects.enable then
-	-- 	compatibility.treesitter_textobjects(
-	-- 		visual.options.mappings.toggle_visual_mode,
-	-- 		visual.options.mappings.visual_inside,
-	-- 		visual.options.mappings.visual_around
-	-- 	)
-	-- end
-end
-
-function visual.disable()
-	if visual.enabled then
-		-- delete visual.nvim mappings
-		for name, lhs in pairs(visual.options.mappings) do
-			-- changing modes so that it doesn't include `sd`
-			local _modes = visual.options.commands[name].modes
-			local modes = {}
-			for i = 1, #_modes do
-				if _modes[i] ~= "sd" then
-					table.insert(modes, _modes[i])
-				end
-			end
-			if #modes > 0 then
-				Vdbg("Deleting mapping " .. lhs .. " in mode " .. table.concat(modes, ","))
-				vim.keymap.del(modes, lhs)
-			end
-		end
-		for _, lhs in ipairs(visual.options.vunmaps) do
-			Vdbg("Deleting mapping " .. lhs .. " in visual mode")
-			pcall(function()
-				vim.keymap.del("v", lhs)
-			end)
-			pcall(function()
-				vim.keymap.del("x", lhs)
-			end)
-		end
-		for _, lhs in ipairs(visual.options.nunmaps) do
-			Vdbg("Deleting mapping " .. lhs .. " in normal mode")
-			pcall(function()
-				vim.keymap.del("n", lhs)
-			end)
-		end
-		-- restore original mappings
-		for _, map in ipairs(visual._backup_mapping) do
-			map.rhs = map.rhs or ""
-			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
-			local buf = map.buffer == 1
-			local mode = map.mode
-			if mode == " " then
-				mode = "v"
-			end
-			vim.keymap.set(mode, map.lhs, map.rhs, {
-				noremap = map.noremap,
-				silent = map.silent,
-				nowait = map.nowait,
-				callback = map.callback,
-				buffer = buf,
-			})
-		end
-		visual.enabled = false
-	end
-end
 
 return visual
