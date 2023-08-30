@@ -1,18 +1,19 @@
 local history = {}
 local Vdbg = require("visual.debugging")
-history.repeat_mapping_name = 'repeat_command'
+history.repeat_mapping_name = "repeat_command"
 history.last_command = nil
 history.selection_history = {}
 history.cur_history_idx = 0
 
-local utils = require('visual.utils')
+local utils = require("visual.utils")
+local serendipity = require("visual.serendipity")
 
 function history.setup(opts)
 	history.history_size = opts.history_size
 end
 
 function history.run_last_command(original)
-  local make_rhs = require('visual.mappings').make_rhs
+	local make_rhs = require("visual.mappings").make_rhs
 	if history.last_command == nil then
 		return
 	end
@@ -22,91 +23,55 @@ function history.run_last_command(original)
 	return f(original)
 end
 
-
--- selection_history is a simple stack with push/pop methods and maximum size
--- defined by history.history_size
-
--- Function to push a new selection into the history
--- @param selection: The selection to be added to the history
-function history:push(selection)
-    -- Check if the current selection is identical to the one at the cur_history_idx
-    if history.selection_history[history.cur_history_idx] == selection then
-        return
-    end
-    -- print("pushing")
-    -- Check if the history is already full
-    if #history.selection_history == history.history_size then
-        -- Remove the oldest selection
-        table.remove(history.selection_history, 1)
-    end
-    -- Check if current history index is less than the size of selection history
-    if history.cur_history_idx < #history.selection_history then
-        -- Remove all elements after the current history index
-        for i = history.cur_history_idx + 1, #history.selection_history do
-            table.remove(history.selection_history, i)
-        end
-        -- Insert the new selection at the current history index
-        table.insert(history.selection_history, history.cur_history_idx, selection)
-    else
-        -- Add the new selection to the history
-        table.insert(history.selection_history, selection)
-    end
-    -- Update the current history index
-    history.cur_history_idx = #history.selection_history
+local ffi = require("ffi")
+ffi.cdef("char *get_inserted(void)")
+local function ffi_get_inserted()
+	return ffi.string(ffi.C.get_inserted())
 end
 
--- Function to pop the most recent selection from the history
--- @return The most recent selection, or nil if the history is empty
-function history:pop()
-	-- Check if the history is empty
-	if #history.selection_history == 0 then
-		-- Return nil, as there is no selection to pop
-		return nil
+function history.run_last_edit()
+	Vdbg("Running last inserted")
+	local inserted = ffi_get_inserted()
+	-- get the second character
+	local edit_cmd = inserted:sub(2, 2)
+	Vdbg("edit_cmd: " .. edit_cmd)
+	-- a variable to keep track of where the cursor-position char should be
+	-- re-inserted after copying the last edit
+	local old_char_pos = "begin"
+	if edit_cmd == "c" then
+		vim.api.nvim_feedkeys("d", "nx", false)
+		serendipity.exit()
+		old_char_pos = "end"
+	elseif edit_cmd == "i" then
+		serendipity.exit()
+		vim.api.nvim_feedkeys("i", "nx", false)
+		old_char_pos = "end"
+	elseif edit_cmd == "a" then
+		serendipity.exit()
+		vim.api.nvim_feedkeys("a", "nx", false)
+		old_char_pos = "begin"
+	elseif edit_cmd == "s" then
+		vim.api.nvim_feedkeys("dx", "nx", false)
+		old_char_pos = "begin"
+	elseif edit_cmd == "S" then
+		serendipity.exit()
+		vim.api.nvim_feedkeys("0d$", "nx", false)
+		old_char_pos = "end"
+	else
+		-- just replay the full command
+		Vdbg("Replaying full command: " .. inserted:sub(2))
+		utils.play_keys(inserted:sub(2))
+		return
 	end
-	-- Get the most recent selection
-	local selection = history.selection_history[history.cur_history_idx]
-	-- Remove the most recent selection from the history
-	table.remove(history.selection_history, history.cur_history_idx)
-	-- Update the current history index
-	history.cur_history_idx = #history.selection_history
-	-- Return the popped selection
-	return selection
-end
 
--- Function to move back in the history
--- @return The previous selection in the history, or nil if there is no previous selection
-function history:back()
-	-- Check if there is a previous selection
-	if history.cur_history_idx <= 1 then
-		-- Return nil, as there is no previous selection
-		return nil
-	end
-	-- Decrement the current history index
-	history.cur_history_idx = history.cur_history_idx - 1
-	-- Return the previous selection
-	return history.selection_history[history.cur_history_idx]
-end
+	-- if it was and edit command, past the remaining part of the last edit
+	-- N.B. this could also be taken from the inserted string above, but it is not
+	-- standard
+	local pos = utils.get_cursor(0) -- (1, 0)-indexed
+	local dotreg = vim.fn.getreg(".")
 
--- Function to move forward in the history
--- @return The next selection in the history, or nil if there is no next selection
-function history:forward()
-	-- Check if there is a next selection
-	if history.cur_history_idx >= #history.selection_history then
-		-- Return nil, as there is no next selection
-		return nil
-	end
-	-- Increment the current history index
-	history.cur_history_idx = history.cur_history_idx + 1
-	-- Return the next selection
-	return history.selection_history[history.cur_history_idx]
-end
-
-function history.set_history_next()
-	utils.set_selection(history:forward())
-end
-
-function history.set_history_prev()
-	utils.set_selection(history:back())
+	Vdbg("Setting current char to: " .. inserted)
+	vim.api.nvim_buf_set_text(0, pos[1] - 1, pos[2], pos[1] - 1, pos[2], { dotreg })
 end
 
 return history

@@ -192,7 +192,7 @@ visual.options = {
 			modes = { "n", "sd", "v" },
 		},
 		repeat_edit = {
-			pre_amend = { "d\".P" },
+			pre_amend = { history.run_last_edit },
 			post_amend = {},
 			modes = { "sd", "v" },
 		},

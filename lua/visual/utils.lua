@@ -127,4 +127,14 @@ function utils.concat_arrays(arrays)
 	return result
 end
 
+function utils.play_keys(keys)
+  -- keys is a string
+  -- iterate each character and feed it to vim
+  for i = 1, #keys do
+    local char = keys:sub(i, i)
+    vim.api.nvim_feedkeys(char, "mx", false)
+  end
+
+end
+
 return utils
