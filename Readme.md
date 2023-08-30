@@ -126,14 +126,19 @@ Example with Treesitter incremental selection
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     event = "VeryLazy"
 }
+{
+    "nvim-treesitter/nvim-treesitter",
+    --etc.
+}
 ```
 
 Example with Treesitter text objects
 ```lua
 {
-    dir = "00sapo/visual.nvim",
+    "00sapo/visual.nvim",
     opts = { treesitter_textobjects = true },
     dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" },
+    event = "VeryLazy"
 },
 {
     "nvim-treesitter/nvim-treesitter",
@@ -150,7 +155,7 @@ comments to understand how to modify it.
 Feel free to suggest new default keybindings in the issues!
 
 See the [full default options](https://github.com/00sapo/visual.nvim/blob/71759886d3864bebe3edd7c00916925edd340256/lua/visual.lua#L90-L357
-) with documentation in the comments: 
+) with documentation in the comments.
 
 # Testing
 
