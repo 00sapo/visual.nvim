@@ -68,6 +68,9 @@ function history.run_last_edit()
 
 	Vdbg("Setting current char to: " .. inserted)
 	vim.api.nvim_buf_set_text(0, pos[1] - 1, pos[2], pos[1] - 1, pos[2], { dotreg })
+
+  -- select the pasted text
+  utils.set_selection({{nil, pos[1], pos[2]+1}, {nil, pos[1], pos[2] + #dotreg}})
 end
 
 return history
