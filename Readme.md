@@ -149,8 +149,8 @@ comments to understand how to modify it.
 
 Feel free to suggest new default keybindings in the issues!
 
-See the full default options with documentation in the comments: 
-https://github.com/00sapo/visual.nvim/blob/71759886d3864bebe3edd7c00916925edd340256/lua/visual.lua#L90-L357
+See the [full default options](https://github.com/00sapo/visual.nvim/blob/71759886d3864bebe3edd7c00916925edd340256/lua/visual.lua#L90-L357
+) with documentation in the comments: 
 
 # Testing
 
