@@ -52,11 +52,11 @@ return function(...)
 		-- Serialize the input data
 		local upf = debug.getinfo(2)
 		local serialized_x = "------------------------------------------------\n"
-			.. upf.short_src
+			.. upf.short_src or "file unknown"
 			.. " - "
-			.. upf.name
+			.. upf.name or "func unknown"
 			.. ":"
-			.. upf.currentline
+			.. upf.currentline or "line unknown"
 			.. "\n"
 		for _, v in ipairs({ ... }) do
 			serialized_x = serialized_x .. vim.inspect(v)
