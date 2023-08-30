@@ -1,9 +1,11 @@
 -- Tools for improving compatibility with other plugins
+local mappings = require("visual.mappings")
+local serendipity = require("visual.serendipity")
 local utils = require("visual.utils")
 local Vdbg = require("visual.debugging")
 local M = {}
 
-function M.treesitter_textobjects(init_key, visual_inside, visual_around)
+function M.treesitter_textobjects(sd_inside, sd_around)
 	local treesitter = utils.prequire("nvim-treesitter.configs")
 	if treesitter then
 		local select = treesitter.get_module("textobjects.select")
@@ -22,20 +24,35 @@ function M.treesitter_textobjects(init_key, visual_inside, visual_around)
 						end
 						local selection_mode = select.selection_modes[query] or "v"
 
-            -- change the first character of key if i/a to
-            if key:sub(1, 1) == "i" then
-              key = visual_inside .. key:sub(2)
-            elseif key:sub(1, 1) == "a" then
-              key = visual_around .. key:sub(2)
-            end
-
-						vim.keymap.set({ "n", "v" }, init_key .. key, function()
-							require("nvim-treesitter.textobjects.select").select_textobject(
+						local func = function () 
+              Vdbg("Adding treesitter-textobjects keymap: " .. key)
+              Vdbg("Selection mode: " .. selection_mode)
+              require("nvim-treesitter.textobjects.select").select_textobject(
 								query,
 								group,
 								selection_mode
 							)
-						end)
+            end
+
+            -- change the first character of key if i/a to
+            local keys = {
+              pre_amend = {"<esc>", "<sdi>", func},
+              post_amend = {},
+              mode = {"sd"},
+              amend = false,
+              countable = false,
+            }
+            -- if outer in key, then set key to sd_around
+            local lhs = ""
+            if string.find(query, "outer") then
+              lhs = sd_around
+            elseif string.find(query, "inner") then
+              lhs = sd_inside
+            end
+            lhs = lhs .. key:sub(2)
+
+            local rhs = mappings.make_rhs(keys, true)
+            serendipity.mappings[lhs] = rhs
 					end
 				else
 					vim.notify("Visual.nvim: treesitter-textobjects keymaps not found, have you set them up?")

@@ -5,7 +5,7 @@ local Vdbg = require("visual.debugging")
 local mappings = require("visual.mappings")
 local history = require("visual.history")
 local serendipity = require("visual.serendipity")
--- local compatibility = require("visual.compatibility")
+local compatibility = require("visual.compatibility")
 local surround = require("visual.surround")
 local motions = require("visual.motions")
 local utils = require("visual.utils")
@@ -26,13 +26,12 @@ function visual.setup(options)
 	mappings.unmaps(visual.options, "n")
 	mappings.apply_mappings(visual.options)
 	visual.enabled = true
-	-- if visual.options.treesitter_textobjects.enable then
-	-- 	compatibility.treesitter_textobjects(
-	-- 		visual.options.mappings.toggle_visual_mode,
-	-- 		visual.options.mappings.visual_inside,
-	-- 		visual.options.mappings.visual_around
-	-- 	)
-	-- end
+	if visual.options.treesitter_textobjects then
+		compatibility.treesitter_textobjects(
+			visual.options.mappings.sd_inside,
+			visual.options.mappings.sd_around
+		)
+	end
 end
 
 function visual.disable()
@@ -94,6 +93,7 @@ visual.options = {
 	vunmaps = {},
 	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "gc" },
 	history_size = 50, -- how many selections we should remember in the history
+  treesitter_textobjects = false,
 	serendipity = {}, -- options for serendipity mode
 	mappings = {
 		-- a list of command names and of their key-maps; what each command does is defined below
