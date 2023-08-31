@@ -127,19 +127,9 @@ visual.options = {
 		sd_inside = "I", -- select inside from serendipity mode
 		sd_around = "A", -- select around from serendipity mode
 		line_visual = "d", -- enter line-visual mode
-		-- block_visual = "<S-x>", -- enter block-visual mode
-		-- delete_char = "y", -- delete char under cursor
 		restart_visual = "'", -- collapse the visual selection to the char under cursor
 		delete_single_char = "x", -- delete the char under cursor while in visual mode
 		replace_single_char = "r", -- replace the char under cursor while in visual mode
-		-- move_down_then_normal = "j", -- move down and enter normal mode
-		-- move_up_then_normal = "k", -- move up and enter normal mode
-		-- move_left_then_normal = "l", -- move left and enter normal mode
-		-- move_right_then_normal = "h", -- move right and enter normal mode
-		-- move_down_visual = "<a-j>", -- move down staying in visual mode
-		-- move_up_visual = "<a-k>", -- move up staying in visual mode
-		-- move_left_visual = "<a-l>", -- move left staying in visual mode
-		-- move_right_visual = "<a-h>", -- move right staying in visual mode
 		surround_change = "sc", -- change chars at the extremes of the selection
 		surround_add = "sa", -- insert chars at the extremes of the selection
 		surround_delete = "sd", -- delete chars at the extremes of the selection
@@ -152,8 +142,7 @@ visual.options = {
 		repeat_command = "<A-.>", -- repeat the last visual.nvim command
 		repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
 		macro = "q", -- same as usual `q` key, but it also disables visual.nvim (see issue https://github.com/00sapo/visual.nvim/issues/7); must be re-enabled via :VisualEnable when finished playing with macros
-		-- next_selection = "L", -- surf selection history forward
-		-- prev_selection = "H", -- surf selection history backward
+    documentation = "K"
 	},
 	commands = { -- what each command name does
 		-- 	example_command = {
@@ -355,6 +344,15 @@ visual.options = {
 			countable = false,
 			amend = true,
 		},
+    documentation = {
+      pre_amend = {
+        "<sde>",
+      },
+      post_amend = {},
+      modes = { "sd" },
+      countable = false,
+      amend = true,
+    },
 		decrease_indent = { pre_amend = { "<gv" }, post_amend = {}, modes = { "v" } },
 		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
 		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },

@@ -38,10 +38,14 @@ If you have been tempted by Kakoune and Helix editors, this may be your new plug
 
 ## Usage
 
-Just install it using your preferred package manager.
+Just install it using your preferred package manager (Lazy recommended).
 
-* Lazy: `{ '00sapo/visual.nvim' }`
-* Packer: `use { '00sapo/visual.nvim' }`
+```lua
+{ 
+    '00sapo/visual.nvim',
+    event = "VeryLazy", -- this is for making sure our keymaps are applied after the others: we call the previous mapppings, but other plugins/configs usually not!
+}
+```
 
 Further configuration examples [below](#example-config). The mappings can be fine-tuned at your will as well,
 see [Keymaps](#keymaps)
@@ -104,7 +108,7 @@ NvChad):
     },
   } )
   end,
-  event = "VeryLazy", -- this is for making sure our keymaps are applied after the others: we call the previous mapppings, but other plugins/configs usually not!
+  event = "VeryLazy"
 }
 ```
 
@@ -119,7 +123,7 @@ Configuration for color scheme (changing the serendipity color, see [here](https
     }
   } )
   end,
-  event = "VeryLazy", -- this is for making sure our keymaps are applied after the others: we call the previous mapppings, but other plugins/configs usually not!
+  event = "VeryLazy"
 }
 ```
 
@@ -136,6 +140,30 @@ Example with Treesitter text objects
     --etc.
 }
 ```
+
+Example with custom mappings
+```lua
+{    
+  '00sapo/visual.nvim',
+  opts = {
+    mappings = {
+        save = "<C-s>" -- the "name" of the command, here to help you modify its keybinding without thinking at the content
+    }
+    commands = {
+        save = { -- the "code" of the command, i.e. what it does, see [below](#keymaps) for more info
+            pre_amend = { "<sde>", "<esc>", "<cmd>w<cr>" },
+            post_amend = {},
+            modes = { "sd", "v" },
+            amend = false,
+            countable = false,
+        }
+    },
+  }
+  event = "VeryLazy"
+}
+
+```
+
 
 ## Keymaps
 
