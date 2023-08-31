@@ -7,6 +7,8 @@ suddenly change in the next few weeks.**
 
 noun,  formal; _the fact of finding interesting or valuable things by chance_
 
+https://github.com/00sapo/visual.nvim/assets/22996003/804655f4-b731-4145-b765-025a5917c563
+
 ## What is this
 In nvim, you do `c3w`. Ah no! It was wrong, let's retry: `uc5w`... wooops! Sorry, it
 is still wrong: `uc6w`!
