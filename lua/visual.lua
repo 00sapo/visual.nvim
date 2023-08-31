@@ -13,24 +13,31 @@ local utils = require("visual.utils")
 -- This function is supposed to be called explicitly by users to configure this
 -- plugin
 function visual.setup(options)
-	if type(options) == "table" then
-		visual.options = vim.tbl_deep_extend("force", visual.options, options)
-	end
-	-- backup mappings
-	visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
+	if not visual.enabled then
+	  Vdbg("Setting up visual.nvim")
+		if type(options) == "table" then
+			visual.options = vim.tbl_deep_extend("force", visual.options, options)
+		end
+	  Vdbg("Backing up commands")
+		-- backup mappings
+		visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
 
-	serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
-	serendipity.unmappings = visual.options.sdunmaps
-	history.setup(visual.options)
-	mappings.unmaps(visual.options, "v")
-	mappings.unmaps(visual.options, "n")
-	mappings.apply_mappings(visual.options)
-	visual.enabled = true
-	if visual.options.treesitter_textobjects then
-		compatibility.treesitter_textobjects(
-			visual.options.mappings.sd_inside,
-			visual.options.mappings.sd_around
-		)
+	  Vdbg("Setting up everything")
+		serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
+		serendipity.unmappings = visual.options.sdunmaps
+		history.setup(visual.options)
+		mappings.unmaps(visual.options, "v")
+		mappings.unmaps(visual.options, "n")
+		mappings.apply_mappings(visual.options)
+
+	  Vdbg("Setting up compatibility")
+		if visual.options.treesitter_textobjects then
+			compatibility.treesitter_textobjects(
+				visual.options.mappings.sd_inside,
+				visual.options.mappings.sd_around
+			)
+		end
+		visual.enabled = true
 	end
 end
 
@@ -67,6 +74,7 @@ function visual.disable()
 			end)
 		end
 		-- restore original mappings
+    Vdbg("Restoring original mappings")
 		for _, map in ipairs(visual._backup_mapping) do
 			map.rhs = map.rhs or ""
 			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
