@@ -12,7 +12,7 @@ local M = {
 	unmappings = {}, -- same
 	options = { -- filled from visual.options.serendipity
 		guicursor = "a:hor100",
-		highlight = "guibg=LightCyan guifg=none",
+		highlight = "guibg=SlateBlue4 guifg=none",
 		v_go_to_visual = true, -- if true, pressing v leads to visual mode, not to normal allows to select text objects like viw vaw
 	},
 }

@@ -106,29 +106,18 @@ NvChad):
 }
 ```
 
-Example with Treesitter incremental selection
+Configuration for color scheme (changing the serendipity color, see [here](https://web.archive.org/web/20230321113552/https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html) for a list of (n)vim colors):
 ```lua
-{
-    '00sapo/visual.nvim',
-    config = function ()
-        require('nvim-treesitter.configs').setup { 
-            incremental_selection = { 
-                enable = true,
-                keymaps = {
-                    init_selection = "<c-.>",
-                    node_incremental = "<c-.>",
-                    scope_incremental = "<c-,>",
-                    node_decremental = "<c-/>",
-                }
-            } 
-        }
-    end,
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    event = "VeryLazy"
-}
-{
-    "nvim-treesitter/nvim-treesitter",
-    --etc.
+{    
+  '00sapo/visual.nvim',
+  config = function()
+    require('visual').setup({
+    serendipity = {
+        highlight = "guibg=LightCyan guifg=none"
+    }
+  } )
+  end,
+  event = "VeryLazy", -- this is for making sure our keymaps are applied after the others: we call the previous mapppings, but other plugins/configs usually not!
 }
 ```
 
@@ -137,7 +126,7 @@ Example with Treesitter text objects
 {
     "00sapo/visual.nvim",
     opts = { treesitter_textobjects = true },
-    dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" },
+    dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" }, -- this is needed so that visual.nvim is loaded *afterwards* Treesitter
     event = "VeryLazy"
 },
 {
