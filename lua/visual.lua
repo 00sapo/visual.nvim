@@ -128,6 +128,7 @@ visual.options = {
 		sd_around = "A", -- select around from serendipity mode
 		line_visual = "d", -- enter line-visual mode
 		restart_visual = "'", -- collapse the visual selection to the char under cursor
+		restart_sd = "'", -- collapse the sd selection to the char under cursor
 		delete_single_char = "x", -- delete the char under cursor while in visual mode
 		replace_single_char = "r", -- replace the char under cursor while in visual mode
 		surround_change = "sc", -- change chars at the extremes of the selection
@@ -318,7 +319,13 @@ visual.options = {
 		restart_visual = {
 			pre_amend = { "<esc>v" },
 			post_amend = {},
-			modes = { "sd", "v" },
+			modes = { "v" },
+			countable = false,
+		},
+		restart_sd = {
+			pre_amend = { "<esc><sdi>" },
+			post_amend = {},
+			modes = { "sd" },
 			countable = false,
 		},
 		delete_single_char = {
