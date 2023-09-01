@@ -22,6 +22,7 @@ require("lazy").setup({
 		dir = "/home/sapo/develop/visual.nvim",
 		opts = { treesitter_textobjects = true },
 		dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" },
+		event = "VeryLazy"
 	},
 	-- uncomment the followings for testing cmp sources
 	-- { "neovim/nvim-lspconfig" },
