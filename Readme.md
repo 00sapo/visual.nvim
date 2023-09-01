@@ -200,7 +200,3 @@ See the [full default options](https://github.com/00sapo/visual.nvim/blob/717598
 * Use `nvim -u test/init.lua test/init.lua` for testing
 * Use `Vdbg(...)` from anywhere to debug lua objects
 * Use `<A-d>u` to show the log of debugged objects and `<A-d>c` to clean the log
-
-# TODO
-
-* Experiment with `vim-visual-multi`
