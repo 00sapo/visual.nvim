@@ -142,7 +142,6 @@ visual.options = {
 		repeat_command = "<A-.>", -- repeat the last visual.nvim command
 		repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
 		macro = "q", -- same as usual `q` key, but it also disables visual.nvim (see issue https://github.com/00sapo/visual.nvim/issues/7); must be re-enabled via :VisualEnable when finished playing with macros
-    documentation = "K"
 	},
 	commands = { -- what each command name does
 		-- 	example_command = {
@@ -344,15 +343,6 @@ visual.options = {
 			countable = false,
 			amend = true,
 		},
-    documentation = {
-      pre_amend = {
-        "<sde>",
-      },
-      post_amend = {},
-      modes = { "sd" },
-      countable = false,
-      amend = true,
-    },
 		decrease_indent = { pre_amend = { "<gv" }, post_amend = {}, modes = { "v" } },
 		increase_indent = { pre_amend = { ">gv" }, post_amend = {}, modes = { "v" } },
 		decrease_indent_sd = { pre_amend = { "<gv<sdi>" }, post_amend = {}, modes = { "sd" } },

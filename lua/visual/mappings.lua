@@ -51,8 +51,7 @@ function mappings.make_rhs(keys, history_store)
 		end
 
 		if amend then
-      Vdbg("Amending")
-      Vdbg(vim.fn.mode())
+      Vdbg("Amending from mode " .. vim.fn.mode())
 			original()
 		end
 

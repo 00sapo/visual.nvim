@@ -96,7 +96,7 @@ mode. This may create confusion in the workflow.
 Configuration with some change to commands in order to make them compatible (needed by
 NvChad):
 ```lua
-{    
+{
   '00sapo/visual.nvim',
   config = function()
     require('visual').setup({
@@ -114,7 +114,7 @@ NvChad):
 
 Configuration for color scheme (changing the serendipity color, see [here](https://web.archive.org/web/20230321113552/https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html) for a list of (n)vim colors):
 ```lua
-{    
+{
   '00sapo/visual.nvim',
   config = function()
     require('visual').setup({
@@ -130,38 +130,52 @@ Configuration for color scheme (changing the serendipity color, see [here](https
 Example with Treesitter text objects
 ```lua
 {
-    "00sapo/visual.nvim",
-    opts = { treesitter_textobjects = true },
-    dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" }, -- this is needed so that visual.nvim is loaded *afterwards* Treesitter
-    event = "VeryLazy"
+  "00sapo/visual.nvim",
+  opts = { treesitter_textobjects = true },
+  dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" }, -- this is needed so that visual.nvim is loaded *afterwards* Treesitter
+  event = "VeryLazy"
 },
 {
-    "nvim-treesitter/nvim-treesitter",
-    --etc.
+  "nvim-treesitter/nvim-treesitter",
+  --etc.
 }
 ```
 
-Example with custom mappings
+Example with custom mappings (more info [below](#keymaps))
 ```lua
-{    
+{
   '00sapo/visual.nvim',
   opts = {
     mappings = {
-        save = "<C-s>" -- the "name" of the command, here to help you modify its keybinding without thinking at the content
-    }
+      save = "<C-s>",
+      docs = "K",
+      to_normal = "jk"
+    },
     commands = {
-        save = { -- the "code" of the command, i.e. what it does, see [below](#keymaps) for more info
-            pre_amend = { "<sde>", "<esc>", "<cmd>w<cr>" },
-            post_amend = {},
-            modes = { "sd", "v" },
-            amend = false,
-            countable = false,
-        }
+      save = {
+        pre_amend = { "<sde>", "<esc>", "<cmd>w<cr>" }, -- <sde> is for exiting serendipity, also <sdi> for init it and <sdt> for toggling
+        post_amend = {},
+        modes = { "sd", "v" }, -- "sd", "v", or "n"
+        amend = false, -- if true, also run the original keymap
+        countable = false, -- can this mapping be counted (e.g. 3w, 3e, etc.)
+      },
+      docs = {
+        pre_amend = {
+          "<sde><esc>",
+          vim.lsp.buf.hover
+        },
+        post_amend = {},
+        modes = { "sd" },
+        amend = false, -- can't use true, because keys feeded to nvim are the mode seen by `K` is visual even after <esc>. Same issue as macros.
+        countable = false,
+      },
+      to_normal = { -- only `amend` and `countable` keys are needed
+        {"<sde><esc>"}, {}, {"sd", "n"}, amend=false, countable=false
+      }
     },
   }
   event = "VeryLazy"
 }
-
 ```
 
 

@@ -135,7 +135,6 @@ function utils.play_keys(keys)
     local char = keys:sub(i, i)
     vim.api.nvim_feedkeys(char, "mx", false)
   end
-
 end
 
 return utils
