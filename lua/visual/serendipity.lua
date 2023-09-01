@@ -69,6 +69,8 @@ function M.init()
 		Vdbg("Serendipity already active!")
 		return
 	end
+
+  Vdbg("Entering serendipity")
 	M.active = true
 	M._old_mode = mode
 	M._old_cursor = vim.o.guicursor
@@ -115,6 +117,8 @@ function M.exit()
 	if not M.active then
 		return
 	end
+
+  Vdbg("Exiting serendipity")
 	if M.avoid_next_exit then
 		-- print("disabling avoid_next_exit 2")
 		M.avoid_next_exit = false
