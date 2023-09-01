@@ -169,8 +169,8 @@ Example with custom mappings (more info [below](#keymaps))
         amend = false, -- can't use true, because keys feeded to nvim are the mode seen by `K` is visual even after <esc>. Same issue as macros.
         countable = false,
       },
-      to_normal = { -- only `amend` and `countable` keys are needed
-        {"<sde><esc>"}, {}, {"sd", "n"}, amend=false, countable=false
+      to_normal = { -- only `amend` and `countable` keys are needed and only if true
+        {"<sde><esc>"}, {}, {"sd", "n"}
       }
     },
   }
