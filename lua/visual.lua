@@ -99,7 +99,7 @@ visual.options = {
 	-- commands that will be unmapped from serendipity, normal, or visual mode (e.g. for forcing you learning new keymaps and/or avoiding conflicts)
 	sdunmaps = {},
 	vunmaps = {},
-	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c", "gc" },
+	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c" },
 	history_size = 50, -- how many selections we should remember in the history
   treesitter_textobjects = false,
 	serendipity = {}, -- options for serendipity mode
