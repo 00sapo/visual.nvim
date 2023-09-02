@@ -14,15 +14,15 @@ local utils = require("visual.utils")
 -- plugin
 function visual.setup(options)
 	if not visual.enabled then
-	  Vdbg("Setting up visual.nvim")
+		Vdbg("Setting up visual.nvim")
 		if type(options) == "table" then
 			visual.options = vim.tbl_deep_extend("force", visual.options, options)
 		end
-	  Vdbg("Backing up commands")
+		Vdbg("Backing up commands")
 		-- backup mappings
 		visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
 
-	  Vdbg("Setting up everything")
+		Vdbg("Setting up everything")
 		serendipity.options = vim.tbl_deep_extend("force", serendipity.options, visual.options.serendipity)
 		serendipity.unmappings = visual.options.sdunmaps
 		history.setup(visual.options)
@@ -30,12 +30,9 @@ function visual.setup(options)
 		mappings.unmaps(visual.options, "n")
 		mappings.apply_mappings(visual.options)
 
-	  Vdbg("Setting up compatibility")
+		Vdbg("Setting up compatibility")
 		if visual.options.treesitter_textobjects then
-			compatibility.treesitter_textobjects(
-				visual.options.mappings.sd_inside,
-				visual.options.mappings.sd_around
-			)
+			compatibility.treesitter_textobjects(visual.options.mappings.sd_inside, visual.options.mappings.sd_around)
 		end
 		visual.enabled = true
 	end
@@ -47,6 +44,9 @@ function visual.disable()
 		for name, lhs in pairs(visual.options.mappings) do
 			-- changing modes so that it doesn't include `sd`
 			local _modes = visual.options.commands[name].modes
+			if _modes == nil then
+				_modes = visual.options.commands[name][3]
+			end
 			local modes = {}
 			for i = 1, #_modes do
 				if _modes[i] ~= "sd" then
@@ -74,7 +74,7 @@ function visual.disable()
 			end)
 		end
 		-- restore original mappings
-    Vdbg("Restoring original mappings")
+		Vdbg("Restoring original mappings")
 		for _, map in ipairs(visual._backup_mapping) do
 			map.rhs = map.rhs or ""
 			-- local rhs = vim.api.nvim_replace_termcodes(map.rhs, true, true, true)
@@ -101,7 +101,7 @@ visual.options = {
 	vunmaps = {},
 	nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c" },
 	history_size = 50, -- how many selections we should remember in the history
-  treesitter_textobjects = false,
+	treesitter_textobjects = false,
 	serendipity = {}, -- options for serendipity mode
 	mappings = {
 		-- a list of command names and of their key-maps; what each command does is defined below
@@ -143,7 +143,7 @@ visual.options = {
 		repeat_command = "<A-.>", -- repeat the last visual.nvim command
 		repeat_edit = "<A-,>", -- repeat the last edit in visual and serendipity mode
 		macro = "q", -- same as usual `q` key, but it also disables visual.nvim (see issue https://github.com/00sapo/visual.nvim/issues/7); must be re-enabled via :VisualEnable when finished playing with macros
-    go_to_definition = "gd", -- go to definition
+		go_to_definition = "gd", -- go to definition
 	},
 	commands = { -- what each command name does
 		-- 	example_command = {
@@ -344,7 +344,7 @@ visual.options = {
 		macro = {
 			pre_amend = {
 				"<sde>",
-        visual.disable
+				visual.disable,
 			},
 			post_amend = {},
 			modes = { "n", "v", "sd" },
@@ -357,13 +357,13 @@ visual.options = {
 		increase_indent_sd = { pre_amend = { ">gv<sdi>" }, post_amend = {}, modes = { "sd" } },
 		decrease_indent_normal = { pre_amend = { "<<" }, post_amend = {}, modes = { "n" } },
 		increase_indent_normal = { pre_amend = { ">>" }, post_amend = {}, modes = { "n" } },
-    go_to_definition = {
-      pre_amend = { "<esc><sde>" },
-      post_amend = {},
-      modes = { "sd" },
-      amend = true,
-      countable = false,
-    }
+		go_to_definition = {
+			pre_amend = { "<esc><sde>" },
+			post_amend = {},
+			modes = { "sd" },
+			amend = true,
+			countable = false,
+		},
 	},
 }
 
