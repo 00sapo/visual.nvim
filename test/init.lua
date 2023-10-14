@@ -19,10 +19,10 @@ vim.cmd("hi Visual guifg=black guibg=lightyellow ctermfg=black ctermbg=lightyell
 
 require("lazy").setup({
 	{
-		dir = "/home/sapo/develop/visual.nvim",
+		"00sapo/visual.nvim",
 		opts = { treesitter_textobjects = true },
 		dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" },
-		event = "VeryLazy"
+		event = "VeryLazy",
 	},
 	-- uncomment the followings for testing cmp sources
 	-- { "neovim/nvim-lspconfig" },
