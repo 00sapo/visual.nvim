@@ -73,11 +73,9 @@ end
 local function get_original(map)
 	return function()
 		local count = vim.v.count
-		if count == 0 then
-			count = 1
-		end
 		local keys, fmode
 		if map.expr then
+			Vdbg("expr!")
 			if map.callback then
 				keys = map.callback()
 			else
@@ -86,8 +84,10 @@ local function get_original(map)
 		elseif map.callback then
 			map.callback()
 			return
-		else
+		elseif count >= 1 then
 			keys = count .. map.rhs
+		else
+			keys = map.rhs
 		end
 		keys = termcodes(keys)
 		fmode = map.noremap and "in" or "im"
