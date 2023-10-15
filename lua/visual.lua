@@ -16,6 +16,14 @@ function visual.setup(options)
 		if type(options) == "table" then
 			visual.options = vim.tbl_deep_extend("force", visual.options, options)
 		end
+		Vdbg("Setting up compatibility")
+		if visual.options.treesitter_textobjects then
+			compatibility.treesitter_textobjects(visual.options.mappings.sd_inside, visual.options.mappings.sd_around)
+		end
+		if visual.options.s_jumps then
+			compatibility.s_jumps()
+		end
+
 		Vdbg("Backing up commands")
 		-- backup mappings
 		visual._backup_mapping = utils.concat_arrays({ vim.api.nvim_get_keymap("v"), vim.api.nvim_get_keymap("n") })
@@ -28,10 +36,6 @@ function visual.setup(options)
 		mappings.unmaps(visual.options, "n")
 		mappings.apply_mappings(visual.options)
 
-		Vdbg("Setting up compatibility")
-		if visual.options.treesitter_textobjects then
-			compatibility.treesitter_textobjects(visual.options.mappings.sd_inside, visual.options.mappings.sd_around)
-		end
 		visual.enabled = true
 	end
 end

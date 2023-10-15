@@ -12,6 +12,7 @@ function M.get_defaults(visual)
 		nunmaps = { "W", "E", "B", "w", "e", "b", "y", "d", "c" },
 		history_size = 50, -- how many selections we should remember in the history
 		treesitter_textobjects = false,
+		s_jumps = pcall(require, "leap"),
 		serendipity = {}, -- options for serendipity mode
 		mappings = {
 			-- a list of command names and of their key-maps; what each command does is defined below

@@ -21,7 +21,7 @@ require("lazy").setup({
 	{
 		"00sapo/visual.nvim",
 		opts = { treesitter_textobjects = true },
-		dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects" },
+		dependencies = { "nvim-treesitter", "nvim-treesitter-textobjects", "leap.nvim", "flit.nvim" },
 		event = "VeryLazy",
 	},
 	-- uncomment the followings for testing cmp sources
@@ -78,6 +78,21 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+	{
+		"ggandor/leap.nvim",
+		config = function()
+			require("leap").add_default_mappings()
+		end,
+	},
+	{
+		"ggandor/flit.nvim",
+		config = function()
+			require("flit").setup({
+				labeled_modes = "nv",
+			})
+		end,
+		dependencies = { "leap.nvim" },
 	},
 	{ "nvim-treesitter/nvim-treesitter-textobjects", dependencies = { "nvim-treesitter" } },
 }, {

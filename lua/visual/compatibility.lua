@@ -24,35 +24,35 @@ function M.treesitter_textobjects(sd_inside, sd_around)
 						end
 						local selection_mode = select.selection_modes[query] or "v"
 
-						local func = function () 
-              Vdbg("Adding treesitter-textobjects keymap: " .. key)
-              Vdbg("Selection mode: " .. selection_mode)
-              require("nvim-treesitter.textobjects.select").select_textobject(
+						local func = function()
+							Vdbg("Adding treesitter-textobjects keymap: " .. key)
+							Vdbg("Selection mode: " .. selection_mode)
+							require("nvim-treesitter.textobjects.select").select_textobject(
 								query,
 								group,
 								selection_mode
 							)
-            end
+						end
 
-            -- change the first character of key if i/a to
-            local keys = {
-              pre_amend = {"<esc>", "<sdi>", func},
-              post_amend = {},
-              mode = {"sd"},
-              amend = false,
-              countable = false,
-            }
-            -- if outer in key, then set key to sd_around
-            local lhs = ""
-            if string.find(query, "outer") then
-              lhs = sd_around
-            elseif string.find(query, "inner") then
-              lhs = sd_inside
-            end
-            lhs = lhs .. key:sub(2)
+						-- change the first character of key if i/a to
+						local keys = {
+							pre_amend = { "<esc>", "<sdi>", func },
+							post_amend = {},
+							mode = { "sd" },
+							amend = false,
+							countable = false,
+						}
+						-- if outer in key, then set key to sd_around
+						local lhs = ""
+						if string.find(query, "outer") then
+							lhs = sd_around
+						elseif string.find(query, "inner") then
+							lhs = sd_inside
+						end
+						lhs = lhs .. key:sub(2)
 
-            local rhs = mappings.make_rhs(keys, true)
-            serendipity.mappings[lhs] = rhs
+						local rhs = mappings.make_rhs(keys, true, true)
+						serendipity.mappings[lhs] = rhs
 					end
 				else
 					vim.notify("Visual.nvim: treesitter-textobjects keymaps not found, have you set them up?")
@@ -66,6 +66,24 @@ function M.treesitter_textobjects(sd_inside, sd_around)
 	else
 		vim.notify("Visual.nvim: treesitter enabled but not found, have you installed it? ")
 	end
+end
+
+function M.s_jumps()
+	Vdbg("Setting up s-jumps")
+	local rhs = mappings.make_rhs({
+		pre_amend = {
+			{ rhs = "<esc><sdi>", countable = false },
+		},
+		post_amend = {},
+		mode = { "n", "sd" }, -- not used, actually
+		amend = true,
+	}, true, true)
+	-- serendipity mappings
+	serendipity.mappings["s"] = rhs
+	serendipity.mappings["S"] = rhs
+	-- normal mappings
+	utils.keys_amend_noremap_nowait("s", rhs, "n")
+	utils.keys_amend_noremap_nowait("S", rhs, "n")
 end
 
 return M
