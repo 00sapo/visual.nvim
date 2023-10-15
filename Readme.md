@@ -35,6 +35,7 @@ If you have been tempted by Kakoune and Helix editors, this may be your new plug
 * Surrounding commands (change, delete, add) that operate over selections
 * Repeat motions
 * Compatible with treesitter-textobjects
+* Compatible with leap.nvim and flit.nvim (and most of similar plugins)
 
 ## Usage
 
@@ -58,6 +59,9 @@ Motion commands such as `w`, `e`, `b`, `ge`, `f`, `t` and their punctuation-awar
 
 Once you are in serendipity mode, you can modify text (`c`, `x`, `i`, `a`) as if you were in normal mode. `d` and `y` will work as in visual mode. With `<A-,>`, you can repeat the last motion selection, while with `<A-.>` you can repeat the last edit applied in insert mode from serendipity or visual mode.
 
+Remember using `o` to move the cursor to the other end of the visual/serendipity
+selection when needed. You can also use `<A-o` from serendipity mode to extend the selection to the previous cursor position. Together with `h`, `j`, `k`, `l`, these keys are a nice way for adjusting the selection in serendipity mode.
+
 Serendipity mode is built around the nvim's visual mode, so you can use all
 visual commands if they don't interfer with your config.
 From serendipity mode, you can enter visual mode with `v`, `<S-v>`, `<C-v>`. You can
@@ -68,15 +72,14 @@ From serendipity mode, `<esc>` will lead you to normal mode.
 Note that motion commands in visual mode are different from normal mode.
 Serendipity mode emulates normal mode for motion commands!
 
-Remember using `o` to move the cursor to the other end of the visual/serendipity
-selection when needed.
-
 Selection of text objects is possible as in usual nvim with `i<text object>` and `a<text object>` in visual mode, thus becoming `va` and `vi` from normal mode, similarly to Helix's `mi` and `ma`. From serendipity mode, since `i` and `a` are mapped to `append` and `insert`, they become `I` and `A`, (or still `vi` and `va`). If you are a treesitter-textobjects user, simply set the `treesitter_textobjects` option to `true` for using them from serendipity mode.
 
 Visual.nvim also offers surrounding commands with `sd`, `sc`, and `sa` (delete, change, add).
 
 Finally, in serendipity mode, pressing `hjkl` will extend the selection. You can move to
 normal mode with `<A-h>`, `<A-j>`, etc.
+
+If you install leap.nvim and flit.nvim, you can use `s/S/f/F/t/T` for "smart" jumps. For other simila plugins (e.g. hop.nvim, flash.nvim, the `f/F/t/T` keys should work out-of-the-box, while the `s/S` keys require the option `s_jumps = true`.
 
 ### Limitations
 
@@ -93,7 +96,7 @@ mode. This may create confusion in the workflow.
 
 ### Example config
 
-Configuration with some change to commands in order to make them compatible (needed by
+Configuration with some changes to commands in order to make them compatible (needed by
 NvChad):
 ```lua
 {
@@ -112,7 +115,7 @@ NvChad):
 }
 ```
 
-Configuration for color scheme (changing the serendipity color, see [here](https://web.archive.org/web/20230321113552/https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html) for a list of (n)vim colors):
+Configuration for dark color scheme (changing the serendipity color, see [here](https://web.archive.org/web/20230321113552/https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html) for a list of (n)vim colors):
 ```lua
 {
   '00sapo/visual.nvim',
@@ -182,13 +185,11 @@ Example with custom mappings (more info [below](#keymaps))
 ## Keymaps
 
 The plugin is highly customizable. It maps commands to keymaps, and you can define new
-commands or edit the existing ones. The following is the default set-up. Read the
-comments to understand how to modify it.
+commands or edit the existing ones.
 
 Feel free to suggest new default keybindings in the issues!
 
-See the [full default options](https://github.com/00sapo/visual.nvim/blob/71759886d3864bebe3edd7c00916925edd340256/lua/visual.lua#L90-L357
-) with documentation in the comments.
+See the [full default options](https://github.com/00sapo/visual.nvim/blob/main/lua/visual/defaults.lua) with documentation in the comments.
 
 # Testing
 
