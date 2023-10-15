@@ -1,7 +1,9 @@
 local history = {}
 local Vdbg = require("visual.debugging")
-history.repeat_mapping_names = {"repeat_command", "repeat_edit"}
+history.repeat_mapping_names = { "repeat_command", "repeat_edit" }
 history.last_command = nil
+history.goto_last_pos_name = "goto_last_pos"
+history.last_cursor = nil
 history.selection_history = {}
 history.cur_history_idx = 0
 
@@ -10,6 +12,21 @@ local serendipity = require("visual.serendipity")
 
 function history.setup(opts)
 	history.history_size = opts.history_size
+end
+
+function history.store_last_pos()
+	Vdbg("Storing last cursor position: ", vim.api.nvim_win_get_cursor(0))
+
+	history.last_cursor = vim.api.nvim_win_get_cursor(0)
+end
+
+function history.goto_last_pos()
+	local last_pos = history.last_cursor
+	Vdbg("last_pos: ", last_pos)
+	if last_pos == nil then
+		return
+	end
+	vim.api.nvim_win_set_cursor(0, last_pos)
 end
 
 function history.run_last_command(original)
@@ -32,7 +49,7 @@ end
 function history.run_last_edit()
 	Vdbg("Running last inserted")
 	local inserted = ffi_get_inserted()
-  Vdbg("inserted: " .. inserted)
+	Vdbg("inserted: " .. inserted)
 	-- get the second character
 	local edit_cmd = inserted:sub(2, 2)
 	Vdbg("edit_cmd: " .. edit_cmd)
@@ -69,8 +86,8 @@ function history.run_last_edit()
 	Vdbg("Setting current char to: " .. inserted)
 	vim.api.nvim_buf_set_text(0, pos[1] - 1, pos[2], pos[1] - 1, pos[2], { dotreg })
 
-  -- select the pasted text
-  utils.set_selection({{nil, pos[1], pos[2]+1}, {nil, pos[1], pos[2] + #dotreg}})
+	-- select the pasted text
+	utils.set_selection({ { nil, pos[1], pos[2] + 1 }, { nil, pos[1], pos[2] + #dotreg } })
 end
 
 return history

@@ -33,7 +33,7 @@ local function apply_key(key, countable, count)
 end
 
 -- Return a function that can be used as rhs in keys-amend.nvim
-function mappings.make_rhs(keys, history_store)
+function mappings.make_rhs(keys, history_store, position_store)
 	local pre_amend = keys.pre_amend or keys[1]
 	local post_amend = keys.post_amend or keys[2]
 	---@diagnostic disable-next-line: unused-local
@@ -45,13 +45,19 @@ function mappings.make_rhs(keys, history_store)
 	end
 
 	local function f(original)
+		-- save current cursor potition
+		if position_store then
+			Vdbg("Saving cursor position: ", vim.api.nvim_win_get_cursor(0))
+			history.last_cursor = vim.api.nvim_win_get_cursor(0)
+		end
+
 		local count = vim.v.count1
 		for _, key in pairs(pre_amend) do
 			apply_key(key, countable, count)
 		end
 
 		if amend then
-      Vdbg("Amending from mode " .. vim.fn.mode())
+			Vdbg("Amending from mode " .. vim.fn.mode())
 			original()
 		end
 
@@ -83,7 +89,11 @@ function mappings.apply_mappings(opts)
 			vim.notify("Visual.nvim: No mapping for " .. name)
 		else
 			local modes = opts.commands[name].modes or opts.commands[name][3]
-			local rhs = mappings.make_rhs(opts.commands[name], not vim.tbl_contains(history.repeat_mapping_names, name))
+			local rhs = mappings.make_rhs(
+				opts.commands[name],
+				not vim.tbl_contains(history.repeat_mapping_names, name),
+				history.goto_last_pos_name ~= name
+			)
 			for i = 1, #modes do
 				if modes[i] == serendipity.mode_value then
 					serendipity.mappings[lhs] = rhs
