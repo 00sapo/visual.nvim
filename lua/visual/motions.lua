@@ -26,6 +26,18 @@ local function iskeyword_pattern()
 	return pattern .. "]"
 end
 
+-- * return true if the cursor is on a space character
+local function isspace()
+	local line, col = unpack(utils.get_cursor())
+	local line_content = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+	local this_char = line_content:sub(col + 1, col + 1)
+	if string.match(this_char, "%s") then
+		return true
+	else
+		return false
+	end
+end
+
 -- * return true if col is at a `direction`-side word boundary in line
 -- * word here has the same concept as nvim
 -- * if `punctuation` is true, then word punctuation create words by themselves (as
@@ -75,12 +87,12 @@ function M.is_word_boundary(pos, direction, punctuation)
 	end
 
 	if class1 ~= class2 or (end_of_line and direction == "r") or (start_of_line and direction == "l") then
-    Vdbg("detected word boundary with " .. direction .. " and " .. tostring(punctuation))
-    Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
+		Vdbg("detected word boundary with " .. direction .. " and " .. tostring(punctuation))
+		Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
 		return true
 	else
-    Vdbg("not detected word boundary with " .. direction .. " and " .. tostring(punctuation))
-    Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
+		Vdbg("not detected word boundary with " .. direction .. " and " .. tostring(punctuation))
+		Vdbg("class1: " .. class1, "class2: " .. class2, end_of_line, start_of_line)
 		return false
 	end
 end
@@ -105,12 +117,12 @@ function M.WORD_start_prev()
 end
 
 local function check_side(direction)
-  local s = utils.get_selection()
-  if direction == "r" then
-    return s[2][2] > s[1][2] or (s[2][3] > s[1][3] and s[2][2] == s[1][2])
-  elseif direction == "l" then
-    return s[2][2] < s[1][2] or (s[2][3] < s[1][3] and s[2][2] == s[1][2])
-  end
+	local s = utils.get_selection()
+	if direction == "r" then
+		return s[2][2] > s[1][2] or (s[2][3] > s[1][3] and s[2][2] == s[1][2])
+	elseif direction == "l" then
+		return s[2][2] < s[1][2] or (s[2][3] < s[1][3] and s[2][2] == s[1][2])
+	end
 end
 
 function M.word_motion(punctuation, side)
@@ -132,11 +144,13 @@ function M.word_motion(punctuation, side)
 		e = "B"
 	end
 
+	-- first, let's skip all spaces till some non-space character
+
 	-- if we are not at proper side, change it
 	local boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
 	if sd.active and not boundary then
-    -- if the cursor is not on the side `side`
-    if not check_side(side) then
+		-- if the cursor is not on the side `side`
+		if not check_side(side) then
 			Vdbg("o")
 			vim.api.nvim_feedkeys("o", "n", true)
 			boundary = M.is_word_boundary(utils.get_cursor(), side, punctuation)
@@ -148,18 +162,20 @@ function M.word_motion(punctuation, side)
 		if sd.active then
 			Vdbg("<esc>")
 			utils.enter("n")
-			Vdbg(w)
-			vim.api.nvim_feedkeys(w, "n", true)
-			-- if after w, we are still at the right-side boundary, this is a
-			-- one-char word
-			if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
-				Vdbg("c-1")
-				count1 = vim.v.count1 - 1
-			end
 		elseif vim.v.count1 > 1 then
 			Vdbg("c-1")
 			count1 = vim.v.count1 - 1
 		end
+	end
+	if sd.active or isspace() then
+		Vdbg(w)
+		vim.api.nvim_feedkeys(w, "n", true)
+	end
+	-- if after w, we are still at the right-side boundary, this is a
+	-- one-char word
+	if M.is_word_boundary(utils.get_cursor(), side, punctuation) then
+		Vdbg("c-1")
+		count1 = vim.v.count1 - 1
 	end
 
 	if sd.active then
