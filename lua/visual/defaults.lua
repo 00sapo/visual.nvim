@@ -42,9 +42,9 @@ function M.get_defaults(visual)
 			restart_sd = "'", -- collapse the sd selection to the char under cursor
 			delete_single_char = "x", -- delete the char under cursor while in visual mode
 			replace_single_char = "r", -- replace the char under cursor while in visual mode
-			surround_change = "sc", -- change chars at the extremes of the selection
-			surround_add = "sa", -- insert chars at the extremes of the selection
-			surround_delete = "sd", -- delete chars at the extremes of the selection
+			surround_change = "zc", -- change chars at the extremes of the selection
+			surround_add = "za", -- insert chars at the extremes of the selection
+			surround_delete = "zd", -- delete chars at the extremes of the selection
 			increase_indent = ">", -- increase indent in visual mode
 			decrease_indent = "<", -- decrease indent in visual mode
 			increase_indent_sd = ">", -- increase indent in serendipity mode
