@@ -7,7 +7,7 @@ local utils = {}
 -- `expr` is the argument for `vim.fn.getchar`
 function utils.feedkey_witharg(keys, expr)
 	return function()
-    vim.api.nvim_feedkeys("", "x", true)
+		vim.api.nvim_feedkeys("", "x", true)
 		local arg = vim.fn.getcharstr()
 		Vdbg("arg: " .. arg)
 		keys = vim.api.nvim_replace_termcodes(keys, true, true, true)
@@ -129,12 +129,25 @@ function utils.concat_arrays(arrays)
 end
 
 function utils.play_keys(keys)
-  -- keys is a string
-  -- iterate each character and feed it to vim
-  for i = 1, #keys do
-    local char = keys:sub(i, i)
-    vim.api.nvim_feedkeys(char, "mx", false)
-  end
+	-- keys is a string
+	-- iterate each character and feed it to vim
+	for i = 1, #keys do
+		local char = keys:sub(i, i)
+		vim.api.nvim_feedkeys(char, "mx", false)
+	end
+end
+
+function utils.del_maps_if_start_lhs(mappings, lhs)
+	local ret = false
+	for _, mapping in ipairs(mappings) do
+		-- if mapping.lhs starts with lhs
+		if mapping.lhs:sub(1, #lhs) == lhs then
+			Vdbg("Deleting mapping " .. mapping.lhs)
+			vim.keymap.del(mapping.mode, mapping.lhs)
+			ret = true
+		end
+	end
+	return ret
 end
 
 return utils

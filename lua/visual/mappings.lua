@@ -107,11 +107,14 @@ end
 
 -- unmappings
 function mappings.unmaps(opts, mode)
+	local globalmaps = vim.api.nvim_get_keymap(mode)
+	local bufmaps = vim.api.nvim_buf_get_keymap(0, mode)
 	local u = opts[mode .. "unmaps"]
 	for _, v in ipairs(u) do
-		vim.keymap.set(mode, v, function() end, { nowait = false })
-		if mode == "v" then
-			vim.keymap.set("x", v, function() end, { nowait = false })
+		-- if a mapping exists, unmap it
+		if not utils.del_maps_if_start_lhs(globalmaps, v) and not utils.del_maps_if_start_lhs(bufmaps, v) then
+			-- otherwise, add a mapping that does nothing
+			vim.keymap.set(mode, v, function() end, { nowait = true })
 		end
 	end
 end
