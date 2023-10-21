@@ -137,13 +137,28 @@ function utils.play_keys(keys)
 	end
 end
 
+function utils.str_to_table(mode)
+  -- mode may be a table or a single-character or multi-character string
+  if type(mode) == "table" then
+    return mode
+  end
+
+  if #mode == 1 then
+    return { mode }
+  end
+
+  local t = {}
+  mode:gsub(".", function (c) table.insert(t, c) end)
+  return t
+end
+
 function utils.del_maps_if_start_lhs(mappings, lhs)
 	local ret = false
 	for _, mapping in ipairs(mappings) do
 		-- if mapping.lhs starts with lhs
 		if mapping.lhs:sub(1, #lhs) == lhs then
 			Vdbg("Deleting mapping " .. mapping.lhs)
-			vim.keymap.del(mapping.mode, mapping.lhs)
+			vim.keymap.del(utils.str_to_table(mapping.mode), mapping.lhs)
 			ret = true
 		end
 	end
