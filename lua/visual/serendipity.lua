@@ -145,7 +145,7 @@ function M.exit()
 			mode = "v"
 		end
 		vim.keymap.set(
-			mode,
+			utils.str_to_table(mode),
 			map.lhs,
 			map.rhs,
 			{ noremap = map.noremap, silent = map.silent, nowait = map.nowait, callback = map.callback, buffer = buf }

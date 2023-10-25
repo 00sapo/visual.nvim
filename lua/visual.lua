@@ -85,7 +85,7 @@ function visual.disable()
 			if mode == " " then
 				mode = "v"
 			end
-			vim.keymap.set(mode, map.lhs, map.rhs, {
+			vim.keymap.set(utils.str_to_table(mode), map.lhs, map.rhs, {
 				noremap = map.noremap,
 				silent = map.silent,
 				nowait = map.nowait,
