@@ -1,6 +1,6 @@
 # Visual.nvim
 
-> # N.B. While the plugin is rather stable, I don't have time to fix some major issues. Moreover, I found that this experiment did not satisfy my expectations. If you're willing to maintain it, feel free to [open an issue](https://github.com/00sapo/visual.nvim/issues/new).
+> # N.B. While the plugin is rather stable, I don't have time to fix some major issues. Moreover, I found that this experiment did not satisfy my expectations. If you're willing to maintain it, feel free to [open an issue](https://github.com/00sapo/visual.nvim/issues/new). More info about this decision [here](https://www.reddit.com/r/neovim/comments/17h9gbv/do_we_really_need_visualnvim/).
 
 ### Serendipity
 
