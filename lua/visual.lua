@@ -37,6 +37,12 @@ function visual.setup(options)
 		mappings.apply_mappings(visual.options)
 
 		visual.enabled = true
+
+		vim.notify(
+			"visual.nvim is currently archived and won't be developed anymore. If you're willing to maintain it, please open an issue on GitHub (https://github.com/00sapo/visual.nvim/issues/new).",
+			vim.log.levels.CRITICAL,
+			{ title = "visual.nvim is archived" }
+		)
 	end
 end
 
